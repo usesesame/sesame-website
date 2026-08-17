@@ -1,0 +1,2 @@
+# Known routes are emitted as static HTML during the website build.
+# Unknown routes use dist/404.html instead of being rewritten to the home page.
