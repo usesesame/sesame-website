@@ -1,0 +1,23 @@
+# Review routing for the public website. Later rules win, so the paths where a
+# mistake is silent are listed last.
+
+* @d0mkaaa
+
+# Delivery controls. Changing these changes what "passing" means.
+/.github/                @d0mkaaa
+/eslint.config.js        @d0mkaaa
+/package.json            @d0mkaaa
+/package-lock.json       @d0mkaaa
+/scripts/                @d0mkaaa
+
+# The site is static and reads nothing that carries a session. These three
+# decide that: the runtime configuration that makes every service optional, the
+# client that must never send credentials, and the build that writes the
+# Content-Security-Policy.
+/src/lib/runtime-config.ts       @d0mkaaa
+/src/lib/api.ts                  @d0mkaaa
+/scripts/build-static-routes.mjs @d0mkaaa
+/public/_headers                 @d0mkaaa
+
+# Documents that make a legal or security claim.
+/src/lib/legal.ts        @d0mkaaa

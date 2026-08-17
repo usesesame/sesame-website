@@ -1,0 +1,11 @@
+[
+  ["/", "Sesame — Passwords, 2FA and Recovery", "Import passwords, 2FA codes, and recovery details. Sesame never receives your vault. Private beta currently on Windows.", true],
+  ["/security", "Security Model | Sesame Password Manager", "See what stays on your Windows PC, what the website stores, and the current private-beta limits.", true],
+  ["/pricing", "Pricing | Sesame", "The vault stays free. Founding Pro is planned at EUR 20 once, with optional Sync at EUR 2.50 monthly or EUR 24 yearly.", true],
+  ["/roadmap", "Product Roadmap | Sesame", "The release plan for the Sesame desktop vault, encrypted Sync, browser helper, and paid convenience features.", true],
+  ["/releases", "Windows Releases | Sesame", "Official Sesame Windows release status, private-beta installers, checksums, and verification requirements.", true],
+  ["/support", "Support | Sesame", "Get help with Sesame without sending passwords, vault files, 2FA secrets, or recovery codes.", true],
+  ["/privacy", "Privacy Policy | Sesame", "How the Sesame website account processes limited account and technical data while the desktop vault stays local.", true],
+  ["/terms", "Terms of Use | Sesame", "Terms for the Sesame website account and private-beta Windows desktop application.", true],
+  ["/cookies", "Cookie Policy | Sesame", "The first-party session and preference storage used by the Sesame website.", true]
+]

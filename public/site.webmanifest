@@ -1,0 +1,17 @@
+{
+  "name": "Sesame",
+  "short_name": "Sesame",
+  "description": "A password, 2FA, and recovery vault for Windows.",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#f5f1e6",
+  "theme_color": "#f5f1e6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

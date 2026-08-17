@@ -1,0 +1,62 @@
+name: Website CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Reserved test origins, never release defaults. A deployment supplies its own.
+# The API and account portal are deliberately absent from the API-free job:
+# both are optional, and the site has to build and serve without either.
+env:
+  VITE_SESAME_SITE_ORIGIN: https://website.test.invalid
+  VITE_SESAME_PRIVACY_EMAIL: privacy@website.test.invalid
+
+jobs:
+  # The exit gate for a static site: no database, no API, no secret, no
+  # sibling checkout. If this job needs a service, the site is not static.
+  static-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Build with no API and no account portal
+        run: npm run build
+
+      - name: Refuse a policy that names a host the site does not use
+        run: |
+          grep -q "connect-src 'self';" dist/_headers
+          ! grep -q '__SESAME_API_ORIGIN__' dist/_headers
+
+      - run: npm run seo:check
+
+  # The same site with both optional services configured, so the links and the
+  # metadata refresh are exercised too.
+  website:
+    runs-on: ubuntu-latest
+    env:
+      VITE_SESAME_API_URL: https://api.test.invalid
+      VITE_SESAME_ACCOUNT_URL: https://account.test.invalid
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - run: npm run ci
