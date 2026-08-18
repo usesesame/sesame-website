@@ -8,6 +8,8 @@
   import { accountUrl, privacyEmail, siteOrigin } from './lib/runtime-config'
   import rawSitePages from './lib/site-pages.json'
   import projectActivity from './lib/project-activity.json'
+  import buildTimeStatus from './lib/product-status.json'
+  import buildTimeRelease from './lib/latest-release.json'
 
   export let initialPath = '/'
 
@@ -41,8 +43,8 @@
     { name: 'sesame-browser-extension', what: 'The Chrome and Edge extension, packaged reproducibly.' },
   ]
 
-  let productStatus: ProductStatus | null = null
-  let latestRelease: WindowsRelease | null = null
+  let productStatus: ProductStatus | null = buildTimeStatus as ProductStatus
+  let latestRelease: WindowsRelease | null = buildTimeRelease as WindowsRelease
   const fallbackPlans: ProductPlan[] = [
     { id: 'free', name: 'Sesame', price: '0', billing: 'none', available: true, description: 'The whole app, free and open source under the AGPL.', includes: ['Encrypted vault', '15 import formats', 'Nine record types', '2FA and recovery details', 'Windows Hello and PIN unlock', 'Backup, restore, and export'] },
     { id: 'sync', name: 'Sesame Sync', price: '1.00', annualPrice: '10.00', billing: 'monthly', available: false, description: 'Optional hosted sync between your own approved devices. Not available until its security review passes.', includes: ['Approved devices', 'End-to-end encryption', 'Conflict review', 'Local access if Sync ends', 'Self-host it instead if you prefer'] },
@@ -244,10 +246,14 @@
     <div class="section home-section-inner">
     <div class="status-card card" use:reveal>
       <div class="status-head">
-        <h2><span class="dot"></span>Private beta.</h2>
+        <h2><span class="dot"></span>{productStatus?.publicDownload ? 'Public beta.' : 'Private beta.'}</h2>
       </div>
       <div class="status-copy">
-        <p>Invited testers are checking the Windows app now.{#if betaAccessUrl} <a href={betaAccessUrl}>Request beta access</a>.{/if} No payment is taken.</p>
+        {#if productStatus?.publicDownload}
+          <p>Anyone can <a href="/releases">download Sesame for Windows</a>. It is early software and its independent security review has not finished, so keep a separate backup of anything you cannot afford to lose. No payment is taken.</p>
+        {:else}
+          <p>Invited testers are checking the Windows app now.{#if betaAccessUrl} <a href={betaAccessUrl}>Request beta access</a>.{/if} No payment is taken.</p>
+        {/if}
         <dl>
           <div><dt>Public download</dt><dd>{productStatus?.publicDownload ? 'Available' : 'Not available'}</dd></div>
           <div><dt>Supported platform</dt><dd>{productStatus?.platforms?.join(', ') || 'Windows'}</dd></div>
@@ -491,7 +497,7 @@
     <div class="footer-brand">
       <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" /><strong>Sesame</strong></a>
       <p>Passwords, 2FA, and recovery details for Windows. Open source, and Sesame never receives your vault.</p>
-      <p class="footer-status"><span class="dot"></span>Private beta · Windows only</p>
+      <p class="footer-status"><span class="dot"></span>{productStatus?.publicDownload ? 'Public beta' : 'Private beta'} · Windows only</p>
     </div>
     <nav class="footer-col" aria-label="Product">
       <strong>Product</strong>

@@ -1,0 +1,19 @@
+{
+  "accountPurposes": [
+    "beta access",
+    "signed downloads",
+    "licences",
+    "connected-device management"
+  ],
+  "accountRequired": false,
+  "cloudSyncAvailable": false,
+  "desktopConnectionAvailable": true,
+  "phase": "private-beta-foundation",
+  "platforms": [
+    "windows"
+  ],
+  "publicDownload": true,
+  "registrationMode": "public",
+  "updated": "2026-07-13",
+  "webSignInAvailable": true
+}

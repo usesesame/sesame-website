@@ -1,5 +1,5 @@
 [
-  ["/", "Sesame: Open Source Passwords, 2FA and Recovery", "An open source password vault for Windows. Import passwords, 2FA codes, and recovery details. Sesame never receives your vault. Private beta.", true],
+  ["/", "Sesame: Open Source Passwords, 2FA and Recovery", "An open source password vault for Windows. Import passwords, 2FA codes, and recovery details. Sesame never receives your vault. Free download.", true],
   ["/security", "Security Model | Sesame Password Manager", "What stays on your Windows PC, what the website stores, and how to check both against the published source.", true],
   ["/pricing", "Pricing | Sesame", "The app is free and open source. Sesame Sync is planned at EUR 1 monthly or EUR 10 yearly, and you can run it yourself instead.", true],
   ["/roadmap", "Product Roadmap | Sesame", "The release plan for the Sesame desktop vault, encrypted Sync, and the Chrome and Edge extension.", true],
