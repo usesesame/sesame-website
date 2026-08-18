@@ -7,6 +7,7 @@
   import { getLatestWindowsRelease, getPlans, getProductStatus, REGISTRATION_MODE_LABELS, WINDOWS_BETA_SUPPORT, type ProductPlan, type ProductStatus, type WindowsRelease } from './lib/product'
   import { accountUrl, privacyEmail, siteOrigin } from './lib/runtime-config'
   import rawSitePages from './lib/site-pages.json'
+  import projectActivity from './lib/project-activity.json'
 
   export let initialPath = '/'
 
@@ -29,6 +30,9 @@
   let headerScrolled: boolean | null = null
 
   const sourceOrg = 'https://github.com/usesesame'
+  const activityByName = new Map(projectActivity.repositories.map((entry) => [entry.name, entry]))
+  const totalRecentCommits = projectActivity.repositories.reduce((total, entry) => total + entry.recentCommits, 0)
+  const activityAsOf = new Date(projectActivity.generatedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   const licenceUrl = `${sourceOrg}/sesame-desktop/blob/main/LICENSE`
   const repositories = [
     { name: 'sesame-desktop', what: 'The Windows app and the Rust vault core that owns every secret.' },
@@ -173,6 +177,7 @@
     <div class="section-title" use:reveal>
       <h2>Read it, build it, run it yourself.</h2>
       <p class="lede">Every surface is AGPL-3.0-or-later. A password manager asks for more trust than most software, so none of it is hidden.</p>
+      <p class="source-activity">{totalRecentCommits} commits across the four repositories in the last {projectActivity.windowDays} days, as of {activityAsOf}.</p>
     </div>
 
     <div class="repo-grid">
@@ -180,6 +185,14 @@
         <a class="repo-card" href={`${sourceOrg}/${repo.name}`} rel="noreferrer" use:reveal={repoIndex * 70}>
           <strong>{repo.name}</strong>
           <span>{repo.what}</span>
+          {#if activityByName.get(repo.name)}
+            {@const activity = activityByName.get(repo.name)}
+            <span class="repo-activity">
+              {activity?.language}
+              <span aria-hidden="true">&middot;</span>
+              {activity?.recentCommits} {activity?.recentCommits === 1 ? 'commit' : 'commits'} in {projectActivity.windowDays} days
+            </span>
+          {/if}
         </a>
       {/each}
     </div>
@@ -403,8 +416,8 @@
         <div id="controller"><h2>Who is responsible</h2><p>Sesame operates the desktop application and the website at {siteHost}. For the optional website account, Sesame is the data controller. Privacy requests can be sent to <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a>. The public beta remains invite-only; its operator identity and postal contact must be supplied in every invitation before the service is opened to the public.</p></div>
         <div id="data"><h2>What we process</h2><p>The desktop app keeps vault entries, unlock material, imported exports, TOTP seeds, backup codes, and recovery notes on your device. The website and account API are not built to receive them. If you create an invited website account, the account service processes:</p><ul><li><strong>Account data:</strong> email address, verification state, a salted password hash, and the Terms and Privacy Policy versions recorded when the account was created.</li><li><strong>Access data:</strong> beta eligibility, licence records, private-beta download eligibility, and connected-desktop identifiers.</li><li><strong>Session and security data:</strong> session, CSRF, and temporary passkey-ceremony tokens; session timestamps; and short-lived rate-limit data derived from network information.</li><li><strong>Support data:</strong> text you deliberately submit through the attachment-free support form. The form rejects likely secrets before sending.</li></ul><p>We do not use advertising, behavioural analytics, profiling, session replay, or third-party trackers. We do not sell or rent personal data.</p></div>
         <div id="basis"><h2>Why we process it</h2><p>For EEA and UK users, the account service relies on <strong>contract</strong> to provide the account, beta access, private-beta download eligibility, sessions, desktop connections, and recovery; and <strong>legitimate interests</strong> to prevent abuse, protect the service, and respond to a support request. Agreeing to the Terms is required to create the account; acknowledging this policy is not permission for marketing or tracking. The local desktop vault does not require a website account.</p></div>
-        <div id="retention"><h2>Retention and recipients</h2><p>Account records remain until you ask for deletion or the beta is closed. Website sessions last up to 30 days unless revoked or signed out sooner. The CSRF token lasts up to one hour and a passkey ceremony token lasts up to ten minutes. Support reports have no automatic expiry in this beta; do not put sensitive information in them and request deletion by email when it is no longer needed. Sesame does not currently operate analytics or advertising processors. Before any public launch, Sesame will publish the hosting and other processor details that apply to the deployed service.</p></div>
-        <div id="transfers"><h2>International transfers</h2><p>The private beta is not offered as a public service. If Sesame later uses a processor outside the EEA or UK, the public policy will name the processor and describe the applicable transfer safeguard before that processing begins.</p></div>
+        <div id="retention"><h2>Retention and recipients</h2><p>Account records remain until you ask for deletion or the beta is closed. Website sessions last up to 30 days unless revoked or signed out sooner. The CSRF token lasts up to one hour and a passkey ceremony token lasts up to ten minutes. Support reports have no automatic expiry in this beta; do not put sensitive information in them and request deletion by email when it is no longer needed. Sesame operates no analytics, advertising, or profiling processors.</p><p>The service runs on two processors, and no others:</p><ul><li><strong>Hetzner Online GmbH</strong>, Falkenstein, Germany. Hosts the server, the account database, and the mail relay that sends account email. All account data is stored here, inside the EU.</li><li><strong>Cloudflare, Inc.</strong>, United States. Provides authoritative DNS for the domain, and forwards mail addressed to published contact addresses such as the privacy address to an operator mailbox.</li></ul><p>Account email is sent from Sesame's own mail relay on the Hetzner server rather than a third-party sending provider, so the contents of verification, recovery, and email-change messages are not processed by an external mail service.</p></div>
+        <div id="transfers"><h2>International transfers</h2><p>Account records, the database, and outbound account email stay on infrastructure located in Germany, inside the EEA. No transfer safeguard is required for that processing.</p><p>Cloudflare, Inc. is established in the United States. Its role is limited to authoritative DNS and to forwarding mail sent to Sesame's published contact addresses, which means the contents of a message you send to those addresses pass through a processor outside the EEA. That transfer relies on the data processing terms Cloudflare offers its customers, including the European Commission's standard contractual clauses. If you would rather not use a US processor for that route, contact details published on this site can also be reached through the account portal's support form, which does not involve Cloudflare mail routing.</p></div>
         <div id="rights"><h2>Your rights</h2><p>Subject to applicable law, you may request <strong>access</strong>, <strong>rectification</strong>, <strong>erasure</strong>, <strong>restriction</strong>, and <strong>portability</strong> of your data, and <strong>object</strong> to processing based on legitimate interests. Email <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> to exercise these rights. You may also complain to your local data-protection authority. Sesame aims to respond within one month where the GDPR applies.</p></div>
         <div id="contact"><h2>Contact and changes</h2><p>Privacy questions and requests: <a href={`mailto:${privacyEmail}`}>{privacyEmail}</a> or the <a href="/support">support page</a>. We will publish a new version and highlight material changes before applying them to existing website accounts.</p><p class="doc-meta">Version {LEGAL_VERSION} · Updated {LEGAL_UPDATED}.</p></div>
       </article>
