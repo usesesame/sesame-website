@@ -1,0 +1,9 @@
+# RFC 9116. Sesame is a password manager, so a clear reporting route matters
+# more here than on most sites.
+Contact: mailto:security@usesesame.app
+Contact: __SESAME_SITE_ORIGIN__/support
+Expires: 2027-08-18T00:00:00.000Z
+Preferred-Languages: en
+Canonical: __SESAME_SITE_ORIGIN__/.well-known/security.txt
+Policy: https://github.com/usesesame/sesame-desktop/blob/main/.github/SECURITY.md
+Acknowledgments: __SESAME_SITE_ORIGIN__/security

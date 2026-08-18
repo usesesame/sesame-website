@@ -18,7 +18,11 @@ for (const [path, title, description, index] of pages) {
   if (!html.includes(`href="${canonical}"`)) errors.push(`${path}: canonical mismatch`)
   if (!html.includes(`content="${index ? 'index,follow' : 'noindex,nofollow'}"`)) errors.push(`${path}: robots mismatch`)
   if (!html.includes(`property="og:image" content="${siteOrigin}/`)) errors.push(`${path}: og:image is missing or not an absolute site URL`)
-  if (path !== '/' && html.includes('sesame-structured-data')) errors.push(`${path}: home structured data leaked`)
+  // The home graph describes the organisation and the application, so it must
+  // not appear anywhere else. /pricing carries its own FAQPage instead.
+  if (path !== '/' && html.includes('SoftwareApplication')) errors.push(`${path}: home structured data leaked`)
+  if (path === '/pricing' && !html.includes('"@type":"FAQPage"')) errors.push('/pricing: FAQ structured data is missing')
+  if (path !== '/' && path !== '/pricing' && html.includes('sesame-structured-data')) errors.push(`${path}: unexpected structured data`)
   if (!html.includes('class="site-header"') || !html.includes('class="site-footer"')) errors.push(`${path}: full page was not prerendered`)
   if (html.includes('class="static-page"') || /<div id="app">\s*<\/div>/.test(html)) errors.push(`${path}: static shim or empty app shell found`)
 }

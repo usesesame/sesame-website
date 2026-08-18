@@ -68,7 +68,30 @@ function renderRoute(template, [path, title, description, index]) {
   const ogImage = `${siteOrigin}/screenshots/vault-overview.png`
   html = replaceTag(html, /<meta property="og:image" content=".*?"\s*\/>/s, `<meta property="og:image" content="${ogImage}" />`)
   html = replaceTag(html, /<meta name="twitter:image" content=".*?"\s*\/>/s, `<meta name="twitter:image" content="${ogImage}" />`)
-  if (path !== '/') html = html.replace(/\s*<script id="sesame-structured-data".*?<\/script>/s, '')
+  html = replaceTag(html, /<meta name="twitter:title" content=".*?"\s*\/>/s, `<meta name="twitter:title" content="${escapeHtml(title)}" />`)
+  html = replaceTag(html, /<meta name="twitter:description" content=".*?"\s*\/>/s, `<meta name="twitter:description" content="${escapeHtml(description)}" />`)
+  if (path === '/pricing') {
+    const faq = {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        ['What is free?', 'The application, all of it. Vault access, imports, 2FA, security checks, Windows Hello and PIN unlock, backup, restore, export, and recovery. Sesame is AGPL software, so there is no paid edition and no feature held back for one.'],
+        ['Then what is the subscription for?', 'Running hosted sync costs money to operate, so Sesame Sync is planned at 1 euro monthly or 10 euros yearly. It syncs ciphertext between your own approved devices. It is not available yet.'],
+        ['Can I sync without paying?', 'The sync service is in the server repository under the same licence, so you can run it yourself. It is not enabled for anyone today, hosted or self-hosted, and it stays that way until its security review passes.'],
+        ['What happens if I stop paying, or Sesame stops?', 'Your vault is a local file you already have. It opens with your master password, recovery kit, PIN, or Windows Hello, with no account and no server. Losing Sync does not lock a vault.'],
+      ].map(([question, answer]) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: { '@type': 'Answer', text: answer },
+      })),
+    }
+    html = html.replace(
+      /<script id="sesame-structured-data".*?<\/script>/s,
+      `<script id="sesame-structured-data" type="application/ld+json">${JSON.stringify(faq)}</script>`,
+    )
+  } else if (path !== '/') {
+    html = html.replace(/\s*<script id="sesame-structured-data".*?<\/script>/s, '')
+  }
   html = replaceTag(html, /<div id="app"><\/div>/, `<div id="app">${rendered.body}</div>`)
   return html
 }
@@ -85,6 +108,23 @@ const notFound = renderRoute(template, ['/404', 'Page not found | Sesame', 'The 
   .replace(/\s*<script id="sesame-structured-data".*?<\/script>/s, '')
 await writeFile(resolve(outputRoot, '404.html'), notFound, 'utf8')
 
+// A sitemap without lastmod gives a crawler no reason to prefer one page over
+// another on a recrawl. The build date is the honest value here: every page is
+// rendered from the same source tree in the same run.
+const lastmod = new Date().toISOString().slice(0, 10)
+const sitemapEntries = pages
+  .filter(([, , , index]) => index)
+  .map(([path]) => `  <url><loc>${siteOrigin}${path}</loc><lastmod>${lastmod}</lastmod></url>`)
+  .join('\n')
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries}\n</urlset>\n`
+await writeFile(resolve(outputRoot, 'sitemap.xml'), sitemap, 'utf8')
+
+// IndexNow lets Bing and Yandex fetch changed pages immediately instead of
+// waiting for a crawl. The key file must be reachable at the site root.
+const indexNowKey = 'a7f3c1e94b2d48a6b5e0c9d7f8a1b3c2'
+await writeFile(resolve(outputRoot, `${indexNowKey}.txt`), indexNowKey, 'utf8')
+await writeFile(resolve(outputRoot, 'indexnow-key.txt'), indexNowKey, 'utf8')
+
 const headersPath = resolve(outputRoot, '_headers')
 let headers = await readFile(headersPath, 'utf8')
 // With no API, connect-src stays 'self' and the placeholder goes away, so the
@@ -92,7 +132,7 @@ let headers = await readFile(headersPath, 'utf8')
 headers = headers.replace(' __SESAME_API_ORIGIN__', apiOrigin ? ` ${apiOrigin}` : '')
 await writeFile(headersPath, headers, 'utf8')
 
-for (const file of ['index.html', '404.html', 'sitemap.xml', 'robots.txt']) {
+for (const file of ['index.html', '404.html', 'robots.txt', '.well-known/security.txt']) {
   const target = resolve(outputRoot, file)
   const content = await readFile(target, 'utf8')
   await writeFile(target, content
