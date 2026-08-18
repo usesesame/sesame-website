@@ -37,10 +37,14 @@ No production origin is compiled into the site. A deployment supplies its own.
 npm run ci
 ```
 
-That runs the design-token contract, lint, type check, the browser suite, and
-the SEO check against the built output. Browser tests use fictional intercepted
-API data; two of them assert the site works with every request aborted, and
-that no public page ever reads a route carrying a session.
+That runs the design-token contract, lint, the type check, the production
+build, and the SEO check against the built output.
+
+No browser suite exists yet. `npm run test` builds the site and then prints a
+skip notice, so a build failure is still caught while the specs are missing.
+When they land they should use fictional intercepted API data, and cover the
+site working with every request aborted and no public page reading a route that
+carries a session.
 
 The `static-only` CI job is the exit gate for a static site: it builds with no
 API and no account portal at all, and fails if the shipped
