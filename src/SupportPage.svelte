@@ -5,7 +5,6 @@
 </script>
 
 <section class="page-hero compact-page-hero">
-  <p class="eyebrow">Support</p>
   <h1>How can we help?</h1>
   <p class="intro">Ask a question, request beta access, or report a bug. Never include passwords or vault files.</p>
 </section>
@@ -17,7 +16,7 @@
   </aside>
 
   <div class="support-intake card" id="new-request">
-    <div class="support-form-head"><div><p class="eyebrow">Contact</p><h2>Send a request</h2></div><span>No attachments</span></div>
+    <div class="support-form-head"><h2>Send a request</h2><span>No attachments</span></div>
     {#if requestUrl}
       <p>Requests are written in the account portal. It checks for common secret patterns before anything is sent, and it works without an account: a guest request enters the same queue.</p>
       <p><a class="button" href={requestUrl}>Open the support form</a></p>
@@ -31,7 +30,6 @@
 
 <section class="section support-faq">
   <div class="faq-block">
-    <p class="eyebrow">Quick answers</p>
     <h2>Common questions</h2>
     <details><summary>Can I download Sesame now?</summary><p>Not yet. Sesame is an invite-only Windows beta.</p></details>
     <details><summary>Can support unlock my vault?</summary><p>No. Use your recovery kit or PIN. Without an unlock method, the vault cannot be recovered.</p></details>
