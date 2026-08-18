@@ -358,7 +358,8 @@
   {:else if page === 'releases'}
     <section class="page-hero compact-page-hero">
       <h1>Windows builds.</h1>
-      <p class="intro">Only releases listed here are official. Every downloadable installer must have a signature, SHA-256 hash, compatibility note, and release record.</p>
+      <p class="intro">Only releases listed here are official. Every installer carries a Tauri updater signature, a published SHA-256, and Sigstore evidence binding it to the exact workflow run that built it.</p>
+      <p class="intro release-live-status">Current availability is published at <a href="https://status.usesesame.app" rel="noreferrer">status.usesesame.app</a>, which runs outside this server.</p>
     </section>
 
     <section class="section release-section">
@@ -505,6 +506,7 @@
       <a href="/support" aria-current={page === 'support' ? 'page' : undefined}>Support</a>
       {#if accountHomeUrl}<a href={accountHomeUrl}>Account</a>{/if}
       <a href="/#status">Project status</a>
+      <a href="https://status.usesesame.app" rel="noreferrer">Service status</a>
     </nav>
     <nav class="footer-col" aria-label="Source">
       <strong>Source</strong>
