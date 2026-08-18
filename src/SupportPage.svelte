@@ -6,7 +6,7 @@
 
 <section class="page-hero compact-page-hero">
   <h1>How can we help?</h1>
-  <p class="intro">Ask a question, request beta access, or report a bug. Never include passwords or vault files.</p>
+  <p class="intro">Ask a question, report a bug, or tell us what is broken in the beta. Never include passwords or vault files.</p>
 </section>
 
 <section class="section support-section safe-support">
