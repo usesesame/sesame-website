@@ -82,12 +82,12 @@
   <meta property="og:title" content={pageSeo.title} />
   <meta property="og:description" content={pageSeo.description} />
   <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:image" content={`${siteOrigin}/og.png`} />
-  <meta property="og:image:width" content="1727" />
-  <meta property="og:image:height" content="910" />
-  <meta property="og:image:alt" content="Sesame password vault beside the words Your passwords. Your computer." />
+  <meta property="og:image" content={`${siteOrigin}/screenshots/vault-overview.png`} />
+  <meta property="og:image:width" content="1440" />
+  <meta property="og:image:height" content="900" />
+  <meta property="og:image:alt" content="The Sesame desktop vault showing a login with its sign-in details" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content={`${siteOrigin}/og.png`} />
+  <meta name="twitter:image" content={`${siteOrigin}/screenshots/vault-overview.png`} />
 </svelte:head>
 
 <header class="site-header" data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
