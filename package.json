@@ -11,6 +11,7 @@
                     "check":  "svelte-check --tsconfig ./tsconfig.json \u0026\u0026 tsc --noEmit",
                     "design:tokens:check":  "node scripts/design-tokens-contract.mjs",
                     "seo:check":  "node scripts/check-seo.mjs",
+                    "activity:refresh":  "node scripts/fetch-project-activity.mjs",
                     "test":  "node scripts/skip-with-message.mjs \"website browser\" \"npm run build\"",
                     "release:check":  "npm run design:tokens:check \u0026\u0026 npm run lint \u0026\u0026 npm run check \u0026\u0026 npm run build \u0026\u0026 npm run seo:check",
                     "ci":  "npm run design:tokens:check \u0026\u0026 npm run lint \u0026\u0026 npm run check \u0026\u0026 npm run build \u0026\u0026 npm run seo:check"

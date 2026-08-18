@@ -210,6 +210,8 @@ p { overflow-wrap: break-word; }
 .repo-card:hover { background: var(--surface-2); }
 .repo-card strong { color: var(--text-heading); font: 650 14px var(--font-mono, var(--font-ui)); }
 .repo-card span { color: var(--text-muted); font-size: 13px; line-height: 1.6; }
+.repo-card .repo-activity { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin-top: 2px; color: var(--text-faint); font-size: 11.5px; font-weight: 600; }
+.source-activity { margin: 14px 0 0; color: var(--text-faint); font-size: 13px; }
 .source-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 32px; margin-top: 52px; padding-top: 44px; border-top: 1px solid var(--border); }
 .source-notes h3 { margin: 0; color: var(--text-heading); font: 650 16px var(--font-ui); }
 .source-notes p { margin: 10px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.7; }
