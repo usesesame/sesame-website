@@ -3,16 +3,16 @@
   "channel": "beta",
   "message": "This Windows build has a verified Tauri updater signature.",
   "platform": "windows",
-  "publishedAt": "2026-08-18T18:44:30.575702Z",
-  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.1.0",
+  "publishedAt": "2026-08-19T08:25:41Z",
+  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.1.1",
   "rollbackNotice": "",
-  "sha256": "85e1adf61290b4771c3f3ad8744e28d61db50939057e1637e7eb22b27e3efa90",
+  "sha256": "7123941ea6b92e8095c51d31f761101cb9ee31d2176f66741b71bcdd0e9edd52",
   "signed": true,
   "signingKeyId": "updater-v1",
   "supportedWindows": [
     "Windows 10",
     "Windows 11"
   ],
-  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.1.0/Sesame_0.1.0_x64-setup.exe",
-  "version": "0.1.0"
+  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.1.1/Sesame_0.1.1_x64-setup.exe",
+  "version": "0.1.1"
 }
