@@ -41,6 +41,8 @@ jobs:
 
       - run: npm run seo:check
 
+      - run: npm run facts:check
+
   # The same site with both optional services configured, so the links and the
   # metadata refresh are exercised too.
   website:

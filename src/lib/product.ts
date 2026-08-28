@@ -1,4 +1,5 @@
 import { readPublic } from './api'
+import { parsePlans, parseProductStatus, parseWindowsRelease } from './product-parse'
 
 export type ProductStatus = {
   phase: string
@@ -12,12 +13,6 @@ export type ProductStatus = {
   // An API older than these fields still renders every page.
   registrationMode?: 'closed' | 'invite' | 'public'
   accountPurposes?: string[]
-}
-
-export const REGISTRATION_MODE_LABELS: Record<'closed' | 'invite' | 'public', string> = {
-  closed: 'Closed',
-  invite: 'Invite only',
-  public: 'Open',
 }
 
 export type ProductPlan = {
@@ -57,14 +52,14 @@ export const WINDOWS_BETA_SUPPORT = {
 } as const
 
 export function getProductStatus(): Promise<ProductStatus | null> {
-  return readPublic<ProductStatus>('/v1/product/status')
+  return readPublic('/v1/product/status').then(parseProductStatus)
 }
 
 export async function getPlans(): Promise<ProductPlan[] | null> {
-  const result = await readPublic<{ plans: ProductPlan[] }>('/v1/plans')
-  return result?.plans ?? null
+  const raw = await readPublic('/v1/plans')
+  return raw === null ? null : parsePlans(raw)
 }
 
 export function getLatestWindowsRelease(): Promise<WindowsRelease | null> {
-  return readPublic<WindowsRelease>('/v1/releases/latest?platform=windows')
+  return readPublic('/v1/releases/latest?platform=windows').then(parseWindowsRelease)
 }
