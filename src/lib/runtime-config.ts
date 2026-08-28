@@ -51,6 +51,8 @@ function configuredEmail(name: string, value: string | undefined): string {
 // Required: a wrong canonical URL is an SEO defect that ships silently. No production origin is compiled in.
 export const siteOrigin = configuredOrigin('VITE_SESAME_SITE_ORIGIN', import.meta.env.VITE_SESAME_SITE_ORIGIN)
 
+export const siteHost = new URL(siteOrigin).host
+
 export const apiBaseURL = optionalOrigin('VITE_SESAME_API_URL', import.meta.env.VITE_SESAME_API_URL)
 
 export const accountOrigin = optionalOrigin('VITE_SESAME_ACCOUNT_URL', import.meta.env.VITE_SESAME_ACCOUNT_URL)

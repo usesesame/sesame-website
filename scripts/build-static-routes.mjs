@@ -2,7 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadEnv } from 'vite'
-import { pages } from './seo-pages.mjs'
+import { routes } from '../src/lib/routes.ts'
 
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(websiteRoot, 'dist')
@@ -45,76 +45,32 @@ if (!privacyEmail || /[\r\n]/.test(privacyEmail) || !/^[^\s@]+@[^\s@]+$/.test(pr
   throw new Error('VITE_SESAME_PRIVACY_EMAIL must be a valid contact email address.')
 }
 
-function escapeHtml(value) {
-  return value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-}
+const template = await readFile(resolve(outputRoot, 'index.html'), 'utf8')
 
-function replaceTag(html, pattern, value) {
-  if (!pattern.test(html)) throw new Error(`SEO template tag missing: ${pattern}`)
-  return html.replace(pattern, value)
-}
-
-function renderRoute(template, [path, title, description, index]) {
-  const canonical = `${siteOrigin}${path}`
-  const rendered = renderPage(path)
-  let html = template
-  html = replaceTag(html, /<title>.*?<\/title>/s, `<title>${escapeHtml(title)}</title>`)
-  html = replaceTag(html, /<meta name="description" content=".*?"\s*\/>/s, `<meta name="description" content="${escapeHtml(description)}" />`)
-  html = replaceTag(html, /<meta name="robots" content=".*?"\s*\/>/s, `<meta name="robots" content="${index ? 'index,follow' : 'noindex,nofollow'}" />`)
-  html = replaceTag(html, /<link rel="canonical" href=".*?"\s*\/>/s, `<link rel="canonical" href="${canonical}" />`)
-  html = replaceTag(html, /<meta property="og:title" content=".*?"\s*\/>/s, `<meta property="og:title" content="${escapeHtml(title)}" />`)
-  html = replaceTag(html, /<meta property="og:description" content=".*?"\s*\/>/s, `<meta property="og:description" content="${escapeHtml(description)}" />`)
-  html = replaceTag(html, /<meta property="og:url" content=".*?"\s*\/>/s, `<meta property="og:url" content="${canonical}" />`)
-  const ogImage = `${siteOrigin}/screenshots/vault-overview.png`
-  html = replaceTag(html, /<meta property="og:image" content=".*?"\s*\/>/s, `<meta property="og:image" content="${ogImage}" />`)
-  html = replaceTag(html, /<meta name="twitter:image" content=".*?"\s*\/>/s, `<meta name="twitter:image" content="${ogImage}" />`)
-  html = replaceTag(html, /<meta name="twitter:title" content=".*?"\s*\/>/s, `<meta name="twitter:title" content="${escapeHtml(title)}" />`)
-  html = replaceTag(html, /<meta name="twitter:description" content=".*?"\s*\/>/s, `<meta name="twitter:description" content="${escapeHtml(description)}" />`)
-  if (path === '/pricing') {
-    const faq = {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: [
-        ['What is free?', 'The application, all of it. Vault access, imports, 2FA, security checks, Windows Hello and PIN unlock, backup, restore, export, and recovery. Sesame is AGPL software, so there is no paid edition and no feature held back for one.'],
-        ['Then what is the subscription for?', 'Running hosted sync costs money to operate, so Sesame Sync is planned at 1 euro monthly or 10 euros yearly. It syncs ciphertext between your own approved devices. It is not available yet.'],
-        ['Can I sync without paying?', 'The sync service is in the server repository under the same licence, so you can run it yourself. It is not enabled for anyone today, hosted or self-hosted, and it stays that way until its security review passes.'],
-        ['What happens if I stop paying, or Sesame stops?', 'Your vault is a local file you already have. It opens with your master password, recovery kit, PIN, or Windows Hello, with no account and no server. Losing Sync does not lock a vault.'],
-      ].map(([question, answer]) => ({
-        '@type': 'Question',
-        name: question,
-        acceptedAnswer: { '@type': 'Answer', text: answer },
-      })),
-    }
-    html = html.replace(
-      /<script id="sesame-structured-data".*?<\/script>/s,
-      `<script id="sesame-structured-data" type="application/ld+json">${JSON.stringify(faq)}</script>`,
-    )
-  } else if (path !== '/') {
-    html = html.replace(/\s*<script id="sesame-structured-data".*?<\/script>/s, '')
-  }
-  html = replaceTag(html, /<div id="app"><\/div>/, `<div id="app">${rendered.body}</div>`)
+function renderDocument(path) {
+  const { head, body } = renderPage(path)
+  const withHead = template.replace(/<head>[\s\S]*?<\/head>/, `<head>${head}</head>`)
+  if (withHead === template) throw new Error(`Template head splice failed for ${path}.`)
+  const html = withHead.replace('<div id="app"></div>', `<div id="app">${body}</div>`)
+  if (html === withHead) throw new Error(`Template app shell missing for ${path}.`)
   return html
 }
 
-const template = await readFile(resolve(outputRoot, 'index.html'), 'utf8')
-for (const page of pages) {
-  const path = page[0]
-  const target = path === '/' ? resolve(outputRoot, 'index.html') : resolve(outputRoot, path.slice(1), 'index.html')
+for (const route of routes) {
+  const target = route.path === '/' ? resolve(outputRoot, 'index.html') : resolve(outputRoot, route.path.slice(1), 'index.html')
   await mkdir(dirname(target), { recursive: true })
-  await writeFile(target, renderRoute(template, page), 'utf8')
+  await writeFile(target, renderDocument(route.path), 'utf8')
 }
 
-const notFound = renderRoute(template, ['/404', 'Page not found | Sesame', 'The requested Sesame page could not be found.', false])
-  .replace(/\s*<script id="sesame-structured-data".*?<\/script>/s, '')
-await writeFile(resolve(outputRoot, '404.html'), notFound, 'utf8')
+await writeFile(resolve(outputRoot, '404.html'), renderDocument('/404'), 'utf8')
 
 // A sitemap without lastmod gives a crawler no reason to prefer one page over
 // another on a recrawl. The build date is the honest value here: every page is
 // rendered from the same source tree in the same run.
 const lastmod = new Date().toISOString().slice(0, 10)
-const sitemapEntries = pages
-  .filter(([, , , index]) => index)
-  .map(([path]) => `  <url><loc>${siteOrigin}${path}</loc><lastmod>${lastmod}</lastmod></url>`)
+const sitemapEntries = routes
+  .filter((route) => route.index)
+  .map((route) => `  <url><loc>${siteOrigin}${route.path}</loc><lastmod>${lastmod}</lastmod></url>`)
   .join('\n')
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries}\n</urlset>\n`
 await writeFile(resolve(outputRoot, 'sitemap.xml'), sitemap, 'utf8')

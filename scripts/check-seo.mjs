@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { pages } from './seo-pages.mjs'
+import { routes } from '../src/lib/routes.ts'
 
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(websiteRoot, 'dist')
@@ -9,7 +9,8 @@ const errors = []
 const siteOrigin = process.env.VITE_SESAME_SITE_ORIGIN?.replace(/\/$/, '')
 if (!siteOrigin) throw new Error('VITE_SESAME_SITE_ORIGIN is required for the SEO check.')
 
-for (const [path, title, description, index] of pages) {
+for (const route of routes) {
+  const { path, title, description, index } = route
   const file = path === '/' ? resolve(outputRoot, 'index.html') : resolve(outputRoot, path.slice(1), 'index.html')
   const html = await readFile(file, 'utf8')
   const canonical = `${siteOrigin}${path}`
@@ -28,14 +29,14 @@ for (const [path, title, description, index] of pages) {
 }
 
 const sitemap = await readFile(resolve(outputRoot, 'sitemap.xml'), 'utf8')
-for (const [path, , , index] of pages) {
-  const present = sitemap.includes(`<loc>${siteOrigin}${path}</loc>`)
-  if (index && !present) errors.push(`${path}: missing from sitemap`)
-  if (!index && present) errors.push(`${path}: private route present in sitemap`)
+for (const route of routes) {
+  const present = sitemap.includes(`<loc>${siteOrigin}${route.path}</loc>`)
+  if (route.index && !present) errors.push(`${route.path}: missing from sitemap`)
+  if (!route.index && present) errors.push(`${route.path}: private route present in sitemap`)
 }
 
 if (errors.length) {
   console.error(errors.join('\n'))
   process.exit(1)
 }
-console.log(`SEO output checked: ${pages.length} routes, sitemap, and robots directives.`)
+console.log(`SEO output checked: ${routes.length} routes, sitemap, and robots directives.`)

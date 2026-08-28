@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { pages } from './seo-pages.mjs'
+import { routes } from '../src/lib/routes.ts'
 
 const siteOrigin = process.env.VITE_SESAME_SITE_ORIGIN?.replace(/\/$/, '')
 if (!siteOrigin) throw new Error('VITE_SESAME_SITE_ORIGIN is required to submit URLs.')
@@ -10,7 +10,7 @@ const host = new URL(siteOrigin).host
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const key = (await readFile(resolve(websiteRoot, 'dist', 'indexnow-key.txt'), 'utf8')).trim()
 
-const urlList = pages.filter(([, , , index]) => index).map(([path]) => `${siteOrigin}${path}`)
+const urlList = routes.filter((route) => route.index).map((route) => `${siteOrigin}${route.path}`)
 
 const response = await fetch('https://api.indexnow.org/IndexNow', {
   method: 'POST',

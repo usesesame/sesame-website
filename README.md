@@ -1,12 +1,9 @@
 # Sesame website
 
 The public marketing site: product pages, pricing, roadmap, release
-information, legal documents, and where to get support. It holds no account,
-no session, and no vault. Everything that needs a sign-in lives in the account
-portal, on its own origin.
+information, legal documents, and where to get support. It holds no account,no session, and no vault. Everything that needs a sign-in lives in the account portal, on its own origin.
 
-The site is static. It renders every page from local content at build time,
-and a deployment needs no database, no API, and no secret.
+The site is static. It renders every page from local content at build time, and a deployment needs no database, no API, and no secret.
 
 ## Build
 
@@ -38,13 +35,17 @@ npm run ci
 ```
 
 That runs the design-token contract, lint, the type check, the production
-build, and the SEO check against the built output.
+build, the SEO check, and the product-facts check against the built output.
+The product-facts check validates the generated status and release files
+against the canonical parsers, then reads every built page and rejects
+availability claims that contradict the canonical status, and any
+import-format count other than the canonical one.
 
-No browser suite exists yet. `npm run test` builds the site and then prints a
-skip notice, so a build failure is still caught while the specs are missing.
-When they land they should use fictional intercepted API data, and cover the
-site working with every request aborted and no public page reading a route that
-carries a session.
+No browser suite exists yet. `npm run test` builds the site, runs the
+product-facts check, and then prints a skip notice, so a build failure is
+still caught while the specs are missing. When they land they should use
+fictional intercepted API data, and cover the site working with every request
+aborted and no public page reading a route that carries a session.
 
 The `static-only` CI job is the exit gate for a static site: it builds with no
 API and no account portal at all, and fails if the shipped

@@ -3,6 +3,7 @@
   export let alt: string
   export let title: string
   export let caption: string
+  export let eager = false
   let unavailable = false
   let previewDialog: HTMLDialogElement
   let previewTrigger: HTMLButtonElement
@@ -35,12 +36,12 @@
   >
     <span class="product-shot-frame">
     {#if !unavailable}
-      <img {src} {alt} loading="lazy" decoding="async" on:error={() => (unavailable = true)} />
+      <img {src} {alt} loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={() => (unavailable = true)} />
     {:else}
       <div class="screenshot-pending" role="img" aria-label={`${title} screenshot pending`}>
         <img src="/favicon.svg" alt="" />
-        <strong>Sanitised beta screenshot pending</strong>
-        <span>The product exists; this public capture still needs its test data checked.</span>
+        <strong>Screenshot on its way</strong>
+        <span>This one is being replaced with checked test data.</span>
       </div>
     {/if}
     </span>

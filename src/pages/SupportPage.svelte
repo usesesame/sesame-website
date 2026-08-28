@@ -1,6 +1,9 @@
 <script lang="ts">
-  import { accountUrl } from './lib/runtime-config'
+  import { IMPORT_FORMAT_COUNT, productFacts } from '../lib/product-facts'
+  import { productState } from '../lib/product-state.svelte'
+  import { accountUrl } from '../lib/runtime-config'
 
+  const facts = $derived(productFacts(productState.status))
   const requestUrl = accountUrl('/support')
 </script>
 
@@ -31,9 +34,8 @@
 <section class="section support-faq">
   <div class="faq-block">
     <h2>Common questions</h2>
-    <details><summary>Can I download Sesame now?</summary><p>Not yet. Sesame is an invite-only Windows beta.</p></details>
-    <details><summary>Can support unlock my vault?</summary><p>No. Use your recovery kit or PIN. Without an unlock method, the vault cannot be recovered.</p></details>
-    <details><summary>What can I import?</summary><p>15 formats from Bitwarden, 1Password, major browsers, and other password managers.</p></details>
+    <details><summary>Can I download Sesame now?</summary><p>{facts.supportDownloadAnswer}</p></details>
+    <details><summary>What can I import?</summary><p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p></details>
     <details><summary>Does Sync work yet?</summary><p>No. It stays disabled until independent review and operating gates pass.</p></details>
     <details><summary>Is there a mobile app or browser extension?</summary><p>No mobile app yet. The browser helper is not in stores.</p></details>
     <details><summary>Where is my vault stored?</summary><p>On your Windows PC. The website and API never receive it.</p></details>

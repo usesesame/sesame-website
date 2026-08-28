@@ -3,7 +3,7 @@ import { apiBaseURL } from './runtime-config'
 const REQUEST_TIMEOUT_MS = 8_000
 
 // Public client: sends no cookies, CSRF token, or unsafe method, so it cannot act on an account session. Resolves to null with no API configured.
-export async function readPublic<T>(path: string): Promise<T | null> {
+export async function readPublic(path: string): Promise<unknown> {
   if (!apiBaseURL) return null
   const controller = new AbortController()
   const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
@@ -15,7 +15,7 @@ export async function readPublic<T>(path: string): Promise<T | null> {
       signal: controller.signal,
     })
     if (!response.ok) return null
-    return await response.json() as T
+    return await response.json()
   } catch {
     return null
   } finally {
