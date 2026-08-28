@@ -49,8 +49,8 @@ const template = await readFile(resolve(outputRoot, 'index.html'), 'utf8')
 
 function renderDocument(path) {
   const { head, body } = renderPage(path)
-  const withHead = template.replace(/<head>[\s\S]*?<\/head>/, `<head>${head}</head>`)
-  if (withHead === template) throw new Error(`Template head splice failed for ${path}.`)
+  const withHead = template.replace('<meta name="sesame-app-head" />', head)
+  if (withHead === template) throw new Error(`Template head marker missing for ${path}.`)
   const html = withHead.replace('<div id="app"></div>', `<div id="app">${body}</div>`)
   if (html === withHead) throw new Error(`Template app shell missing for ${path}.`)
   return html
