@@ -20,7 +20,7 @@
                     "facts:check":  "node scripts/check-product-facts.mjs"
                 },
     "dependencies":  {
-                         "svelte":  "^5.56.4"
+                         "svelte":  "^5.56.10"
                      },
     "devDependencies":  {
                             "@eslint/js":  "^10.0.1",
