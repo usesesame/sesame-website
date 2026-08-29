@@ -73,9 +73,11 @@
   <meta name="twitter:image" content={`${siteOrigin}/screenshots/vault-overview.png`} />
 </svelte:head>
 
+<a class="skip-link" href="#top">Skip to content</a>
+
 <header class="site-header" data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
   <div class="site-header-inner">
-    <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" /><strong>Sesame</strong></a>
+    <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
     <nav aria-label="Main navigation">
       <a href="/" aria-current={route.key === 'home' ? 'page' : undefined}>Product</a>
       <a href="/security" aria-current={route.key === 'security' ? 'page' : undefined}>Security</a>
@@ -100,7 +102,7 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" /><strong>Sesame</strong></a>
+      <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
       <p>Passwords, 2FA, and recovery details for Windows. Open source, and Sesame never receives your vault.</p>
       <p class="footer-status"><span class="dot"></span>{facts.betaLabel} · Windows only</p>
     </div>
