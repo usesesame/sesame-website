@@ -23,14 +23,14 @@ export const routes: Route[] = [
     path: '/',
     key: 'home',
     title: 'Sesame: Open Source Passwords, 2FA and Recovery',
-    description: 'An open source password vault for Windows. Import passwords, 2FA codes, and recovery details. Sesame never receives your vault. Free download.',
+    description: 'An open source password vault for Windows and Linux. Import passwords, 2FA codes, and recovery details. Sesame never receives your vault. Free download.',
     index: true,
   },
   {
     path: '/security',
     key: 'security',
     title: 'Security Model | Sesame Password Manager',
-    description: 'What stays on your Windows PC, what the website stores, and how to check both against the published source.',
+    description: 'What stays on your computer, what the website stores, and how to check both against the published source.',
     index: true,
   },
   {
@@ -50,8 +50,8 @@ export const routes: Route[] = [
   {
     path: '/releases',
     key: 'releases',
-    title: 'Windows Releases | Sesame',
-    description: 'Official Sesame Windows release status, public beta installers, SHA-256 checksums, and how to verify a download.',
+    title: 'Releases | Sesame',
+    description: 'Official Sesame release status for Windows and Linux, public beta installers, SHA-256 checksums, and how to verify a download.',
     index: true,
   },
   {

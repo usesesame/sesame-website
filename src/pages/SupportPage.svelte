@@ -14,7 +14,7 @@
 
 <section class="section support-section safe-support">
   <aside class="support-guide card">
-    <div><h2>Helpful</h2><ul><li>App and Windows version</li><li>What you clicked</li><li>The exact error</li></ul></div>
+    <div><h2>Helpful</h2><ul><li>App and system version</li><li>What you clicked</li><li>The exact error</li></ul></div>
     <div><h2>Never send</h2><ul><li>Passwords or codes</li><li>Vault or export files</li><li>Recovery kits or keys</li></ul></div>
   </aside>
 
@@ -35,10 +35,12 @@
   <div class="faq-block">
     <h2>Common questions</h2>
     <details><summary>Can I download Sesame now?</summary><p>{facts.supportDownloadAnswer}</p></details>
+    <details><summary>Does Sesame run on my computer?</summary><p>Windows 10 and 11 on x64, and Linux through deb, rpm, and AppImage packages. The releases page lists every official installer with its checksum.</p></details>
+    <details><summary>How do I update?</summary><p>Sesame checks for updates itself. Builds from 0.1.1 on update from inside the app; if you are still on 0.1.0, install a newer version by hand once.</p></details>
     <details><summary>What can I import?</summary><p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p></details>
     <details><summary>Does Sync work yet?</summary><p>No. It stays disabled until independent review and operating gates pass.</p></details>
     <details><summary>Is there a mobile app or browser extension?</summary><p>No mobile app yet. The browser helper is not in stores.</p></details>
-    <details><summary>Where is my vault stored?</summary><p>On your Windows PC. The website and API never receive it.</p></details>
+    <details><summary>Where is my vault stored?</summary><p>On your computer. The website and API never receive it.</p></details>
     <details><summary>Has Sesame been independently reviewed?</summary><p>Not yet. Use test data and keep an encrypted backup.</p></details>
   </div>
 </section>
