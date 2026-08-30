@@ -103,8 +103,8 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
-      <p>Passwords, 2FA, and recovery details for Windows. Open source, and Sesame never receives your vault.</p>
-      <p class="footer-status"><span class="dot"></span>{facts.betaLabel} · Windows only</p>
+      <p>Passwords, 2FA, and recovery details for Windows and Linux. Open source, and Sesame never receives your vault.</p>
+      <p class="footer-status"><span class="dot"></span>{facts.betaLabel} · {facts.platformSummary}</p>
     </div>
     <nav class="footer-col" aria-label="Product">
       <strong>Product</strong>

@@ -22,7 +22,7 @@
     <p class="hero-caveat">Sesame is early beta software. Its independent security review is not finished, so use test data for now.</p>
     <div class="hero-actions">
       {#if facts.publicDownload || !betaAccessUrl}
-        <a class="button" href="/releases">Download for Windows</a>
+        <a class="button" href="/releases">Download for Windows and Linux</a>
       {:else}
         <a class="button" href={betaAccessUrl}>Request beta access</a>
       {/if}
@@ -56,9 +56,9 @@
     </div>
 
     <dl class="release-facts" use:reveal>
-      <div><dt>Available to test</dt><dd>Local vault, imports, 2FA, security checks, PIN or Windows Hello unlock, backup, and export.</dd></div>
+      <div><dt>Available to test</dt><dd>Local vault, imports, 2FA, security checks, PIN unlock, Windows Hello on Windows, backup, and export.</dd></div>
       <div><dt>Not shipped</dt><dd>Browser-store distribution, Sync, mobile apps, passkeys, sharing, and emergency access.</dd></div>
-      <div><dt>Current platform</dt><dd>Windows. Linux support is in progress.</dd></div>
+      <div><dt>Platforms</dt><dd>Windows and Linux.</dd></div>
     </dl>
   </div>
 </section>
@@ -127,9 +127,9 @@
       </div>
       <div class="status-copy">
         {#if facts.publicDownload}
-          <p>Anyone can <a href="/releases">download Sesame for Windows</a>. The independent review is still pending, so keep a separate backup of anything you cannot afford to lose. It is free during the beta.</p>
+          <p>Anyone can <a href="/releases">download Sesame for Windows and Linux</a>. The independent review is still pending, so keep a separate backup of anything you cannot afford to lose. It is free during the beta.</p>
         {:else}
-          <p>Invited testers are trying the Windows app now.{#if betaAccessUrl} <a href={betaAccessUrl}>Request beta access</a>.{/if} It is free during the beta.</p>
+          <p>Invited testers are trying the beta now.{#if betaAccessUrl} <a href={betaAccessUrl}>Request beta access</a>.{/if} It is free during the beta.</p>
         {/if}
         <dl>
           <div><dt>Public download</dt><dd>{facts.downloadState}</dd></div>

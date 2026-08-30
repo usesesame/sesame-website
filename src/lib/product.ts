@@ -44,11 +44,14 @@ export type WindowsRelease = {
   artifacts?: Array<{ name: string; format: 'msi' | 'nsis'; url: string; sha256: string; signed: boolean }>
 }
 
-export const WINDOWS_BETA_SUPPORT = {
-  supported: ['Windows 10', 'Windows 11'],
-  testedArchitectures: ['x64'],
+export const BETA_SUPPORT = {
+  platforms: [
+    { name: 'Windows', detail: 'Windows 10 and Windows 11' },
+    { name: 'Linux', detail: 'deb, rpm, and AppImage packages' },
+  ],
+  architectures: ['x64'],
   unsupported: ['Windows on Arm'],
-  note: 'Sesame runs on 64-bit Windows 10 and Windows 11. Beta testing has concentrated on current Windows 11 builds, so report anything that behaves differently on Windows 10.',
+  note: 'Sesame runs on 64-bit Windows 10 and 11, and on Linux. The Linux build produces deb, rpm, and AppImage packages and is new in 0.2.0. Beta testing has concentrated on current Windows 11 builds, so report anything that behaves differently.',
 } as const
 
 export function getProductStatus(): Promise<ProductStatus | null> {
