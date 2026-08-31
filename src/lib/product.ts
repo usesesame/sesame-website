@@ -1,5 +1,5 @@
 import { readPublic } from './api'
-import { parsePlans, parseProductStatus, parseWindowsRelease } from './product-parse'
+import { parsePlans, parseProductRelease, parseProductStatus } from './product-parse'
 
 export type ProductStatus = {
   phase: string
@@ -26,7 +26,7 @@ export type ProductPlan = {
   includes: string[]
 }
 
-export type WindowsRelease = {
+export type ProductRelease = {
   channel: string
   platform: string
   available: boolean
@@ -41,7 +41,7 @@ export type WindowsRelease = {
   releaseNotesUrl?: string
   signingKeyId?: string
   rollbackNotice?: string
-  artifacts?: Array<{ name: string; format: 'msi' | 'nsis'; url: string; sha256: string; signed: boolean }>
+  artifacts?: Array<{ name: string; format: 'msi' | 'nsis' | 'appimage' | 'deb' | 'rpm'; url: string; sha256: string; signed: boolean }>
 }
 
 export const BETA_SUPPORT = {
@@ -63,6 +63,10 @@ export async function getPlans(): Promise<ProductPlan[] | null> {
   return raw === null ? null : parsePlans(raw)
 }
 
-export function getLatestWindowsRelease(): Promise<WindowsRelease | null> {
-  return readPublic('/v1/releases/latest?platform=windows').then(parseWindowsRelease)
+export function getLatestWindowsRelease(): Promise<ProductRelease | null> {
+  return readPublic('/v1/releases/latest?platform=windows').then(parseProductRelease)
+}
+
+export function getLatestLinuxRelease(): Promise<ProductRelease | null> {
+  return readPublic('/v1/releases/latest?platform=linux').then(parseProductRelease)
 }

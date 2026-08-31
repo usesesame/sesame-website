@@ -1,12 +1,14 @@
-import { getLatestWindowsRelease, getPlans, getProductStatus } from './product'
+import { getLatestLinuxRelease, getLatestWindowsRelease, getPlans, getProductStatus } from './product'
 import { fallbackPlans } from './product-facts'
-import { parseProductStatus, parseWindowsRelease } from './product-parse'
+import { parseProductRelease, parseProductStatus } from './product-parse'
 import rawRelease from './latest-release.json'
+import rawLinuxRelease from './latest-release-linux.json'
 import rawStatus from './product-status.json'
 
 export const productState = $state({
   status: parseProductStatus(rawStatus),
-  release: parseWindowsRelease(rawRelease),
+  release: parseProductRelease(rawRelease),
+  linuxRelease: parseProductRelease(rawLinuxRelease),
   plans: fallbackPlans,
 })
 
@@ -21,6 +23,8 @@ export async function loadPlans(): Promise<void> {
 }
 
 export async function loadLatestRelease(): Promise<void> {
-  const value = await getLatestWindowsRelease()
-  if (value) productState.release = value
+  const windows = await getLatestWindowsRelease()
+  if (windows) productState.release = windows
+  const linux = await getLatestLinuxRelease()
+  if (linux) productState.linuxRelease = linux
 }
