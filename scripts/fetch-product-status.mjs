@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { parseProductStatus, parseWindowsRelease } from '../src/lib/product-parse.ts'
+import { parseProductRelease, parseProductStatus } from '../src/lib/product-parse.ts'
 
 // The site is prerendered, so whatever this writes is what a crawler and the
 // first paint see. Without it the static HTML kept saying "request beta
@@ -24,7 +24,15 @@ console.log(`Product status refreshed: publicDownload=${status.publicDownload}, 
 const releaseTarget = resolve(websiteRoot, 'src', 'lib', 'latest-release.json')
 const releaseResponse = await fetch(`${api}/v1/releases/latest?platform=windows`)
 if (!releaseResponse.ok) throw new Error(`${api}/v1/releases/latest returned ${releaseResponse.status}`)
-const release = parseWindowsRelease(await releaseResponse.json())
+const release = parseProductRelease(await releaseResponse.json())
 if (!release) throw new Error(`${api}/v1/releases/latest returned a payload outside the canonical release contract.`)
 await writeFile(releaseTarget, `${JSON.stringify(release, null, 2)}\n`, 'utf8')
 console.log(`Latest Windows release: ${release.version ?? 'none'}, available=${release.available}`)
+
+const linuxTarget = resolve(websiteRoot, 'src', 'lib', 'latest-release-linux.json')
+const linuxResponse = await fetch(`${api}/v1/releases/latest?platform=linux`)
+if (!linuxResponse.ok) throw new Error(`${api}/v1/releases/latest returned ${linuxResponse.status}`)
+const linuxRelease = parseProductRelease(await linuxResponse.json())
+if (!linuxRelease) throw new Error(`${api}/v1/releases/latest returned a payload outside the canonical release contract.`)
+await writeFile(linuxTarget, `${JSON.stringify(linuxRelease, null, 2)}\n`, 'utf8')
+console.log(`Latest Linux release: ${linuxRelease.version ?? 'none'}, available=${linuxRelease.available}`)

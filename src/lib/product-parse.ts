@@ -1,11 +1,11 @@
-import type { ProductPlan, ProductStatus, WindowsRelease } from './product'
+import type { ProductPlan, ProductRelease, ProductStatus } from './product'
 
 const registrationModes = ['closed', 'invite', 'public'] as const
 const billingModes = ['none', 'one_time', 'monthly', 'yearly'] as const
-const artifactFormats = ['msi', 'nsis'] as const
+const artifactFormats = ['msi', 'nsis', 'appimage', 'deb', 'rpm'] as const
 
 type RegistrationMode = (typeof registrationModes)[number]
-type ReleaseArtifact = NonNullable<WindowsRelease['artifacts']>[number]
+type ReleaseArtifact = NonNullable<ProductRelease['artifacts']>[number]
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -142,7 +142,7 @@ function parseArtifacts(value: unknown): ReleaseArtifact[] | undefined | null {
   return artifacts
 }
 
-export function parseWindowsRelease(value: unknown): WindowsRelease | null {
+export function parseProductRelease(value: unknown): ProductRelease | null {
   if (!isRecord(value)) return null
   if (!isString(value.channel) || !isString(value.platform) || !isString(value.message)) return null
   if (!isBoolean(value.available) || !isBoolean(value.signed)) return null

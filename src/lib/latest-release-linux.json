@@ -1,0 +1,7 @@
+{
+  "available": false,
+  "channel": "private-beta",
+  "message": "A public Linux download will appear only after signing and beta verification are complete.",
+  "platform": "linux",
+  "signed": false
+}
