@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { createHash } from 'node:crypto'
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadEnv } from 'vite'
@@ -63,7 +64,6 @@ for (const route of routes) {
 }
 
 await writeFile(resolve(outputRoot, '404.html'), renderDocument('/404'), 'utf8')
-
 // A sitemap without lastmod gives a crawler no reason to prefer one page over
 // another on a recrawl. The build date is the honest value here: every page is
 // rendered from the same source tree in the same run.
@@ -86,6 +86,29 @@ let headers = await readFile(headersPath, 'utf8')
 // With no API, connect-src stays 'self' and the placeholder goes away, so the
 // shipped policy never names a host the site does not use.
 headers = headers.replace(' __SESAME_API_ORIGIN__', apiOrigin ? ` ${apiOrigin}` : '')
+
+// The inline hashes are derived from the rendered pages on every build. A
+// hand-maintained hash goes stale with the next copy change and the CSP then
+// blocks the site's own structured data, so this may never be edited by hand.
+const inlineHashes = new Set()
+const walk = async (directory) => {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const target = resolve(directory, entry.name)
+    if (entry.isDirectory()) await walk(target)
+    else if (entry.name.endsWith('.html')) {
+      for (const match of (await readFile(target, 'utf8')).matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g)) {
+        if (/\ssrc=/.test(match[1])) continue
+        inlineHashes.add(`'sha256-${createHash('sha256').update(match[2]).digest('base64')}'`)
+      }
+    }
+  }
+}
+await walk(outputRoot)
+const scriptHashes = [...inlineHashes].sort().join(' ')
+if (!headers.includes(" script-src 'self' __SESAME_INLINE_SCRIPT_HASHES__;")) {
+  throw new Error('_headers no longer declares the inline script hash placeholder.')
+}
+headers = headers.replace(" script-src 'self' __SESAME_INLINE_SCRIPT_HASHES__;", scriptHashes ? ` script-src 'self' ${scriptHashes};` : " script-src 'self';")
 await writeFile(headersPath, headers, 'utf8')
 
 for (const file of ['index.html', '404.html', 'robots.txt', '.well-known/security.txt']) {

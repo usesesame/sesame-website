@@ -41,7 +41,13 @@ jobs:
       - name: Refuse a policy that names a host the site does not use
         run: |
           grep -q "connect-src 'self';" dist/_headers
-          ! grep -q '__SESAME_API_ORIGIN__' dist/_headers
+          ! grep -q '__SESAME_' dist/_headers
+
+      - name: Stage and validate the built release
+        run: |
+          revision=$(node scripts/prepare-site-release.mjs dist /tmp/website-releases | sed -n 's/.*site release \(b[0-9a-f]*\) .*/\1/p')
+          test -n "$revision"
+          node scripts/deploy-site-release.mjs /tmp/website-releases validate "$revision"
 
       - run: npm run seo:check
 
