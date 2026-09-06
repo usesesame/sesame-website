@@ -24,9 +24,9 @@
         <div class="cookie-row" role="row"><span role="cell"><code>sesame_session</code></span><span role="cell">Keeps you signed in to a website account</span><span role="cell">Strictly necessary, first-party, HttpOnly</span><span role="cell">Up to 30 days; cleared on sign out</span></div>
         <div class="cookie-row" role="row"><span role="cell"><code>sesame_wan</code></span><span role="cell">Binds a temporary passkey ceremony to the browser that started it</span><span role="cell">Strictly necessary, first-party, HttpOnly</span><span role="cell">Up to 10 minutes; cleared after use</span></div>
       </div>
-      <p>These are first-party cookies. They are sent with <code>Secure</code> on HTTPS and use a restrictive same-site setting. The account API does not use them for analytics or advertising.</p>
+      <p>These are first-party cookies. They are sent with <code>Secure</code> on HTTPS and use a restrictive same-site setting.</p>
     </div>
-    <div id="consent"><h2>Consent and choices</h2><p>These cookies are limited to the account action you requested and are not used for tracking. If Sesame adds a non-essential cookie or similar browser storage, it will request opt-in consent before setting it and provide an equally clear way to withdraw it.</p></div>
+    <div id="consent"><h2>Consent and choices</h2><p>These cookies are limited to the account action you requested. If Sesame adds a non-essential cookie or similar browser storage, it will request opt-in consent before setting it and provide an equally clear way to withdraw it.</p></div>
     <div id="manage"><h2>Managing cookies</h2><p>You can delete or block these cookies in your browser settings. Doing so can prevent sign-in, passkey use, account changes, or support submissions from working, but it does not affect the desktop app or a local vault.</p><p class="doc-meta">Version {LEGAL_VERSION} · Updated {LEGAL_UPDATED}.</p></div>
   </article>
 </section>

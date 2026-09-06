@@ -1,9 +1,7 @@
 import { render } from 'svelte/server'
 import Site from './Site.svelte'
 import { homeGraph, ldJson, pricingFaqPage } from './lib/structured-data'
-import { productFacts } from './lib/product-facts'
 import { routeForPath } from './lib/routes'
-import { productState } from './lib/product-state.svelte'
 import { privacyEmail, siteOrigin } from './lib/runtime-config'
 
 function structuredDataScript(path: string): string {
@@ -12,7 +10,7 @@ function structuredDataScript(path: string): string {
     return `<script id="sesame-structured-data" type="application/ld+json">${ldJson(homeGraph(siteOrigin, privacyEmail))}</script>`
   }
   if (route.key === 'pricing') {
-    return `<script id="sesame-structured-data" type="application/ld+json">${ldJson(pricingFaqPage(productFacts(productState.status)))}</script>`
+    return `<script id="sesame-structured-data" type="application/ld+json">${ldJson(pricingFaqPage())}</script>`
   }
   return ''
 }

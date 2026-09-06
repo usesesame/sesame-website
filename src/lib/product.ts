@@ -51,7 +51,7 @@ export const BETA_SUPPORT = {
   ],
   architectures: ['x64'],
   unsupported: ['Windows on Arm'],
-  note: 'Sesame runs on 64-bit Windows 10 and 11, and on Linux. The Linux build produces deb, rpm, and AppImage packages and is new in 0.2.0. Beta testing has concentrated on current Windows 11 builds, so report anything that behaves differently.',
+  note: 'Beta testing has concentrated on current Windows 11 builds, so report anything that behaves differently.',
 } as const
 
 export function getProductStatus(): Promise<ProductStatus | null> {

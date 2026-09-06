@@ -3,31 +3,32 @@ export function prefersReducedMotion(): boolean {
   return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-type QueuedReveal = { node: HTMLElement; delay: number }
+const STAGGER_MS = 90
+const MAX_CHAIN = 5
 const revealQueue = new Map<HTMLElement, number>()
 let revealFrame = 0
 
 function flushRevealQueue() {
   revealFrame = 0
-  const items: QueuedReveal[] = [...revealQueue].map(([node, delay]) => ({ node, delay }))
+  const items: { node: HTMLElement; order: number }[] = [...revealQueue].map(([node, order]) => ({ node, order }))
   revealQueue.clear()
   items.sort((a, b) => {
     const first = a.node.getBoundingClientRect()
     const second = b.node.getBoundingClientRect()
     return first.top - second.top || first.left - second.left
   })
-  items.forEach(({ node, delay }, index) => {
-    node.style.setProperty('--reveal-delay', `${delay + index * 70}ms`)
+  items.forEach(({ node }, index) => {
+    node.style.setProperty('--reveal-delay', `${Math.min(index, MAX_CHAIN) * STAGGER_MS}ms`)
     node.classList.add('is-revealed')
   })
 }
 
-function queueReveal(node: HTMLElement, delay: number) {
-  revealQueue.set(node, delay)
+function queueReveal(node: HTMLElement) {
+  revealQueue.set(node, 0)
   if (!revealFrame) revealFrame = requestAnimationFrame(flushRevealQueue)
 }
 
-export function reveal(node: HTMLElement, delay = 0) {
+export function reveal(node: HTMLElement) {
   if (typeof IntersectionObserver === 'undefined' || prefersReducedMotion()) return
   node.classList.add('reveal')
   let revealed = false
@@ -37,7 +38,7 @@ export function reveal(node: HTMLElement, delay = 0) {
     if (revealed) return
     revealed = true
     window.clearInterval(fallback)
-    queueReveal(node, delay)
+    queueReveal(node)
     observer.disconnect()
   }
 

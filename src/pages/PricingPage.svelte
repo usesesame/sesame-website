@@ -1,11 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { ProductPlan } from '../lib/product'
-  import { pricingFaqEntries, productFacts } from '../lib/product-facts'
+  import { pricingFaqEntries } from '../lib/product-facts'
   import { loadPlans, productState } from '../lib/product-state.svelte'
   import { accountUrl } from '../lib/runtime-config'
 
-  const facts = $derived(productFacts(productState.status))
   const syncInterestUrl = accountUrl('/support?category=billing&intent=sync#new-request')
 
   function priceLabel(plan: ProductPlan) {
@@ -24,7 +23,7 @@
 
 <section class="page-hero compact-page-hero">
   <h1>The app is free.</h1>
-  <p class="intro">The whole app is free and open source. The one optional subscription is for hosted sync, and you can run that yourself instead.</p>
+  <p class="intro">The one optional subscription is for hosted Sync, which you can also run yourself.</p>
 </section>
 <section class="section pricing-page">
   <div class="pricing-promise">
@@ -57,12 +56,12 @@
       </article>
     {/each}
   </div>
-  <p class="pricing-note">Nothing is charged today. Final tax, refund, and support terms will appear before checkout opens.</p>
+  <p class="pricing-note">Final tax, refund, and support terms will appear before checkout opens.</p>
 
   <div class="faq-block">
     <h2>Before you choose</h2>
-    {#each pricingFaqEntries(facts) as entry (entry.question)}
-      <details><summary>{entry.question}</summary><p>{entry.answer}{#if entry.syncInterestLink && syncInterestUrl} You can <a href={syncInterestUrl}>register interest in Sync</a> without committing to anything.{/if}</p></details>
+    {#each pricingFaqEntries() as entry (entry.question)}
+      <details><summary>{entry.question}</summary><p>{entry.answer}{#if entry.syncInterestLink && syncInterestUrl} You can <a href={syncInterestUrl}>register interest in Sync</a>.{/if}</p></details>
     {/each}
   </div>
 </section>

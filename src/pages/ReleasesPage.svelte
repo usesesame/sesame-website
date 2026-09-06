@@ -46,13 +46,13 @@
     {/if}
   {/each}
   {#if !anyAvailable}
-    <div class="release-requirements"><h2>Nothing to download yet</h2><p>No desktop build has cleared the release gate yet. When one does, it appears here with its checksum and signature, and you will not need an account to get it.</p></div>
+    <div class="release-requirements"><h2>Nothing to download yet</h2><p>No desktop build has cleared the release gate yet. When one does, it appears here with its checksum and signature.</p></div>
   {/if}
   <div class="release-requirements compatibility-notes">
     <h2>Beta compatibility</h2>
     <dl>{#each BETA_SUPPORT.platforms as platform (platform.name)}<div><dt>{platform.name}</dt><dd>{platform.detail}</dd></div>{/each}<div><dt>Architecture</dt><dd>{BETA_SUPPORT.architectures.join(', ')}</dd></div><div><dt>Not supported</dt><dd>{BETA_SUPPORT.unsupported.join(', ')}</dd></div></dl>
     <p>{BETA_SUPPORT.note}</p>
   </div>
-  <div class="release-requirements"><h2>Release gate</h2><ol><li>The NSIS or AppImage updater artifact has a valid Tauri signature and Sigstore evidence for Sesame's exact protected tag workflow.</li><li>Published SHA-256 hashes match the tested files. Early-access installers are not Authenticode-signed and can trigger an unknown-publisher warning on Windows; production releases require Authenticode.</li><li>Clean profiles on a supported Windows version and on a current Linux distribution pass install, unlock, import, backup, restore, export, uninstall, and in-app upgrade checks.</li><li>Release-blocking security findings are resolved.</li></ol></div>
-  <p class="release-warning">Do not install Sesame builds from an unofficial mirror or attachment. Beta installers carry no Authenticode signature, so Windows shows an unknown-publisher warning; check the SHA-256 and updater signature published above instead.</p>
+  <div class="release-requirements"><h2>Release gate</h2><ol><li>The NSIS or AppImage updater artifact has a valid Tauri signature and Sigstore evidence for Sesame's exact protected tag workflow.</li>    <li>Published SHA-256 hashes match the tested files. Production releases also require Authenticode signing.</li><li>Clean profiles on a supported Windows version and on a current Linux distribution pass install, unlock, import, backup, restore, export, uninstall, and in-app upgrade checks.</li><li>Release-blocking security findings are resolved.</li></ol></div>
+  <p class="release-warning">Beta installers carry no Authenticode signature, so Windows shows an unknown-publisher warning. Verify the SHA-256 and updater signature published above instead.</p>
 </section>

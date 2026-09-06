@@ -1,4 +1,4 @@
-import { IMPORT_FORMAT_COUNT, pricingFaqEntries, type ProductFacts } from './product-facts'
+import { IMPORT_FORMAT_COUNT, pricingFaqEntries } from './product-facts'
 
 export function ldJson(value: unknown): string {
   return JSON.stringify(value).replaceAll('<', '\\u003c')
@@ -56,11 +56,11 @@ export function homeGraph(origin: string, email: string) {
   }
 }
 
-export function pricingFaqPage(facts: ProductFacts) {
+export function pricingFaqPage() {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: pricingFaqEntries(facts).map((entry) => ({
+    mainEntity: pricingFaqEntries().map((entry) => ({
       '@type': 'Question',
       name: entry.question,
       acceptedAnswer: { '@type': 'Answer', text: entry.answer },

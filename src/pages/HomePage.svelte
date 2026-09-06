@@ -18,7 +18,7 @@
 <section class="hero">
   <div class="hero-copy enter">
     <h1>A vault that works without an account.</h1>
-    <p class="intro">Create, edit, import, back up, and export a vault on your computer. The hosted service does not receive the vault.</p>
+    <p class="intro">Create, edit, import, back up, and export a vault on your computer. The hosted service never receives it.</p>
     <p class="hero-caveat">Sesame is early beta software. Its independent security review is not finished, so use test data for now.</p>
     <div class="hero-actions">
       {#if facts.publicDownload || !betaAccessUrl}
@@ -30,7 +30,7 @@
     </div>
   </div>
 
-  <div class="hero-product-shot enter" style="--enter-delay: 120ms">
+  <div class="hero-product-shot enter" style="--enter-delay: 180ms">
     <ProductScreenshot eager src="/screenshots/vault-overview.png" alt="Sesame vault showing a fictional login with password, 2FA, and recovery details" title="Sesame vault" caption="Fictional test data." />
   </div>
 </section>
@@ -47,8 +47,8 @@
         <h3>Import from other managers</h3>
         <p>Import {IMPORT_FORMAT_COUNT} formats, check the preview, and choose what to save.</p>
       </div>
-      <div class="workflow-shot" use:reveal={90}><ProductScreenshot src="/screenshots/vault-overview.png" alt="Sesame desktop vault with a login selected" /></div>
-      <div class="workflow-copy" use:reveal={90}>
+      <div class="workflow-shot" use:reveal><ProductScreenshot src="/screenshots/vault-overview.png" alt="Sesame desktop vault with a login selected" /></div>
+      <div class="workflow-copy" use:reveal>
         <h3>Search, open, copy.</h3>
         <p>Find the login, open it, and copy the username, password, or 2FA code.</p>
         <p class="workflow-limitation"><strong>Browser extension:</strong> packaged for Chrome, Edge, and Firefox. Not in the stores yet.</p>
@@ -57,7 +57,7 @@
 
     <dl class="release-facts" use:reveal>
       <div><dt>Available to test</dt><dd>Local vault, imports, 2FA, security checks, PIN unlock, Windows Hello on Windows, backup, and export.</dd></div>
-      <div><dt>Not shipped</dt><dd>Browser-store distribution, Sync, mobile apps, passkeys, sharing, and emergency access.</dd></div>
+      <div><dt>Not shipped</dt><dd>Sync, mobile apps, passkeys, sharing, and emergency access.</dd></div>
       <div><dt>Platforms</dt><dd>Windows and Linux.</dd></div>
     </dl>
   </div>
@@ -79,15 +79,11 @@
     <div class="source-notes" use:reveal>
       <article>
         <h3>Why another password manager?</h3>
-        <p>Sesame is built around a writable local vault. It does not require an account or a server for creating, editing, importing, backing up, or exporting data.</p>
+        <p>KeePassXC and Bitwarden are more mature, and Sesame does not pretend otherwise. It exists for a gap they leave: a current desktop experience.</p>
       </article>
       <article>
         <h3>What self-hosting covers</h3>
-        <p>The optional service, account portal, and admin interface can be self-hosted. The local desktop app remains usable without them.</p>
-      </article>
-      <article>
-        <h3>What payment covers</h3>
-        <p>The local app is free. A paid hosted plan is intended to cover managed Sync when that service ships.</p>
+        <p>The server, account portal, and admin interface are open source and free to run yourself. Paying will only cover us hosting Sync for you.</p>
       </article>
     </div>
   </div>
@@ -97,7 +93,6 @@
   <div class="section home-section-inner">
     <div class="section-title" use:reveal>
       <h2>Where your data lives.</h2>
-      <p class="lede">Vault operations run in the desktop app. A website account is separate from the vault.</p>
     </div>
 
     <div class="security-stack">
@@ -110,11 +105,6 @@
           <li><span>Product and release information</span><strong class="on-server">Sesame website</strong></li>
         </ul>
       </div>
-
-      <aside class="caveat-note" use:reveal={90}>
-        <span class="caveat-badge">Current limitation</span>
-        <p>The independent review is still in progress. Use test data rather than real secrets.</p>
-      </aside>
     </div>
   </div>
 </section>
@@ -127,22 +117,12 @@
       </div>
       <div class="status-copy">
         {#if facts.publicDownload}
-          <p>Anyone can <a href="/releases">download Sesame for Windows and Linux</a>. The independent review is still pending, so keep a separate backup of anything you cannot afford to lose. It is free during the beta.</p>
+          <p>Anyone can <a href="/releases">download Sesame</a>. Keep a separate backup of anything you cannot afford to lose.</p>
         {:else}
-          <p>Invited testers are trying the beta now.{#if betaAccessUrl} <a href={betaAccessUrl}>Request beta access</a>.{/if} It is free during the beta.</p>
+          <p>Invited testers are using the beta now.</p>
         {/if}
-        <dl>
-          <div><dt>Public download</dt><dd>{facts.downloadState}</dd></div>
-          <div><dt>Supported platform</dt><dd>{facts.platformSummary}</dd></div>
-          <div><dt>Website account</dt><dd>{facts.webSignIn}</dd></div>
-          <div><dt>Sesame Sync</dt><dd>{facts.sync}</dd></div>
-          {#if facts.registration}
-            <div><dt>Account registration</dt><dd>{facts.registration}</dd></div>
-          {/if}
-          <div><dt>Browser extension</dt><dd>Packaged, not submitted</dd></div>
-        </dl>
         {#if facts.accountPurposes.length}
-          <p class="status-purposes">A website account covers {facts.accountPurposes.join(', ')}. It never holds a vault.</p>
+          <p class="status-purposes">A website account covers {facts.accountPurposes.join(', ')}.</p>
         {/if}
       </div>
     </div>

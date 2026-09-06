@@ -37,14 +37,14 @@ export const routes: Route[] = [
     path: '/pricing',
     key: 'pricing',
     title: 'Pricing | Sesame',
-    description: 'The app is free and open source. Sesame Sync is planned at EUR 1 monthly or EUR 10 yearly, and you can run it yourself instead.',
+    description: 'The app is free. Sesame Sync is planned at EUR 1 monthly or EUR 10 yearly, or run it yourself.',
     index: true,
   },
   {
     path: '/roadmap',
     key: 'roadmap',
     title: 'Product Roadmap | Sesame',
-    description: 'The release plan for the Sesame desktop vault, encrypted Sync, and the Chrome and Edge extension.',
+    description: 'What is built and what is next: backup compatibility, release gates, passkeys, Sync, and the browser extension.',
     index: true,
   },
   {

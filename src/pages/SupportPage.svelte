@@ -9,7 +9,7 @@
 
 <section class="page-hero compact-page-hero">
   <h1>How can we help?</h1>
-  <p class="intro">Ask a question, report a bug, or tell us what is broken in the beta. Never include passwords or vault files.</p>
+  <p class="intro">Ask a question or report a bug. Never include passwords or vault files.</p>
 </section>
 
 <section class="section support-section safe-support">
@@ -38,9 +38,9 @@
     <details><summary>Does Sesame run on my computer?</summary><p>Windows 10 and 11 on x64, and Linux through deb, rpm, and AppImage packages. The releases page lists every official installer with its checksum.</p></details>
     <details><summary>How do I update?</summary><p>Sesame checks for updates itself. Builds from 0.1.1 on update from inside the app; if you are still on 0.1.0, install a newer version by hand once.</p></details>
     <details><summary>What can I import?</summary><p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p></details>
-    <details><summary>Does Sync work yet?</summary><p>No. It stays disabled until independent review and operating gates pass.</p></details>
+    <details><summary>Does Sync work yet?</summary><p>No. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p></details>
     <details><summary>Is there a mobile app or browser extension?</summary><p>No mobile app yet. The browser helper is not in stores.</p></details>
-    <details><summary>Where is my vault stored?</summary><p>On your computer. The website and API never receive it.</p></details>
-    <details><summary>Has Sesame been independently reviewed?</summary><p>Not yet. Use test data and keep an encrypted backup.</p></details>
+    <details><summary>Where is my vault stored?</summary><p>On your computer.</p></details>
+    <details><summary>Has Sesame been independently reviewed?</summary><p>Not yet. The <a href="/security">security page</a> shows what that means for the current release.</p></details>
   </div>
 </section>
