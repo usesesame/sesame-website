@@ -1,20 +1,19 @@
 {
-  "accountPurposes": [
-    "beta access",
-    "signed downloads",
-    "licences",
-    "connected-device management"
-  ],
-  "accountRequired": false,
-  "cloudSyncAvailable": false,
-  "desktopConnectionAvailable": true,
-  "phase": "private-beta-foundation",
+  "phase": "public-beta",
   "platforms": [
     "windows",
     "linux"
   ],
+  "accountRequired": false,
+  "webSignInAvailable": true,
+  "desktopConnectionAvailable": true,
+  "cloudSyncAvailable": false,
   "publicDownload": true,
+  "updated": "2026-07-13",
   "registrationMode": "public",
-  "updated": "2026-08-30",
-  "webSignInAvailable": true
+  "accountPurposes": [
+    "signed downloads",
+    "licences",
+    "connected-device management"
+  ]
 }
