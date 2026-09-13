@@ -17,14 +17,16 @@
 
 <section class="hero">
   <div class="hero-copy enter">
-    <h1>A vault that works without an account.</h1>
-    <p class="intro">Create, edit, import, back up, and export a vault on your computer. The hosted service never receives it.</p>
-    <p class="hero-caveat">Sesame is early beta software. Its independent security review is not finished, so use test data for now.</p>
+    <h1>A password manager that works without an account.</h1>
+    <p class="intro">Keep your passwords in a vault on your computer. Import existing logins and make your own backups.</p>
+    <p class="hero-caveat">Sesame is in early beta and has not had an independent security audit. Use test data for now.</p>
     <div class="hero-actions">
-      {#if facts.publicDownload || !betaAccessUrl}
+      {#if facts.publicDownload}
         <a class="button" href="/releases">Download for Windows and Linux</a>
-      {:else}
+      {:else if betaAccessUrl}
         <a class="button" href={betaAccessUrl}>Request beta access</a>
+      {:else}
+        <a class="button button-soft" href="/releases">See release status</a>
       {/if}
       <a class="text-link hero-text-link" href="#product">See how it works</a>
     </div>
@@ -38,20 +40,25 @@
 <section id="product" class="home-section home-section-product">
   <div class="section home-section-inner">
     <div class="section-title" use:reveal>
-      <h2>How Sesame works.</h2>
+      <h2>How Sesame works</h2>
       <p class="lede">Logins, 2FA codes, security checks, and backups in one desktop app.</p>
     </div>
 
     <div class="product-workflows">
-      <div class="workflow-copy" use:reveal>
-        <h3>Import from other managers</h3>
-        <p>Import {IMPORT_FORMAT_COUNT} formats, check the preview, and choose what to save.</p>
+      <div class="workflow-row" use:reveal>
+        <div class="workflow-copy">
+          <h3>Import from other managers</h3>
+          <p>Import {IMPORT_FORMAT_COUNT} formats, check the preview, and choose what to save.</p>
+        </div>
+        <div class="workflow-shot"><ProductScreenshot src="/screenshots/import-modal.png" alt="Sesame import dialog with a password-manager export selected" /></div>
       </div>
-      <div class="workflow-shot" use:reveal><ProductScreenshot src="/screenshots/vault-overview.png" alt="Sesame desktop vault with a login selected" /></div>
-      <div class="workflow-copy" use:reveal>
-        <h3>Search, open, copy.</h3>
-        <p>Find the login, open it, and copy the username, password, or 2FA code.</p>
-        <p class="workflow-limitation"><strong>Browser extension:</strong> packaged for Chrome, Edge, and Firefox. Not in the stores yet.</p>
+      <div class="workflow-row" use:reveal>
+        <div class="workflow-copy">
+          <h3>Find a saved login</h3>
+          <p>Search your vault and open a login to copy the details you need.</p>
+          <p class="workflow-limitation">The browser extension has packages for Chrome, Edge, and Firefox. It is not in the stores yet.</p>
+        </div>
+        <div class="workflow-shot"><ProductScreenshot src="/screenshots/vault-search.png" alt="Sesame search results with a saved login open" /></div>
       </div>
     </div>
 
@@ -66,7 +73,7 @@
 <section id="source" class="home-section home-section-source">
   <div class="section home-section-inner">
     <div class="section-title" use:reveal>
-      <h2>Read the source.</h2>
+      <h2>Read the source</h2>
       <p class="lede">The desktop app, browser extension, website, and optional server are licensed under AGPL-3.0-or-later.</p>
     </div>
 
@@ -78,12 +85,12 @@
 
     <div class="source-notes" use:reveal>
       <article>
-        <h3>Why another password manager?</h3>
-        <p>KeePassXC and Bitwarden are more mature, and Sesame does not pretend otherwise. It exists for a gap they leave: a current desktop experience.</p>
+        <h3>Use the desktop app on its own</h3>
+        <p>You can create and use a vault without running a server or creating a website account.</p>
       </article>
       <article>
         <h3>What self-hosting covers</h3>
-        <p>The server, account portal, and admin interface are open source and free to run yourself. Paying will only cover us hosting Sync for you.</p>
+        <p>You can run the server, account portal, and admin interface yourself. Hosted Sync is planned as an optional paid service. Sync is not available yet.</p>
       </article>
     </div>
   </div>
@@ -92,7 +99,7 @@
 <section id="security" class="home-section home-section-security">
   <div class="section home-section-inner">
     <div class="section-title" use:reveal>
-      <h2>Where your data lives.</h2>
+      <h2>Where your data lives</h2>
     </div>
 
     <div class="security-stack">

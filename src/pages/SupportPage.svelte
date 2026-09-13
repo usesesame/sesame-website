@@ -1,4 +1,6 @@
 <script lang="ts">
+  import FaqItem from '../FaqItem.svelte'
+  import { reveal } from '../lib/motion'
   import { IMPORT_FORMAT_COUNT, productFacts } from '../lib/product-facts'
   import { productState } from '../lib/product-state.svelte'
   import { accountUrl } from '../lib/runtime-config'
@@ -7,40 +9,58 @@
   const requestUrl = accountUrl('/support')
 </script>
 
-<section class="page-hero compact-page-hero">
+<section class="page-hero compact-page-hero support-hero">
   <h1>How can we help?</h1>
-  <p class="intro">Ask a question or report a bug. Never include passwords or vault files.</p>
+  <p class="intro">Get help with Sesame or report a bug.</p>
 </section>
 
-<section class="section support-section safe-support">
-  <aside class="support-guide card">
-    <div><h2>Helpful</h2><ul><li>App and system version</li><li>What you clicked</li><li>The exact error</li></ul></div>
-    <div><h2>Never send</h2><ul><li>Passwords or codes</li><li>Vault or export files</li><li>Recovery kits or keys</li></ul></div>
-  </aside>
-
-  <div class="support-intake card" id="new-request">
-    <div class="support-form-head"><h2>Send a request</h2><span>No attachments</span></div>
+<section class="section support-section" aria-label="Contact support">
+  <div class="support-intake" id="new-request" use:reveal>
+    <h2>Send a request</h2>
     {#if requestUrl}
-      <p>Requests are written in the account portal. It checks for common secret patterns before anything is sent, and it works without an account: a guest request enters the same queue.</p>
-      <p><a class="button" href={requestUrl}>Open the support form</a></p>
-      <p class="support-safety">Signing in first keeps a request history you can follow. A reference number alone never grants access to a request's contents.</p>
+      <p class="support-description">Tell us what happened and what you expected. You can send a request as a guest or sign in to keep a request history.</p>
+      <div class="support-action">
+        <a class="button" href={requestUrl}>Open the support form</a>
+        <p>The form accepts text only.</p>
+      </div>
     {:else}
-      <p>This deployment runs no account service, so there is no request form here. Report a security problem through the security policy in the project repository, and use the repository's issues for everything else.</p>
-      <p class="support-safety">Never include a password, vault file, recovery kit, or 2FA code in a report, wherever you send it.</p>
+      <p class="support-description">The support form is unavailable on this site. For security problems, follow the project's security policy. Use repository issues for other questions and bugs.</p>
+      <div class="support-action"><a class="button button-soft" href="/security">Read security guidance</a></div>
     {/if}
   </div>
+
+  <aside class="support-guide" aria-label="Before you send a request" use:reveal>
+    <div><h2>What to include</h2><ul><li>Your app and system version</li><li>The steps that led to the problem</li><li>The error message, if there is one</li></ul></div>
+    <div><h2>Keep private details out</h2><p>Never send passwords, security codes, vault files, exports, recovery kits, or keys.</p></div>
+  </aside>
 </section>
 
 <section class="section support-faq">
-  <div class="faq-block">
+  <div class="faq-block" use:reveal>
     <h2>Common questions</h2>
-    <details><summary>Can I download Sesame now?</summary><p>{facts.supportDownloadAnswer}</p></details>
-    <details><summary>Does Sesame run on my computer?</summary><p>Windows 10 and 11 on x64, and Linux through deb, rpm, and AppImage packages. The releases page lists every official installer with its checksum.</p></details>
-    <details><summary>How do I update?</summary><p>Sesame checks for updates itself. Builds from 0.1.1 on update from inside the app; if you are still on 0.1.0, install a newer version by hand once.</p></details>
-    <details><summary>What can I import?</summary><p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p></details>
-    <details><summary>Does Sync work yet?</summary><p>No. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p></details>
-    <details><summary>Is there a mobile app or browser extension?</summary><p>No mobile app yet. The browser helper is not in stores.</p></details>
-    <details><summary>Where is my vault stored?</summary><p>On your computer.</p></details>
-    <details><summary>Has Sesame been independently reviewed?</summary><p>Not yet. The <a href="/security">security page</a> shows what that means for the current release.</p></details>
+    <FaqItem question="Can I download Sesame now?">
+      <p>{facts.supportDownloadAnswer}</p>
+    </FaqItem>
+    <FaqItem question="Does Sesame run on my computer?">
+      <p>Windows 10 and 11 on x64, and Linux through deb, rpm, and AppImage packages. The releases page lists every official installer with its checksum.</p>
+    </FaqItem>
+    <FaqItem question="How do I update?">
+      <p>Sesame checks for updates itself. Builds from 0.1.1 on update from inside the app; if you are still on 0.1.0, install a newer version by hand once.</p>
+    </FaqItem>
+    <FaqItem question="What can I import?">
+      <p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p>
+    </FaqItem>
+    <FaqItem question="Does Sync work yet?">
+      <p>No. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p>
+    </FaqItem>
+    <FaqItem question="Is there a mobile app or browser extension?">
+      <p>No mobile app yet. The browser helper is not in stores.</p>
+    </FaqItem>
+    <FaqItem question="Where is my vault stored?">
+      <p>On your computer.</p>
+    </FaqItem>
+    <FaqItem question="Has Sesame been independently reviewed?">
+      <p>Not yet. The <a href="/security">security page</a> shows what that means for the current release.</p>
+    </FaqItem>
   </div>
 </section>
