@@ -44,6 +44,37 @@
 
   let headerScrolled: boolean | null = $state(null)
   $effect(() => watchScroll((scrolled) => { headerScrolled = scrolled }))
+
+  let navEl: HTMLElement | undefined = $state()
+  let didInitialPlace = $state(false)
+  let indicator = $state({ left: 0, width: 0, placed: false, instant: false })
+
+  function placeIndicator(link: HTMLElement, instant: boolean) {
+    indicator = { left: link.offsetLeft, width: link.offsetWidth, placed: true, instant }
+  }
+
+  function settleIndicator(instant = false) {
+    const link = navEl?.querySelector<HTMLAnchorElement>('a[aria-current="page"]') ?? navEl?.querySelector('a')
+    if (link instanceof HTMLElement) placeIndicator(link, instant)
+  }
+
+  function trackLinkTarget(target: EventTarget | null) {
+    const link = target instanceof Element ? target.closest('a') : null
+    if (link instanceof HTMLElement && link.parentElement === navEl) placeIndicator(link, false)
+  }
+
+  $effect(() => {
+    route.key
+    settleIndicator(!didInitialPlace)
+    didInitialPlace = true
+  })
+
+  $effect(() => {
+    const onResize = () => settleIndicator(false)
+    window.addEventListener('resize', onResize)
+    void document.fonts?.ready.then(() => settleIndicator(false))
+    return () => window.removeEventListener('resize', onResize)
+  })
 </script>
 
 <svelte:head>
@@ -78,7 +109,8 @@
 <header class="site-header" data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
   <div class="site-header-inner">
     <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
-    <nav aria-label="Main navigation">
+    <nav bind:this={navEl} aria-label="Main navigation" onpointerover={(event) => trackLinkTarget(event.target)} onpointerleave={() => settleIndicator()} onfocusin={(event) => trackLinkTarget(event.target)} onfocusout={() => settleIndicator()}>
+      <span class="nav-indicator" class:instant={indicator.instant} aria-hidden="true" data-placed={indicator.placed ? '' : undefined} style="transform: translateX({indicator.left}px); width: {indicator.width}px;"></span>
       <a href="/" aria-current={route.key === 'home' ? 'page' : undefined}>Product</a>
       <a href="/security" aria-current={route.key === 'security' ? 'page' : undefined}>Security</a>
       <a href="/pricing" aria-current={route.key === 'pricing' ? 'page' : undefined}>Pricing</a>
