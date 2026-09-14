@@ -65,7 +65,7 @@ export const routes: Route[] = [
     path: '/privacy',
     key: 'privacy',
     title: 'Privacy Policy | Sesame',
-    description: 'How the Sesame website account processes limited account and technical data while the desktop vault stays local.',
+    description: 'How the Sesame website, account service, and browser extension handle data while the desktop vault stays local.',
     index: true,
   },
   {
