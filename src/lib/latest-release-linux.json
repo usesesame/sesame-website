@@ -1,7 +1,15 @@
 {
-  "channel": "private-beta",
+  "channel": "beta",
   "platform": "linux",
-  "available": false,
+  "available": true,
+  "version": "0.2.5",
+  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.2.5/Sesame_0.2.5_amd64.AppImage",
+  "sha256": "74972dc1d42270732773d46cffa17c541762d156cd4c714d45a3856ff48d6363",
   "signed": false,
-  "message": "A public Linux download will appear only after signing and beta verification are complete."
+  "message": "This Linux build has a verified Tauri updater signature.",
+  "publishedAt": "2026-09-16T20:36:22.312495Z",
+  "supportedWindows": [],
+  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.2.5",
+  "signingKeyId": "",
+  "rollbackNotice": ""
 }

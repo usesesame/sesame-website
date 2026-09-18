@@ -18,7 +18,7 @@
 
 <section class="page-hero compact-page-hero">
   <h1>Desktop builds.</h1>
-  <p class="intro">Only releases listed here are official. Every installer ships with an updater signature, a published SHA-256, and Sigstore evidence tying it to the exact build.</p>
+  <p class="intro">Only releases listed here are official. Every installer ships with a published SHA-256 and Sigstore evidence tying it to the exact build, and the Windows installer also carries a Tauri updater signature.</p>
   <p class="intro release-live-status">Live availability is at <a href="https://status.usesesame.app" rel="noreferrer">status.usesesame.app</a>.</p>
 </section>
 
@@ -33,7 +33,7 @@
             <small>{release?.message || 'Internal verification in progress'}</small>
           </div>
         </div>
-        {#if release?.available && release.url && release.signed}
+        {#if release?.available && release.url}
           <a class="button button-sm" href={release.url}>Download for {platformLabel(release.platform)}</a>
         {:else}
           <span class="release-unavailable">No public artifact</span>
@@ -98,12 +98,12 @@
     <section class="card release-requirements" use:reveal>
       <h2>Release gate</h2>
       <ol>
-        <li>The NSIS or AppImage updater artifact has a valid Tauri signature and Sigstore evidence for Sesame's exact protected tag workflow.</li>
+        <li>The NSIS installer has a valid Tauri updater signature, and every installer carries Sigstore evidence for Sesame's exact protected tag workflow.</li>
         <li>Published SHA-256 hashes match the tested files. Production releases also require Authenticode signing.</li>
         <li>Clean profiles on a supported Windows version and on a current Linux distribution pass install, unlock, import, backup, restore, export, uninstall, and in-app upgrade checks.</li>
         <li>Release-blocking security findings are resolved.</li>
       </ol>
     </section>
   </div>
-  <p class="release-warning">Beta installers carry no Authenticode signature, so Windows shows an unknown-publisher warning. Verify the SHA-256 and updater signature published above instead.</p>
+  <p class="release-warning">Beta installers carry no Authenticode signature, so Windows shows an unknown-publisher warning. Verify the published SHA-256 and Sigstore evidence instead.</p>
 </section>
