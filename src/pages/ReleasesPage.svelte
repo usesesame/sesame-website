@@ -1,11 +1,54 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { BETA_SUPPORT } from '../lib/product'
+  import type { ProductRelease } from '../lib/product'
   import { reveal } from '../lib/motion'
   import { loadLatestRelease, productState } from '../lib/product-state.svelte'
 
   const channels = $derived([productState.release, productState.linuxRelease])
   const anyAvailable = $derived(channels.some((release) => release?.available))
+  const linuxRelease = $derived(productState.linuxRelease)
+  const linuxArtifacts = $derived(linuxRelease?.artifacts?.length ? orderLinuxArtifacts(linuxRelease.artifacts) : [])
+
+  let linuxDialog: HTMLDialogElement | undefined = $state()
+  let linuxTrigger: HTMLButtonElement | undefined = $state()
+
+  const linuxPackageOrder = ['deb', 'rpm', 'appimage'] as const
+
+  function orderLinuxArtifacts(artifacts: NonNullable<ProductRelease['artifacts']>): NonNullable<ProductRelease['artifacts']> {
+    return [...artifacts].sort((first, second) => linuxPackageOrder.indexOf(first.format as 'deb') - linuxPackageOrder.indexOf(second.format as 'deb'))
+  }
+
+  function linuxPackageDetail(format: string): string {
+    switch (format) {
+      case 'deb':
+        return 'Debian 12 and newer, Ubuntu 22.04 and newer, Linux Mint, and derivatives'
+      case 'rpm':
+        return 'Fedora, openSUSE, RHEL 9, Rocky, AlmaLinux, and derivatives'
+      case 'appimage':
+        return 'Any current distribution; mark executable and run'
+      case 'nsis':
+        return 'Windows 10 and 11, x64'
+      default:
+        return format.toUpperCase()
+    }
+  }
+
+  function openLinuxPicker() {
+    if (!linuxDialog?.open) linuxDialog?.showModal()
+  }
+
+  function closeLinuxPicker() {
+    linuxDialog?.close()
+  }
+
+  function closeLinuxPickerFromBackdrop(event: MouseEvent) {
+    if (event.target === linuxDialog) closeLinuxPicker()
+  }
+
+  function restoreLinuxTrigger() {
+    linuxTrigger?.focus()
+  }
 
   function platformLabel(platform: string | undefined): string {
     return platform === 'linux' ? 'Linux' : 'Windows'
@@ -34,7 +77,11 @@
           </div>
         </div>
         {#if release?.available && release.url}
-          <a class="button button-sm" href={release.url}>Download for {platformLabel(release.platform)}</a>
+          {#if release.platform === 'linux' && linuxArtifacts.length > 1}
+            <button class="button button-sm" type="button" bind:this={linuxTrigger} onclick={openLinuxPicker}>Download for Linux</button>
+          {:else}
+            <a class="button button-sm" href={release.url}>Download for {platformLabel(release.platform)}</a>
+          {/if}
         {:else}
           <span class="release-unavailable">No public artifact</span>
         {/if}
@@ -49,10 +96,10 @@
                   <article>
                     <div>
                       <strong>{artifact.name}</strong>
-                      <span>{artifact.format.toUpperCase()} · {artifact.signed ? 'Tauri updater signature verified' : 'Do not install: updater signature unavailable'}</span>
+                      <span>{artifact.format.toUpperCase()} · {artifact.signed ? 'Tauri updater signature verified' : 'Sigstore evidence verified; no updater signature'}</span>
                       <code>{artifact.sha256}</code>
                     </div>
-                    {#if artifact.signed}<a class="button button-sm" href={artifact.url}>Download</a>{/if}
+                    <a class="button button-sm" href={artifact.url}>Download</a>
                   </article>
                 {/each}
               </div>
@@ -77,6 +124,39 @@
       {/if}
     </article>
   {/each}
+  {#if linuxArtifacts.length}
+    <dialog
+      class="linux-picker-dialog"
+      bind:this={linuxDialog}
+      aria-label="Choose a Linux package"
+      onclick={closeLinuxPickerFromBackdrop}
+      onclose={restoreLinuxTrigger}
+    >
+      <div class="linux-picker-panel">
+        <div class="linux-picker-head">
+          <div>
+            <strong>Choose a Linux package</strong>
+            <span>Sesame {linuxRelease?.version} for x86_64 (amd64)</span>
+          </div>
+          <button class="linux-picker-close" type="button" aria-label="Close the Linux package picker" onclick={closeLinuxPicker}>Close</button>
+        </div>
+        <ul class="linux-picker-list">
+          {#each linuxArtifacts as artifact (artifact.name)}
+            <li>
+              <div>
+                <strong>{artifact.name}</strong>
+                <span>{linuxPackageDetail(artifact.format)}</span>
+                <code>{artifact.sha256}</code>
+                <small>{artifact.signed ? 'Tauri updater signature verified' : 'Sigstore evidence verified; no updater signature'}</small>
+              </div>
+              <a class="button button-sm" href={artifact.url}>Download</a>
+            </li>
+          {/each}
+        </ul>
+        <p class="linux-picker-note">Every package was built in public CI from the released tag and carries Sigstore evidence. Verify the SHA-256 after download.</p>
+      </div>
+    </dialog>
+  {/if}
   {#if !anyAvailable}
     <div class="card release-requirements" use:reveal>
       <h2>Nothing to download yet</h2>
