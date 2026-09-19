@@ -18,13 +18,34 @@ test('the Sync section reports the availability the service publishes', async ()
   assert.ok(section, 'the roadmap page has no #sync section')
   assert.match(
     section[0],
-    /productState\.status\??\.cloudSyncAvailable/,
-    'the Sync section states a fixed availability instead of the one the product status endpoint publishes',
+    /facts\.syncAvailabilitySentence/,
+    'the Sync section states a fixed availability instead of the shared product fact',
   )
+  const facts = await read('src', 'lib', 'product-facts.ts')
   assert.match(
-    section[0],
-    /cloudSyncAvailable\s*\?\s*'[^']+' : '[^']+'/,
-    'the Sync section no longer chooses between two pieces of wording from the published field',
+    facts,
+    /cloudSyncAvailable === true/,
+    'the shared Sync fact no longer comes from the product status endpoint',
+  )
+})
+
+test('every page that states Sync availability reads the shared fact', async () => {
+  for (const page of ['HomePage', 'SupportPage', 'PricingPage', 'SecurityPage', 'RoadmapPage']) {
+    const source = await read('src', 'pages', `${page}.svelte`)
+    assert.match(
+      source,
+      /facts\.syncAvailable|facts\.syncAvailabilitySentence/,
+      `${page} states Sync availability independently of the published status`,
+    )
+  }
+})
+
+test('the roadmap loads the published status before showing it', async () => {
+  const page = await read('src', 'pages', 'RoadmapPage.svelte')
+  assert.match(
+    page,
+    /onMount\(\(\) => \{\s*void loadStatus\(\)\s*\}\)/,
+    'the roadmap no longer loads the product status the Sync section reports',
   )
 })
 
