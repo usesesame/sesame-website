@@ -57,10 +57,26 @@ for (const route of checked) {
   if (route.path === '/' && release?.version && !html.includes(`"softwareVersion":"${release.version}"`)) {
     errors.push(`${route.path}: structured data version disagrees with latest-release.json`)
   }
+
   if (publicDownload && /invite-only/i.test(html)) errors.push(`${route.path}: invite-only claim while the public download is open`)
   if (publicDownload && html.includes('Private beta')) errors.push(`${route.path}: private beta claim while the public download is open`)
   if (!publicDownload && (html.includes('Public beta') || html.includes('Public download available'))) {
     errors.push(`${route.path}: public availability claim while the download is closed`)
+  }
+}
+
+let security = ''
+try {
+  security = await readFile(resolve(outputRoot, '.well-known', 'security.txt'), 'utf8')
+} catch {
+  errors.push('security.txt is missing from the build output')
+}
+if (security) {
+  if (/__SESAME_/.test(security)) errors.push('security.txt still carries an unresolved placeholder')
+  if (!/^Contact:\s*mailto:\S+@\S+$/m.test(security)) errors.push('security.txt must name an email contact')
+  const expires = security.match(/^Expires:\s*(.+)$/m)?.[1]
+  if (!expires || Number.isNaN(Date.parse(expires)) || Date.parse(expires) <= Date.now()) {
+    errors.push('security.txt Expires must be a future timestamp')
   }
 }
 
