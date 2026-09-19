@@ -50,8 +50,6 @@
   let didInitialPlace = $state(false)
   let indicator = $state({ left: 0, width: 0, placed: false, instant: false })
 
-  // Style attributes are blocked by the shipped Content-Security-Policy, so the
-  // indicator position is written through CSSOM instead.
   $effect(() => {
     if (!indicatorEl || !indicator.placed) return
     indicatorEl.style.transform = `translateX(${indicator.left}px)`

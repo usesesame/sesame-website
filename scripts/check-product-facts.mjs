@@ -24,8 +24,6 @@ if (!routes.some((route) => route.path === '/')) errors.push('route table has no
 
 const publicDownload = status?.publicDownload === true
 
-// The service derives both fields from one condition: a release with an
-// updater signature says so, and one without says it carries none.
 const claimsUpdaterSignature = (message) =>
   message.includes('updater signature') && !message.includes('no updater signature')
 
