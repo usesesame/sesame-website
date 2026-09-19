@@ -1,4 +1,10 @@
 import { IMPORT_FORMAT_COUNT, pricingFaqEntries } from './product-facts'
+import { parseProductRelease, parseProductStatus } from './product-parse'
+import rawRelease from './latest-release.json'
+import rawStatus from './product-status.json'
+
+const release = parseProductRelease(rawRelease)
+const status = parseProductStatus(rawStatus)
 
 export function ldJson(value: unknown): string {
   return JSON.stringify(value).replaceAll('<', '\\u003c')
@@ -32,7 +38,7 @@ export function homeGraph(origin: string, email: string) {
         applicationSubCategory: 'Password Manager',
         operatingSystem: 'Windows 10, Windows 11, Linux',
         url: `${origin}/`,
-        softwareVersion: '0.2.0',
+        softwareVersion: release?.version ?? '0.0.0',
         downloadUrl: 'https://github.com/usesesame/sesame-desktop/releases/latest',
         releaseNotes: 'https://github.com/usesesame/sesame-desktop/releases',
         description:
@@ -60,7 +66,7 @@ export function pricingFaqPage() {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: pricingFaqEntries().map((entry) => ({
+    mainEntity: pricingFaqEntries(status?.cloudSyncAvailable === true).map((entry) => ({
       '@type': 'Question',
       name: entry.question,
       acceptedAnswer: { '@type': 'Answer', text: entry.answer },

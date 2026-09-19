@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div class="hero-product-shot enter" style="--enter-delay: 180ms">
+  <div class="hero-product-shot enter">
     <ProductScreenshot eager src="/screenshots/vault-overview.png" alt="Sesame vault showing a fictional login with password, 2FA, and recovery details" title="Sesame vault" caption="Fictional test data." />
   </div>
 </section>
@@ -64,7 +64,7 @@
 
     <dl class="release-facts" use:reveal>
       <div><dt>Available to test</dt><dd>Local vault, imports, 2FA, security checks, PIN unlock, Windows Hello on Windows, backup, and export.</dd></div>
-      <div><dt>Not shipped</dt><dd>Sync, mobile apps, passkeys, sharing, and emergency access.</dd></div>
+      <div><dt>Not shipped</dt><dd>{facts.syncAvailable ? 'Mobile apps, passkeys, sharing, and emergency access.' : 'Sync, mobile apps, passkeys, sharing, and emergency access.'}</dd></div>
       <div><dt>Platforms</dt><dd>Windows and Linux.</dd></div>
     </dl>
   </div>
@@ -90,7 +90,7 @@
       </article>
       <article>
         <h3>What self-hosting covers</h3>
-        <p>You can run the server, account portal, and admin interface yourself. Hosted Sync is planned as an optional paid service. Sync is not available yet.</p>
+        <p>{facts.syncAvailable ? 'You can run the server, account portal, and admin interface yourself. Hosted Sync is an optional paid service.' : 'You can run the server, account portal, and admin interface yourself. Hosted Sync is planned as an optional paid service. Sync is not available yet.'}</p>
       </article>
     </div>
   </div>

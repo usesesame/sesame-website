@@ -51,8 +51,11 @@ for (const route of checked) {
     errors.push(`${route.path}: no built page`)
     continue
   }
-  for (const claim of html.match(/\b\d+\s+(?:import|supported)\s+formats\b/g) ?? []) {
-    if (!claim.startsWith(`${IMPORT_FORMAT_COUNT} `)) errors.push(`${route.path}: format claim "${claim}" disagrees with IMPORT_FORMAT_COUNT`)
+  for (const claim of html.match(/\b\d+\s+(?:import|supported)\s+formats\b|\b(?:import|supported)\s+\d+\s+formats\b/gi) ?? []) {
+    if (claim.match(/\d+/)[0] !== String(IMPORT_FORMAT_COUNT)) errors.push(`${route.path}: format claim "${claim}" disagrees with IMPORT_FORMAT_COUNT`)
+  }
+  if (route.path === '/' && release?.version && !html.includes(`"softwareVersion":"${release.version}"`)) {
+    errors.push(`${route.path}: structured data version disagrees with latest-release.json`)
   }
   if (publicDownload && /invite-only/i.test(html)) errors.push(`${route.path}: invite-only claim while the public download is open`)
   if (publicDownload && html.includes('Private beta')) errors.push(`${route.path}: private beta claim while the public download is open`)
