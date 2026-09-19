@@ -24,9 +24,17 @@ if (!routes.some((route) => route.path === '/')) errors.push('route table has no
 
 const publicDownload = status?.publicDownload === true
 
+// The service derives both fields from one condition: a release with an
+// updater signature says so, and one without says it carries none.
+const claimsUpdaterSignature = (message) =>
+  message.includes('updater signature') && !message.includes('no updater signature')
+
 for (const [file, channel] of [['latest-release.json', release], ['latest-release-linux.json', linuxRelease]]) {
   if (channel?.available && channel.url && !publicDownload) {
     errors.push(`${file} offers a download while product-status.json closes the public download`)
+  }
+  if (channel && claimsUpdaterSignature(channel.message) !== channel.signed) {
+    errors.push(`${file} reports signed=${channel.signed} while its message says otherwise`)
   }
 }
 if (!publicDownload && routes.some((route) => route.description.includes('Free download'))) {
