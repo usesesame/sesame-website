@@ -1,6 +1,12 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { reveal } from '../lib/motion'
+  import { loadStatus, productState } from '../lib/product-state.svelte'
   import { syncPricePhrase } from '../lib/product-facts'
+
+  onMount(() => {
+    void loadStatus()
+  })
 </script>
 
 <section class="page-hero compact-page-hero">
@@ -28,7 +34,7 @@
     <div id="deployment" use:reveal><h2>Deployment</h2><p>The website validates a new build before replacing the live site. If validation fails, the current site stays live.</p></div>
     <div id="baseline" use:reveal><h2>Security review</h2><p>Sesame has not had an independent security audit. The review plan covers the vault, browser integration, account service, and release process. Use test data for now.</p></div>
     <div id="passkeys" use:reveal><h2>Passkeys</h2><p>Saving and using passkeys in Sesame is planned. The storage and browser design needs review before implementation. There is no release date.</p></div>
-    <div id="sync" use:reveal><h2>Sesame Sync</h2><p>Sync has preview code, but it is disabled in shipping builds. It will stay unavailable until its security review and release checks pass.</p></div>
+    <div id="sync" use:reveal><h2>Sesame Sync</h2><p class="sync-status">{productState.status?.cloudSyncAvailable ? 'Sesame Sync is available for accounts that have it enabled.' : 'Sesame Sync is not available yet. It stays disabled until its security review and release checks pass.'}</p><p>Sync has preview code, but it is disabled in shipping builds.</p></div>
     <div id="browser" use:reveal><h2>Browser extension</h2><p>Chrome, Edge, and Firefox packages build from source. Store submission, signed native-host installation, and clean-profile lifecycle checks remain before public distribution.</p></div>
     <div id="payment" use:reveal><h2>Payment</h2><p>The app is free. Managed Sync is planned at {syncPricePhrase('code')}.</p></div>
     <div id="later" use:reveal><h2>Later</h2><p>macOS support and unlock with a security key need design review. Post-quantum device enrollment has a prototype and a decision packet awaiting review. None of these are available in shipping builds.</p></div>

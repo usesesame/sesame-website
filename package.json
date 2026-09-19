@@ -16,9 +16,10 @@
         "seo:submit": "node scripts/submit-indexnow.mjs",
         "site:release:prepare": "node scripts/prepare-site-release.mjs",
         "site:release:deploy": "node scripts/deploy-site-release.mjs",
-        "test": "npm run build && node scripts/check-product-facts.mjs && node --test scripts/site-release-contracts.test.mjs && node scripts/skip-with-message.mjs \"website browser\"",
+        "sync:contract": "node --test scripts/sync-status-contracts.test.mjs",
+        "test": "npm run build && node scripts/check-product-facts.mjs && node --test scripts/site-release-contracts.test.mjs && npm run sync:contract && node scripts/skip-with-message.mjs \"website browser\"",
         "release:check": "npm run design:tokens:check && npm run lint && npm run check && npm run build && npm run seo:check && npm run facts:check",
-        "ci": "npm run design:tokens:check && npm run lint && npm run check && npm run build && npm run seo:check && npm run facts:check && node --test scripts/site-release-contracts.test.mjs",
+        "ci": "npm run design:tokens:check && npm run lint && npm run check && npm run build && npm run seo:check && npm run facts:check && node --test scripts/site-release-contracts.test.mjs && npm run sync:contract",
         "facts:check": "node scripts/check-product-facts.mjs"
     },
     "dependencies": {
