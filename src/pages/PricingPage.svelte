@@ -66,7 +66,7 @@
   <div class="faq-block" use:reveal>
     <h2>Before you choose</h2>
     {#each pricingFaqEntries(facts.syncAvailable) as entry (entry.question)}
-      <FaqItem question="{entry.question}">
+      <FaqItem question={entry.question}>
         <p>{entry.answer}{#if entry.syncInterestLink && syncInterestUrl} You can <a href={syncInterestUrl}>register interest in Sync</a>.{/if}</p>
       </FaqItem>
     {/each}

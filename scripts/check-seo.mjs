@@ -8,8 +8,6 @@ const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const outputRoot = resolve(websiteRoot, 'dist')
 const errors = []
 
-// `vite build` reads the same production env files, so the check must see the
-// value the build used rather than requiring the caller to export it.
 const fileEnv = loadEnv('production', websiteRoot, '')
 const siteOrigin = (process.env.VITE_SESAME_SITE_ORIGIN ?? fileEnv.VITE_SESAME_SITE_ORIGIN)?.replace(/\/$/, '')
 if (!siteOrigin) throw new Error('VITE_SESAME_SITE_ORIGIN is required for the SEO check.')

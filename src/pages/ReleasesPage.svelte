@@ -22,9 +22,9 @@
   function linuxPackageDetail(format: string): string {
     switch (format) {
       case 'deb':
-        return 'Debian 12 and newer, Ubuntu 22.04 and newer, Linux Mint, and derivatives'
+        return 'Debian 13 and newer, Ubuntu 24.04 and newer, and derivatives'
       case 'rpm':
-        return 'Fedora, openSUSE, RHEL 9, Rocky, AlmaLinux, and derivatives'
+        return 'Fedora 40 and newer, RHEL 9 with EPEL, Rocky, AlmaLinux, and derivatives'
       case 'appimage':
         return 'Any current distribution; mark executable and run'
       case 'nsis':

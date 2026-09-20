@@ -56,7 +56,7 @@
         <div class="workflow-copy">
           <h3>Find a saved login</h3>
           <p>Search your vault and open a login to copy the details you need.</p>
-          <p class="workflow-limitation">The browser extension has packages for Chrome, Edge, and Firefox. It is not in the stores yet.</p>
+          <p class="workflow-limitation">The browser extension ships a Chrome package first, with an experimental Firefox package. It is not in the store yet.</p>
         </div>
         <div class="workflow-shot"><ProductScreenshot src="/screenshots/vault-search.png" alt="Sesame search results with a saved login open" /></div>
       </div>
