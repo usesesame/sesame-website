@@ -8,9 +8,19 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const read = (...parts) => readFileSync(join(root, ...parts), 'utf8')
 
 const workflows = readdirSync(join(root, '.github', 'workflows'))
-  .filter((name) => name.endsWith('.yml'))
+  .filter((name) => /\.(ya?ml)$/.test(name))
   .map((name) => join('.github', 'workflows', name))
   .sort()
+
+const repository = 'usesesame/sesame-website'
+
+const topLevelPermissions = (body) => {
+  const start = body.match(/^permissions:\s*$/m)
+  assert.ok(start, 'the workflow declares no top-level permissions block')
+  const rest = body.slice(start.index + start[0].length)
+  const end = rest.search(/^[^\s#]/m)
+  return end >= 0 ? rest.slice(0, end) : rest
+}
 
 test('every workflow declares permissions and pins every third-party action', () => {
   assert.ok(workflows.length >= 1, `expected this repository's workflows, found ${workflows.length}`)
@@ -22,6 +32,7 @@ test('every workflow declares permissions and pins every third-party action', ()
     if (!/^permissions:\s*$/m.test(body)) missingPermissions.push(workflow)
     for (const [, action] of body.matchAll(/uses:\s*([^\s#]+)/g)) {
       if (action.startsWith('./')) continue
+      if (action.startsWith(`${repository}/`) && action.length > repository.length + 1 && !action.includes('@')) continue
       if (!/@[0-9a-f]{40}$/.test(action)) unpinned.push(`${workflow}: ${action}`)
     }
   }
@@ -32,11 +43,12 @@ test('every workflow declares permissions and pins every third-party action', ()
 test('a workflow defaults to read access and widens per job', () => {
   for (const workflow of workflows) {
     const body = read(workflow)
-    const header = body.slice(0, body.indexOf('\njobs:'))
-    assert.match(
-      header,
-      /^permissions:\s*\n\s+contents: read\s*$/m,
-      `${workflow} should default to contents: read at the top and widen per job`,
+    const block = topLevelPermissions(body)
+    const entries = [...block.matchAll(/^\s+([a-z-]+):\s*([a-z-]+)\s*$/gm)].map(([, key, value]) => `${key}: ${value}`)
+    assert.deepEqual(
+      entries,
+      ['contents: read'],
+      `${workflow} should default to exactly contents: read at the top and widen per job`,
     )
   }
 })
@@ -71,8 +83,15 @@ test('review routing names paths that exist in this repository', () => {
 
 test('every dependency ecosystem this repository uses is updated', () => {
   const body = read('.github', 'dependabot.yml')
+  const uncommented = body
+    .split('\n')
+    .filter((line) => !/^\s*#/.test(line))
+    .join('\n')
+  const active = new Set(
+    [...uncommented.matchAll(/^[ \t]*-?[ \t]*package-ecosystem:[ \t]*([a-z-]+)/gm)].map((match) => match[1]),
+  )
   for (const ecosystem of ['npm', 'github-actions']) {
-    assert.match(body, new RegExp(`package-ecosystem: ${ecosystem}\\b`), `dependabot does not update ${ecosystem}`)
+    assert.ok(active.has(ecosystem), `dependabot does not update ${ecosystem}`)
   }
 })
 

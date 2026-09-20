@@ -27,6 +27,14 @@ test('the Sync section reports the availability the service publishes', async ()
     /cloudSyncAvailable === true/,
     'the shared Sync fact no longer comes from the product status endpoint',
   )
+  assert.match(
+    facts,
+    /syncAvailabilitySentence = syncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/,
+    'the shared Sync sentence no longer chooses between two pieces of wording from the published field',
+  )
+  const branch = facts.match(/syncAvailabilitySentence = syncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/)
+  assert.notEqual(branch[1], branch[2], 'the shared Sync sentence renders the same wording for available and unavailable states')
+  assert.match(branch[2], /not available|disabled/i, 'the unavailable branch must say Sync is unavailable, not available')
 })
 
 test('every page that states Sync availability reads the shared fact', async () => {
