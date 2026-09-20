@@ -51,7 +51,11 @@
       <p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p>
     </FaqItem>
     <FaqItem question="Does Sync work yet?">
-      <p>No. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p>
+      {#if facts.syncAvailable}
+        <p>Yes. Sesame Sync is available for accounts that have it enabled.</p>
+      {:else}
+        <p>No. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p>
+      {/if}
     </FaqItem>
     <FaqItem question="Is there a mobile app or browser extension?">
       <p>No mobile app yet. The browser helper is not in stores.</p>

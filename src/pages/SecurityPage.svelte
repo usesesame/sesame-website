@@ -1,7 +1,10 @@
 <script lang="ts">
   import { reveal } from '../lib/motion'
-  import { IMPORT_FORMAT_COUNT } from '../lib/product-facts'
+  import { IMPORT_FORMAT_COUNT, productFacts } from '../lib/product-facts'
+  import { productState } from '../lib/product-state.svelte'
   import { licenceUrl } from '../lib/source-links'
+
+  const facts = $derived(productFacts(productState.status))
 </script>
 
 <section class="page-hero">
@@ -134,7 +137,7 @@
       </div>
     </div>
     <div id="local" use:reveal><h2>Data kept on your device</h2><p>The desktop app keeps vault files encrypted and opens them with the unlock method you configure:</p><ul><li>Vault items and document attachments</li><li>Master passwords, derived keys, and recovery material</li><li>Imports from {IMPORT_FORMAT_COUNT} supported formats</li><li>2FA seeds, backup codes, and recovery notes</li></ul></div>
-    <div id="service" use:reveal><h2>Data handled by the website and API</h2><p>The service publishes product and release information. If you create a website account, it stores the account email, password hash, and revocable sessions separately from any vault.</p><p>Sync is disabled in the current release. The packaged browser extension stores no credentials, never submits a form, and requires approval from the unlocked desktop app for each fill.</p></div>
+    <div id="service" use:reveal><h2>Data handled by the website and API</h2><p>The service publishes product and release information. If you create a website account, it stores the account email, password hash, and revocable sessions separately from any vault.</p><p>Sync {facts.syncAvailable ? 'is available for accounts that have it enabled' : 'is disabled in the current release'}. The packaged browser extension stores no credentials, never submits a form, and requires approval from the unlocked desktop app for each fill.</p></div>
     <div id="source" use:reveal><h2>Read the implementation</h2><p>The desktop app, vault core, optional server, portals, website, and browser extension are published under the <a href={licenceUrl} rel="noreferrer">GNU Affero General Public License v3.0 or later</a>. Release pages link source and build evidence to the shipped version.</p></div>
     <div id="limitations" use:reveal><h2>Current limitations</h2><p>The independent security review is not complete, and the browser extension is not published in browser stores.</p></div>
   </article>

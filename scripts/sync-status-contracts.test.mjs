@@ -18,17 +18,43 @@ test('the Sync section reports the availability the service publishes', async ()
   assert.ok(section, 'the roadmap page has no #sync section')
   assert.match(
     section[0],
-    /productState\.status\??\.cloudSyncAvailable/,
-    'the Sync section states a fixed availability instead of the one the product status endpoint publishes',
+    /facts\.syncAvailabilitySentence/,
+    'the Sync section states a fixed availability instead of the shared product fact',
+  )
+  const facts = await read('src', 'lib', 'product-facts.ts')
+  assert.match(
+    facts,
+    /cloudSyncAvailable === true/,
+    'the shared Sync fact no longer comes from the product status endpoint',
   )
   assert.match(
-    section[0],
-    /cloudSyncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/,
-    'the Sync section no longer chooses between two pieces of wording from the published field',
+    facts,
+    /syncAvailabilitySentence = syncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/,
+    'the shared Sync sentence no longer chooses between two pieces of wording from the published field',
   )
-  const branch = section[0].match(/cloudSyncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/)
-  assert.notEqual(branch[1], branch[2], 'the Sync section renders the same wording for available and unavailable states')
-  assert.match(branch[2], /disabled|not available|preview/i, 'the unavailable branch must say Sync is unavailable, not available')
+  const branch = facts.match(/syncAvailabilitySentence = syncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/)
+  assert.notEqual(branch[1], branch[2], 'the shared Sync sentence renders the same wording for available and unavailable states')
+  assert.match(branch[2], /not available|disabled/i, 'the unavailable branch must say Sync is unavailable, not available')
+})
+
+test('every page that states Sync availability reads the shared fact', async () => {
+  for (const page of ['HomePage', 'SupportPage', 'PricingPage', 'SecurityPage', 'RoadmapPage']) {
+    const source = await read('src', 'pages', `${page}.svelte`)
+    assert.match(
+      source,
+      /facts\.syncAvailable|facts\.syncAvailabilitySentence/,
+      `${page} states Sync availability independently of the published status`,
+    )
+  }
+})
+
+test('the roadmap loads the published status before showing it', async () => {
+  const page = await read('src', 'pages', 'RoadmapPage.svelte')
+  assert.match(
+    page,
+    /onMount\(\(\) => \{\s*void loadStatus\(\)\s*\}\)/,
+    'the roadmap no longer loads the product status the Sync section reports',
+  )
 })
 
 test('the desktop Settings link target exists on the site', async () => {

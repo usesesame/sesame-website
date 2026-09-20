@@ -41,6 +41,8 @@ export const fallbackPlans: ProductPlan[] = [
 
 export type ProductFacts = {
   publicDownload: boolean
+  syncAvailable: boolean
+  syncAvailabilitySentence: string
   betaLabel: string
   betaSentence: string
   statusHeadline: string
@@ -63,10 +65,16 @@ export function productFacts(status: ProductStatus | null): ProductFacts {
     .map((platform) => `${platform.charAt(0).toUpperCase()}${platform.slice(1)}`)
     .join(', ')
   const accountPurposes = status?.accountPurposes ?? []
+  const syncAvailable = status?.cloudSyncAvailable === true
+  const syncAvailabilitySentence = syncAvailable
+    ? 'Sesame Sync is available for accounts that have it enabled.'
+    : 'Sesame Sync is not available yet. It stays disabled until its security review and release checks pass.'
 
   if (status?.publicDownload) {
     return {
       publicDownload: true,
+      syncAvailable,
+      syncAvailabilitySentence,
       betaLabel: 'Public beta',
       betaSentence: 'Sesame is a public beta.',
       statusHeadline: 'Public beta.',
@@ -81,6 +89,8 @@ export function productFacts(status: ProductStatus | null): ProductFacts {
 
   return {
     publicDownload: false,
+    syncAvailable,
+    syncAvailabilitySentence,
     betaLabel: 'Private beta',
     betaSentence: 'Sesame is a private beta.',
     statusHeadline: 'Private beta.',
@@ -99,7 +109,7 @@ export type PricingFaqEntry = {
   syncInterestLink?: boolean
 }
 
-export function pricingFaqEntries(): PricingFaqEntry[] {
+export function pricingFaqEntries(syncAvailable: boolean): PricingFaqEntry[] {
   return [
     {
       question: 'What is free?',
@@ -112,9 +122,10 @@ export function pricingFaqEntries(): PricingFaqEntry[] {
     },
     {
       question: 'Can I sync without paying?',
-      answer:
-        'The sync service is in the server repository under the same licence, so you can run it yourself. It is not enabled for anyone today, hosted or self-hosted, and it stays that way until its security review passes.',
-      syncInterestLink: true,
+      answer: syncAvailable
+        ? 'Hosted Sync is available for accounts that have it enabled. The same service is in the server repository under the same licence if you would rather run it yourself.'
+        : 'The sync service is in the server repository under the same licence, so you can run it yourself. It is not enabled for anyone today, hosted or self-hosted, and it stays that way until its security review passes.',
+      syncInterestLink: !syncAvailable,
     },
     {
       question: 'What happens if I stop paying, or Sesame stops?',

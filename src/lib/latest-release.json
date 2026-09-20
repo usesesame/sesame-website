@@ -6,7 +6,7 @@
   "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.2.5/Sesame_0.2.5_x64-setup.exe",
   "sha256": "a1e0e90c29eb4d3cb9513d242965fa28e1754d60711ea3b51ab5e79d91105aae",
   "signed": true,
-  "message": "This Windows build has a verified Tauri updater signature.",
+  "message": "This build has a verified Tauri updater signature.",
   "publishedAt": "2026-09-16T20:12:12.528377Z",
   "supportedWindows": [
     "Windows 10",

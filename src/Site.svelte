@@ -46,8 +46,17 @@
   $effect(() => watchScroll((scrolled) => { headerScrolled = scrolled }))
 
   let navEl: HTMLElement | undefined = $state()
+  let indicatorEl: HTMLElement | undefined = $state()
   let didInitialPlace = $state(false)
   let indicator = $state({ left: 0, width: 0, placed: false, instant: false })
+
+  // Style attributes are blocked by the shipped Content-Security-Policy, so the
+  // indicator position is written through CSSOM instead.
+  $effect(() => {
+    if (!indicatorEl || !indicator.placed) return
+    indicatorEl.style.transform = `translateX(${indicator.left}px)`
+    indicatorEl.style.width = `${indicator.width}px`
+  })
 
   function placeIndicator(link: HTMLElement, instant: boolean) {
     indicator = { left: link.offsetLeft, width: link.offsetWidth, placed: true, instant }
@@ -110,7 +119,7 @@
   <div class="site-header-inner">
     <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
     <nav bind:this={navEl} aria-label="Main navigation" onpointerover={(event) => trackLinkTarget(event.target)} onpointerleave={() => settleIndicator()} onfocusin={(event) => trackLinkTarget(event.target)} onfocusout={() => settleIndicator()}>
-      <span class="nav-indicator" class:instant={indicator.instant} aria-hidden="true" data-placed={indicator.placed ? '' : undefined} style="transform: translateX({indicator.left}px); width: {indicator.width}px;"></span>
+      <span bind:this={indicatorEl} class="nav-indicator" class:instant={indicator.instant} aria-hidden="true" data-placed={indicator.placed ? '' : undefined}></span>
       <a href="/" aria-current={route.key === 'home' ? 'page' : undefined}>Product</a>
       <a href="/security" aria-current={route.key === 'security' ? 'page' : undefined}>Security</a>
       <a href="/pricing" aria-current={route.key === 'pricing' ? 'page' : undefined}>Pricing</a>

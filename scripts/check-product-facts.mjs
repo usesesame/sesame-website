@@ -24,9 +24,17 @@ if (!routes.some((route) => route.path === '/')) errors.push('route table has no
 
 const publicDownload = status?.publicDownload === true
 
+// The service derives both fields from one condition: a release with an
+// updater signature says so, and one without says it carries none.
+const claimsUpdaterSignature = (message) =>
+  message.includes('updater signature') && !message.includes('no updater signature')
+
 for (const [file, channel] of [['latest-release.json', release], ['latest-release-linux.json', linuxRelease]]) {
   if (channel?.available && channel.url && !publicDownload) {
     errors.push(`${file} offers a download while product-status.json closes the public download`)
+  }
+  if (channel && claimsUpdaterSignature(channel.message) !== channel.signed) {
+    errors.push(`${file} reports signed=${channel.signed} while its message says otherwise`)
   }
 }
 if (!publicDownload && routes.some((route) => route.description.includes('Free download'))) {
@@ -43,8 +51,11 @@ for (const route of checked) {
     errors.push(`${route.path}: no built page`)
     continue
   }
-  for (const claim of html.match(/\b\d+\s+(?:import|supported)\s+formats\b/g) ?? []) {
-    if (!claim.startsWith(`${IMPORT_FORMAT_COUNT} `)) errors.push(`${route.path}: format claim "${claim}" disagrees with IMPORT_FORMAT_COUNT`)
+  for (const claim of html.match(/\b\d+\s+(?:import|supported)\s+formats\b|\b(?:import|supported)\s+\d+\s+formats\b/gi) ?? []) {
+    if (claim.match(/\d+/)[0] !== String(IMPORT_FORMAT_COUNT)) errors.push(`${route.path}: format claim "${claim}" disagrees with IMPORT_FORMAT_COUNT`)
+  }
+  if (route.path === '/' && release?.version && !html.includes(`"softwareVersion":"${release.version}"`)) {
+    errors.push(`${route.path}: structured data version disagrees with latest-release.json`)
   }
   if (publicDownload && /invite-only/i.test(html)) errors.push(`${route.path}: invite-only claim while the public download is open`)
   if (publicDownload && html.includes('Private beta')) errors.push(`${route.path}: private beta claim while the public download is open`)
