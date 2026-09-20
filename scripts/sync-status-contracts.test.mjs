@@ -23,9 +23,12 @@ test('the Sync section reports the availability the service publishes', async ()
   )
   assert.match(
     section[0],
-    /cloudSyncAvailable\s*\?\s*'[^']+' : '[^']+'/,
+    /cloudSyncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/,
     'the Sync section no longer chooses between two pieces of wording from the published field',
   )
+  const branch = section[0].match(/cloudSyncAvailable\s*\?\s*'([^']+)'\s*:\s*'([^']+)'/)
+  assert.notEqual(branch[1], branch[2], 'the Sync section renders the same wording for available and unavailable states')
+  assert.match(branch[2], /disabled|not available|preview/i, 'the unavailable branch must say Sync is unavailable, not available')
 })
 
 test('the desktop Settings link target exists on the site', async () => {
