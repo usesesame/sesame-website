@@ -2,7 +2,6 @@
   import { onMount } from 'svelte'
   import { BETA_SUPPORT } from '../lib/product'
   import type { ProductRelease } from '../lib/product'
-  import { reveal } from '../lib/motion'
   import { loadLatestRelease, productState } from '../lib/product-state.svelte'
 
   const channels = $derived([productState.release, productState.linuxRelease])
@@ -60,14 +59,14 @@
 </script>
 
 <section class="page-hero compact-page-hero">
-  <h1>Desktop builds.</h1>
+  <h1>Desktop builds</h1>
   <p class="intro">Only releases listed here are official. Every installer ships with a published SHA-256 and Sigstore evidence tying it to the exact build, and the Windows installer also carries a Tauri updater signature.</p>
   <p class="intro release-live-status">Live availability is at <a href="https://status.usesesame.app" rel="noreferrer">status.usesesame.app</a>.</p>
 </section>
 
 <section class="section release-section">
   {#each channels as release (release?.platform ?? 'windows')}
-    <article class="card release-panel" use:reveal>
+    <article class="card release-panel">
       <header class="release-panel-head">
         <div class="release-panel-title">
           <span class="dot"></span>
@@ -158,13 +157,13 @@
     </dialog>
   {/if}
   {#if !anyAvailable}
-    <div class="card release-requirements" use:reveal>
+    <div class="card release-requirements">
       <h2>Nothing to download yet</h2>
       <p>No desktop build has cleared the release gate yet. When one does, it appears here with its checksum and signature.</p>
     </div>
   {/if}
   <div class="release-info-grid">
-    <section class="card release-requirements compatibility-notes" use:reveal>
+    <section class="card release-requirements compatibility-notes">
       <h2>Beta compatibility</h2>
       <dl>
         {#each BETA_SUPPORT.platforms as platform (platform.name)}
@@ -175,7 +174,7 @@
       </dl>
       <p>{BETA_SUPPORT.note}</p>
     </section>
-    <section class="card release-requirements" use:reveal>
+    <section class="card release-requirements">
       <h2>Release gate</h2>
       <ol>
         <li>The NSIS installer has a valid Tauri updater signature, and every installer carries Sigstore evidence for Sesame's exact protected tag workflow.</li>

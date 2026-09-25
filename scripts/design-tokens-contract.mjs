@@ -1,10 +1,20 @@
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const tokens = readFileSync(join(root, 'design', 'tokens.css'), 'utf8')
+
+const DESKTOP_TOKENS_COMMIT = 'c7f01ee19d8f855a417c8c82813ce88131df84f5'
+const DESKTOP_TOKENS_SHA256 = '9e87d3014fb30c16de209f7d178333e9fde354261bc5ff5bcc2abd8764582306'
+const tokensDigest = createHash('sha256').update(tokens, 'utf8').digest('hex')
+assert.equal(
+  tokensDigest,
+  DESKTOP_TOKENS_SHA256,
+  `design/tokens.css no longer matches the desktop copy at ${DESKTOP_TOKENS_COMMIT}: expected sha256 ${DESKTOP_TOKENS_SHA256}, found ${tokensDigest}`,
+)
 const files = readdirSync(join(root, 'src'), { recursive: true, withFileTypes: true })
   .filter((entry) => entry.isFile() && /\.(?:css|svelte|ts)$/.test(entry.name))
   .map((entry) => ({ path: join(entry.parentPath, entry.name), text: readFileSync(join(entry.parentPath, entry.name), 'utf8') }))
