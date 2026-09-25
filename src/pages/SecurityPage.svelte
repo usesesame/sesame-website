@@ -71,7 +71,7 @@
         <div><dt>Vault file</dt><dd>Argon2id key derivation, XChaCha20-Poly1305 encryption</dd></div>
         <div><dt>Opening</dt><dd>Authenticated first; relabelled, tampered, and newer formats refuse to open</dd></div>
         <div><dt>Saving</dt><dd>Staged, validated, then swapped in by rename; the current file is never truncated</dd></div>
-        <div><dt>Storage limit</dt><dd>A save above the 64 MiB limit is refused before it is serialized, and the existing vault stays unchanged</dd></div>
+        <div><dt>Storage limit</dt><dd>A save above the 64 MiB limit is refused while the vault is encoded, and the existing vault stays unchanged</dd></div>
       </dl>
       <p>A failed or interrupted save leaves the previous vault in place. A link planted into the vault file's path is removed rather than written through. Before publication, the release pipeline installs the packaged app and proves it opens, restores, restarts, and backs up every supported historical backup on Windows and Linux.</p>
       <p>The unlocked vault key does not sit in ordinary memory. On Windows it is locked out of the page file, re-encrypted when idle, and reachable only through one guarded call. On Linux the kernel locks it against swap and crash dumps, and Sesame wipes it when the kernel refuses that protection. On other systems it is wiped after use. Decrypted payloads, key wrappers, and sealed records are wiped when their buffers are dropped.</p>
