@@ -311,7 +311,8 @@ strong { font-weight: var(--weight-bold); }
   transition: transform var(--t-mid) var(--ease-out), box-shadow var(--t-mid) var(--ease-out);
 }
 .product-shot-trigger:hover .product-shot-frame, .product-shot-trigger:focus-visible .product-shot-frame { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
-.product-shot-frame > img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+.product-shot-frame picture { display: contents; }
+.product-shot-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
 .product-shot figcaption { display: grid; gap: 5px; margin-top: 14px; padding-inline: 3px; }
 .product-shot figcaption strong { color: var(--text-heading); font: var(--weight-regular) var(--type-3) var(--font-display); font-variation-settings: var(--font-display-settings); }
 .product-shot figcaption span { color: var(--text-muted); font-size: var(--type-2); line-height: 1.55; }

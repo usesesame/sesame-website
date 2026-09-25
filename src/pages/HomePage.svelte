@@ -32,7 +32,7 @@
   </div>
 
   <div class="hero-product-shot enter">
-    <ProductScreenshot eager src="/screenshots/vault-overview.png" alt="Sesame vault showing a fictional login with password, 2FA, and recovery details" title="Sesame vault" caption="Fictional test data." />
+    <ProductScreenshot eager src="/screenshots/vault-overview.png" darkSrc="/screenshots/vault-overview-dark.png" alt="Sesame vault showing a fictional login with password, 2FA, and recovery details" title="Sesame vault" caption="Fictional test data." />
   </div>
 </section>
 
@@ -49,7 +49,7 @@
           <h3>Import from other managers</h3>
           <p>Import {IMPORT_FORMAT_COUNT} formats, check the preview, and choose what to save.</p>
         </div>
-        <div class="workflow-shot"><ProductScreenshot src="/screenshots/import-modal.png" alt="Sesame import dialog with a password-manager export selected" /></div>
+        <div class="workflow-shot"><ProductScreenshot src="/screenshots/import-modal.png" darkSrc="/screenshots/import-modal-dark.png" alt="Sesame import dialog with a password-manager export selected" /></div>
       </div>
       <div class="workflow-row">
         <div class="workflow-copy">
@@ -57,7 +57,7 @@
           <p>Search your vault and open a login to copy the details you need.</p>
           <p class="workflow-limitation">The browser extension ships a Chrome package first, with an experimental Firefox package. It is not in the store yet.</p>
         </div>
-        <div class="workflow-shot"><ProductScreenshot src="/screenshots/vault-search.png" alt="Sesame search results with a saved login open" /></div>
+        <div class="workflow-shot"><ProductScreenshot src="/screenshots/vault-search.png" darkSrc="/screenshots/vault-search-dark.png" alt="Sesame search results with a saved login open" /></div>
       </div>
     </div>
 
