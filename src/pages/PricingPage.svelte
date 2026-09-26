@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import FaqItem from '../FaqItem.svelte'
-  import { reveal } from '../lib/motion'
   import type { ProductPlan } from '../lib/product'
   import { pricingFaqEntries, productFacts } from '../lib/product-facts'
   import { loadPlans, productState } from '../lib/product-state.svelte'
@@ -25,17 +24,17 @@
 </script>
 
 <section class="page-hero compact-page-hero">
-  <h1>The app is free.</h1>
+  <h1>The app is free</h1>
   <p class="intro">{facts.syncAvailable ? 'Hosted Sync is an optional subscription.' : 'Hosted Sync is planned as an optional subscription. Sync is not available yet.'}</p>
 </section>
 <section class="section pricing-page">
-  <div class="pricing-promise" use:reveal>
+  <div class="pricing-promise">
     <strong>Payments are not open</strong>
     <p>Registering interest does not start a subscription.</p>
   </div>
   <div class="price-grid">
     {#each productState.plans as plan (plan.id ?? plan.name)}
-      <article class="card price-card" class:featured={plan.id === 'free'} use:reveal>
+      <article class="card price-card" class:featured={plan.id === 'free'}>
         <p class="price-name">{plan.name} <span class="price-tag" class:current={plan.id === 'free' || plan.available}>{plan.id === 'free' ? 'Free' : plan.available ? 'Available' : 'Planned'}</span></p>
         {#if plan.id === 'sync' && plan.annualPrice}
           <div class="sync-price-options">
@@ -52,18 +51,18 @@
         {#if plan.id === 'free'}
           <a class="button button-soft price-cta" href="/#product">See what it does</a>
         {:else if plan.available}
-          <a class="button button-soft price-cta" href={accountUrl('/account') || '/roadmap#sync'}>Set up Sync</a>
+          <a class="button price-cta" href={accountUrl('/account') || '/roadmap#sync'}>Set up Sync</a>
         {:else if syncInterestUrl}
-          <a class="button button-soft price-cta" href={syncInterestUrl}>Register Sync interest</a>
+          <a class="button price-cta" href={syncInterestUrl}>Register Sync interest</a>
         {:else}
           <a class="button button-soft price-cta" href="/roadmap#sync">Read the Sync plans</a>
         {/if}
       </article>
     {/each}
   </div>
-  <p class="pricing-note" use:reveal>Final tax, refund, and support terms will appear before checkout opens.</p>
+  <p class="pricing-note">Final tax, refund, and support terms will appear before checkout opens.</p>
 
-  <div class="faq-block" use:reveal>
+  <div class="faq-block">
     <h2>Before you choose</h2>
     {#each pricingFaqEntries(facts.syncAvailable) as entry (entry.question)}
       <FaqItem question={entry.question}>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import FaqItem from '../FaqItem.svelte'
-  import { reveal } from '../lib/motion'
   import { IMPORT_FORMAT_COUNT, productFacts } from '../lib/product-facts'
   import { productState } from '../lib/product-state.svelte'
   import { accountUrl } from '../lib/runtime-config'
@@ -15,7 +14,7 @@
 </section>
 
 <section class="section support-section" aria-label="Contact support">
-  <div class="support-intake" id="new-request" use:reveal>
+  <div class="support-intake" id="new-request">
     <h2>Send a request</h2>
     {#if requestUrl}
       <p class="support-description">Tell us what happened and what you expected. You can send a request as a guest or sign in to keep a request history.</p>
@@ -29,14 +28,14 @@
     {/if}
   </div>
 
-  <aside class="support-guide" aria-label="Before you send a request" use:reveal>
+  <aside class="support-guide" aria-label="Before you send a request">
     <div><h2>What to include</h2><ul><li>Your app and system version</li><li>The steps that led to the problem</li><li>The error message, if there is one</li></ul></div>
     <div><h2>Keep private details out</h2><p>Never send passwords, security codes, vault files, exports, recovery kits, or keys.</p></div>
   </aside>
 </section>
 
 <section class="section support-faq">
-  <div class="faq-block" use:reveal>
+  <div class="faq-block">
     <h2>Common questions</h2>
     <FaqItem question="Can I download Sesame now?">
       <p>{facts.supportDownloadAnswer}</p>
