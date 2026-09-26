@@ -6,8 +6,18 @@
   export let caption = ''
   export let eager = false
   let unavailable = false
+  let darkFailed = false
+  $: darkAvailable = Boolean(darkSrc) && !darkFailed
   let previewDialog: HTMLDialogElement
   let previewTrigger: HTMLButtonElement
+
+  function handleImageError() {
+    if (darkAvailable) {
+      darkFailed = true
+      return
+    }
+    unavailable = true
+  }
 
   function openPreview() {
     if (!previewDialog?.open) previewDialog?.showModal()
@@ -37,13 +47,13 @@
   >
     <span class="product-shot-frame">
     {#if !unavailable}
-      {#if darkSrc}
+      {#if darkAvailable}
         <picture>
           <source srcset={darkSrc} media="(prefers-color-scheme: dark)" />
-          <img {src} {alt} width="1440" height="900" loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={() => (unavailable = true)} />
+          <img {src} {alt} width="1440" height="900" loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={handleImageError} />
         </picture>
       {:else}
-        <img {src} {alt} width="1440" height="900" loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={() => (unavailable = true)} />
+        <img {src} {alt} width="1440" height="900" loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={handleImageError} />
       {/if}
     {:else}
       <div class="screenshot-pending" role="img" aria-label={`${title || alt} screenshot pending`}>
@@ -69,7 +79,7 @@
       <div>{#if title}<strong>{title}</strong>{/if}<span>Fictional test data</span></div>
       <button class="screenshot-dialog-close" type="button" aria-label={`Close ${title || alt} screenshot preview`} on:click={closePreview}>Close</button>
     </div>
-    {#if darkSrc}
+    {#if darkAvailable}
       <picture>
         <source srcset={darkSrc} media="(prefers-color-scheme: dark)" />
         <img {src} {alt} width="1440" height="900" />
