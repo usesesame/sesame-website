@@ -90,6 +90,7 @@
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f4ee" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16150e" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
   <title>{route.title}</title>
   <meta name="description" content={route.description} />
@@ -100,15 +101,15 @@
   <meta property="og:title" content={route.title} />
   <meta property="og:description" content={route.description} />
   <meta property="og:url" content={canonicalUrl} />
-  <meta property="og:image" content={`${siteOrigin}/screenshots/vault-overview.png`} />
-  <meta property="og:image:alt" content="The Sesame desktop vault showing a login with its sign-in details" />
+  <meta property="og:image" content={`${siteOrigin}/og-card.png`} />
+  <meta property="og:image:alt" content="Sesame: a password manager that works without an account, beside the desktop vault window with fictional logins" />
   <meta property="og:locale" content="en_GB" />
-  <meta property="og:image:width" content="1440" />
-  <meta property="og:image:height" content="900" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={route.title} />
   <meta name="twitter:description" content={route.description} />
-  <meta name="twitter:image" content={`${siteOrigin}/screenshots/vault-overview.png`} />
+  <meta name="twitter:image" content={`${siteOrigin}/og-card.png`} />
 </svelte:head>
 
 <a class="skip-link" href="#top">Skip to content</a>
