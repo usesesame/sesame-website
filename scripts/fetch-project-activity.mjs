@@ -20,17 +20,27 @@ async function github(path) {
   return response.json()
 }
 
+const pageSize = 100
+const maxPages = 20
+
+async function countCommits(name) {
+  let total = 0
+  for (let page = 1; page <= maxPages; page += 1) {
+    const commits = await github(`/repos/${org}/${name}/commits?since=${since}&per_page=${pageSize}&page=${page}`)
+    total += commits.length
+    if (commits.length < pageSize) return total
+  }
+  throw new Error(`${name} has more than ${pageSize * maxPages} commits in the window; raise maxPages rather than publish a capped count`)
+}
+
 const entries = []
 for (const name of repositories) {
-  const [repo, commits] = await Promise.all([
-    github(`/repos/${org}/${name}`),
-    github(`/repos/${org}/${name}/commits?since=${since}&per_page=100`),
-  ])
+  const [repo, recentCommits] = await Promise.all([github(`/repos/${org}/${name}`), countCommits(name)])
   entries.push({
     name,
     language: repo.language ?? '',
     pushedAt: repo.pushed_at,
-    recentCommits: commits.length,
+    recentCommits,
   })
 }
 

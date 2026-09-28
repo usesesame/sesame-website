@@ -1,23 +1,15 @@
 <script lang="ts">
-  export let src: string
-  export let darkSrc = ''
+  import ProductPicture from './ProductPicture.svelte'
+
+  export let name: string
   export let alt: string
+  export let width: number
+  export let height: number
   export let title = ''
-  export let caption = ''
   export let eager = false
   let unavailable = false
-  let darkFailed = false
-  $: darkAvailable = Boolean(darkSrc) && !darkFailed
   let previewDialog: HTMLDialogElement
   let previewTrigger: HTMLButtonElement
-
-  function handleImageError() {
-    if (darkAvailable) {
-      darkFailed = true
-      return
-    }
-    unavailable = true
-  }
 
   function openPreview() {
     if (!previewDialog?.open) previewDialog?.showModal()
@@ -41,20 +33,13 @@
     class="product-shot-trigger"
     type="button"
     bind:this={previewTrigger}
-    aria-label={`View ${title || alt} screenshot full size`}
+    aria-label={`Enlarge the ${title || alt} screenshot`}
     disabled={unavailable}
     on:click={openPreview}
   >
-    <span class="product-shot-frame">
+    <span class="product-shot-frame" style={`aspect-ratio: ${width} / ${height}`}>
     {#if !unavailable}
-      {#if darkAvailable}
-        <picture>
-          <source srcset={darkSrc} media="(prefers-color-scheme: dark)" />
-          <img {src} {alt} width="1440" height="900" loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={handleImageError} />
-        </picture>
-      {:else}
-        <img {src} {alt} width="1440" height="900" loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={handleImageError} />
-      {/if}
+      <ProductPicture {name} {alt} {width} {height} {eager} onFailure={() => { unavailable = true }} />
     {:else}
       <div class="screenshot-pending" role="img" aria-label={`${title || alt} screenshot pending`}>
         <img src="/favicon.svg" alt="" width="512" height="512" />
@@ -64,7 +49,6 @@
     {/if}
     </span>
   </button>
-  <figcaption>{#if title}<strong>{title}</strong>{/if}{#if caption}<span>{caption}</span>{/if}<small>Click to view full size.</small></figcaption>
 </figure>
 
 <dialog
@@ -79,13 +63,6 @@
       <div>{#if title}<strong>{title}</strong>{/if}<span>Fictional test data</span></div>
       <button class="screenshot-dialog-close" type="button" aria-label={`Close ${title || alt} screenshot preview`} on:click={closePreview}>Close</button>
     </div>
-    {#if darkAvailable}
-      <picture>
-        <source srcset={darkSrc} media="(prefers-color-scheme: dark)" />
-        <img {src} {alt} width="1440" height="900" />
-      </picture>
-    {:else}
-      <img {src} {alt} width="1440" height="900" />
-    {/if}
+    <ProductPicture {name} {alt} {width} {height} />
   </div>
 </dialog>

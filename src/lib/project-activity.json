@@ -1,30 +1,30 @@
 {
-  "generatedAt": "2026-08-22T13:46:11.271Z",
+  "generatedAt": "2026-09-27T09:08:00.859Z",
   "windowDays": 30,
   "repositories": [
     {
       "name": "sesame-desktop",
       "language": "Rust",
-      "pushedAt": "2026-08-22T13:08:49Z",
-      "recentCommits": 78
+      "pushedAt": "2026-09-26T20:53:56Z",
+      "recentCommits": 273
     },
     {
       "name": "sesame-server",
       "language": "Go",
-      "pushedAt": "2026-08-22T12:51:47Z",
-      "recentCommits": 34
+      "pushedAt": "2026-09-26T22:09:24Z",
+      "recentCommits": 175
     },
     {
       "name": "sesame-website",
-      "language": "CSS",
-      "pushedAt": "2026-08-18T20:14:32Z",
-      "recentCommits": 11
+      "language": "JavaScript",
+      "pushedAt": "2026-09-26T10:02:51Z",
+      "recentCommits": 63
     },
     {
       "name": "sesame-browser-extension",
       "language": "TypeScript",
-      "pushedAt": "2026-08-22T12:44:14Z",
-      "recentCommits": 24
+      "pushedAt": "2026-09-26T10:11:09Z",
+      "recentCommits": 78
     }
   ]
 }

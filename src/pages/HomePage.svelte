@@ -1,12 +1,62 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import FeatureTour from '../FeatureTour.svelte'
+  import PlatformIcon from '../PlatformIcon.svelte'
   import ProductScreenshot from '../ProductScreenshot.svelte'
   import { IMPORT_FORMAT_COUNT, productFacts } from '../lib/product-facts'
   import { loadStatus, productState } from '../lib/product-state.svelte'
+  import { activityByRepository, activityCountedOn, activityWindowDays, lastPushLabel } from '../lib/project-activity'
   import { accountUrl } from '../lib/runtime-config'
   import { repositories, sourceOrg } from '../lib/source-links'
 
   const facts = $derived(productFacts(productState.status))
+  const release = $derived(productState.release)
+  const releaseDate = $derived(release?.publishedAt ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(release.publishedAt)) : '')
+
+  const features = [
+    {
+      key: 'import',
+      title: 'Bring your logins',
+      summary: `${IMPORT_FORMAT_COUNT} formats, read on your computer`,
+      detail: 'Choose the export from your old password manager. Sesame reads it on your computer, shows a preview, and saves only what you choose. Nothing is uploaded.',
+      shot: 'stage-import',
+      alt: 'The Sesame import dialog over the vault, with Bitwarden CSV selected',
+    },
+    {
+      key: 'search',
+      title: 'Find and copy',
+      summary: 'Search every item, copy one field',
+      detail: 'Search matches titles, sites, usernames, email addresses, notes, tags, and folders. It never matches a password, so typing a guess cannot confirm one. A copied password clears from the clipboard after 30 seconds by default.',
+      shot: 'stage-search',
+      alt: 'A search for git in Sesame, with the fictional GitHub login open and flagged for a missing 2FA code',
+    },
+    {
+      key: 'check',
+      title: 'Fix weak passwords',
+      summary: 'The security check says what to change',
+      detail: 'The security check finds weak, reused, and old passwords, logins without a 2FA code, and recovery details you have not reviewed. It runs on your computer, and for each finding it offers the next step.',
+      shot: 'stage-weak',
+      alt: 'A weak password finding for a fictional Notion login, with a password score and a button to change it on the site',
+    },
+    {
+      key: 'backups',
+      title: 'Keep your own backups',
+      summary: 'Encrypted copies you control',
+      detail: 'Export an encrypted backup to any folder or drive. A recovery drill opens a backup without changing your vault, and a restore keeps a safety copy of the current vault first.',
+      shot: 'stage-backups',
+      alt: 'The Sesame backups screen with export, recovery drill, and restore actions',
+    },
+  ]
+
+  const windowsVersions = $derived(release?.supportedWindows?.length ? release.supportedWindows.join(' and ').replace('Windows 10 and Windows 11', 'Windows 10 and 11') : 'Windows 10 and 11')
+  const availableFeatures = ['Local vault', 'Imports from other managers', '2FA codes', 'Security checks', 'PIN unlock', 'Windows Hello on Windows', 'Encrypted backup and export']
+  const laterFeatures = $derived([...(facts.syncAvailable ? [] : ['Sync']), 'Mobile apps', 'Passkeys', 'Sharing', 'Emergency access'])
+
+  const importGroups = [
+    { key: 'managers', title: 'Password managers', names: ['Bitwarden CSV and JSON', '1Password', 'LastPass', 'Dashlane', 'KeePass', 'Keeper', 'NordPass', 'Proton Pass'] },
+    { key: 'browsers', title: 'Browsers', names: ['Google Chrome', 'Microsoft Edge', 'Brave', 'Firefox', 'Google Password Manager', 'Apple Passwords'] },
+    { key: 'authenticators', title: '2FA apps', names: ['Aegis', '2FAS', 'otpauth link lists'] },
+  ]
   const betaAccessUrl = accountUrl('/support?category=general#new-request')
 
   onMount(() => {
@@ -17,7 +67,7 @@
 <section class="hero">
   <div class="hero-copy enter">
     <h1>A password manager that works without an account.</h1>
-    <p class="intro">Keep your passwords in a vault on your computer. Import existing logins and make your own backups.</p>
+    <p class="intro">Your vault is a file on your computer. Sesame unlocks it, searches it, and copies from it with no account and no network connection.</p>
     <p class="hero-caveat">Sesame is in early beta and has not had an independent security audit. Use test data for now.</p>
     <div class="hero-actions">
       {#if facts.publicDownload}
@@ -32,7 +82,7 @@
   </div>
 
   <div class="hero-product-shot enter">
-    <ProductScreenshot eager src="/screenshots/vault-overview.png" darkSrc="/screenshots/vault-overview-dark.png" alt="Sesame vault showing a fictional login with password, 2FA, and recovery details" title="Sesame vault" caption="Fictional test data." />
+    <ProductScreenshot eager name="vault-window" width={1180} height={740} alt="The Sesame vault window with a fictional Gmail login open, showing its username, hidden password, 2FA code, and recovery details" title="Sesame vault" />
   </div>
 </section>
 
@@ -43,54 +93,23 @@
       <p class="lede">Logins, 2FA codes, security checks, and backups in one desktop app.</p>
     </div>
 
-    <div class="product-workflows">
-      <div class="workflow-row">
-        <div class="workflow-copy">
-          <h3>Import from other managers</h3>
-          <p>Import {IMPORT_FORMAT_COUNT} formats, check the preview, and choose what to save.</p>
-        </div>
-        <div class="workflow-shot"><ProductScreenshot src="/screenshots/import-modal.png" darkSrc="/screenshots/import-modal-dark.png" alt="Sesame import dialog with a password-manager export selected" /></div>
-      </div>
-      <div class="workflow-row">
-        <div class="workflow-copy">
-          <h3>Find a saved login</h3>
-          <p>Search your vault and open a login to copy the details you need.</p>
-          <p class="workflow-limitation">The browser extension ships a Chrome package first, with an experimental Firefox package. It is not in the store yet.</p>
-        </div>
-        <div class="workflow-shot"><ProductScreenshot src="/screenshots/vault-search.png" darkSrc="/screenshots/vault-search-dark.png" alt="Sesame search results with a saved login open" /></div>
-      </div>
-    </div>
-
-    <dl class="release-facts">
-      <div><dt>Available to test</dt><dd>Local vault, imports, 2FA, security checks, PIN unlock, Windows Hello on Windows, backup, and export.</dd></div>
-      <div><dt>Not shipped</dt><dd>{facts.syncAvailable ? 'Mobile apps, passkeys, sharing, and emergency access.' : 'Sync, mobile apps, passkeys, sharing, and emergency access.'}</dd></div>
-      <div><dt>Platforms</dt><dd>Windows and Linux.</dd></div>
-    </dl>
+    <FeatureTour {features} />
   </div>
 </section>
 
-<section id="source" class="home-section home-section-source">
-  <div class="section home-section-inner">
+<section id="switch" class="home-section home-section-switch">
+  <div class="section home-section-inner switch-layout">
     <div class="section-title">
-      <h2>Read the source</h2>
-      <p class="lede">The desktop app, browser extension, website, and optional server are licensed under AGPL-3.0-or-later.</p>
+      <h2>Bring everything with you</h2>
+      <p class="lede">Sesame reads exports from {IMPORT_FORMAT_COUNT} password manager and browser formats, and 2FA secrets from three authenticator formats. Every import shows a preview before anything is saved.</p>
     </div>
-
-    <ul class="source-links">
-      {#each repositories as repo (repo.name)}
-        <li><a href={`${sourceOrg}/${repo.name}`} rel="noreferrer"><strong>{repo.name}</strong><span>{repo.what}</span></a></li>
+    <div class="import-groups">
+      {#each importGroups as group (group.key)}
+        <section aria-labelledby={`import-${group.key}`}>
+          <h3 id={`import-${group.key}`}>{group.title}</h3>
+          <ul>{#each group.names as name (name)}<li>{name}</li>{/each}</ul>
+        </section>
       {/each}
-    </ul>
-
-    <div class="source-notes">
-      <article>
-        <h3>Use the desktop app on its own</h3>
-        <p>You can create and use a vault without running a server or creating a website account.</p>
-      </article>
-      <article>
-        <h3>What self-hosting covers</h3>
-        <p>{facts.syncAvailable ? 'You can run the server, account portal, and admin interface yourself. Hosted Sync is an optional paid service.' : 'You can run the server, account portal, and admin interface yourself. Hosted Sync is planned as an optional paid service. Sync is not available yet.'}</p>
-      </article>
     </div>
   </div>
 </section>
@@ -99,37 +118,109 @@
   <div class="section home-section-inner">
     <div class="section-title">
       <h2>Where your data lives</h2>
+      <p class="lede">The vault needs nothing from the website. {#if facts.accountPurposes.length}An optional website account covers {facts.accountPurposes.join(', ')}.{/if}</p>
     </div>
 
-    <div class="security-stack">
-      <div class="card boundary-card">
-        <ul class="boundary-list">
-          <li><span>Vault file</span><strong class="on-device">Your device</strong></li>
-          <li><span>Master password or unlock secret</span><strong class="on-device">Your device</strong></li>
-          <li><span>Imported password-manager export</span><strong class="on-device">Your device</strong></li>
-          <li><span>Website account email and password hash</span><strong class="on-server">Sesame website</strong></li>
-          <li><span>Product and release information</span><strong class="on-server">Sesame website</strong></li>
+    <div class="data-split">
+      <section class="data-side data-device" aria-labelledby="data-device-heading">
+        <h3 id="data-device-heading">On your computer</h3>
+        <ul>
+          <li><strong>Vault file</strong><span>Every login, card, note, 2FA secret, and backup code, encrypted and unlocked with your master password.</span></li>
+          <li><strong>Master password and unlock secrets</strong><span>Your PIN and Windows Hello setup stay on the device that created them.</span></li>
+          <li><strong>Imported exports</strong><span>Read and parsed locally. Nothing is uploaded.</span></li>
         </ul>
-      </div>
+      </section>
+      <section class="data-side data-website" aria-labelledby="data-website-heading">
+        <h3 id="data-website-heading">On the Sesame website</h3>
+        <ul>
+          <li><strong>Account email and password hash</strong><span>Only if you create an account. Used to sign in to the account portal, and it cannot open a vault.</span></li>
+          <li><strong>Support requests and linked desktops</strong><span>What you write to support, and a record of each desktop you link. Neither holds vault data.</span></li>
+          <li><strong>Product and release information</strong><span>Version numbers, download checksums, and project status.</span></li>
+        </ul>
+      </section>
     </div>
   </div>
 </section>
 
-<section id="status" class="home-section home-section-status">
-  <div class="section home-section-inner">
-    <div class="status-card card">
-      <div class="status-head">
-        <h2><span class="dot"></span>{facts.statusHeadline}</h2>
+<section id="source" class="home-section home-section-source">
+  <div class="section home-section-inner source-layout">
+    <div class="source-intro">
+      <h2>Read the source</h2>
+      <p class="lede">The desktop app, browser extension, website, and optional server are licensed under AGPL-3.0-or-later.</p>
+      <div class="source-notes">
+        <article>
+          <h3>Use the desktop app on its own</h3>
+          <p>You can create and use a vault without running a server or creating a website account.</p>
+        </article>
+        <article>
+          <h3>What self-hosting covers</h3>
+          <p>{facts.syncAvailable ? 'You can run the server, account portal, and admin interface yourself. Hosted Sync is an optional paid service.' : 'You can run the server, account portal, and admin interface yourself. Hosted Sync is planned as an optional paid service. Sync is not available yet.'}</p>
+        </article>
       </div>
-      <div class="status-copy">
+    </div>
+
+    <div class="source-activity">
+      <p class="source-activity-head">Commits in the last {activityWindowDays} days, counted {activityCountedOn}</p>
+      <ul class="repo-tiles">
+        {#each repositories as repo (repo.name)}
+          {@const activity = activityByRepository.get(repo.name)}
+          <li>
+            <a href={`${sourceOrg}/${repo.name}`} rel="noreferrer">
+              <strong class="repo-name">{repo.name}</strong>
+              <span class="repo-what">{repo.what}</span>
+              {#if activity}
+                <span class="repo-count"><b>{activity.recentCommits}</b> commits</span>
+                <span class="repo-push">Last push {lastPushLabel(activity.pushedAt)}</span>
+              {/if}
+            </a>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="download" class="home-section home-section-download">
+  <div class="section home-section-inner download-layout">
+    <div class="download-copy">
+      <p class="download-status"><span class="dot"></span>{facts.statusHeadline}</p>
+      <h2>Try Sesame with test data</h2>
+      <p class="lede">{#if release?.version && releaseDate}Version {release.version} was released on {releaseDate}.{/if} Each release lists its SHA-256 checksums. Keep a separate backup of anything you cannot afford to lose.</p>
+      <div class="hero-actions">
         {#if facts.publicDownload}
-          <p>Anyone can <a href="/releases">download Sesame</a>. Keep a separate backup of anything you cannot afford to lose.</p>
+          <a class="button" href="/releases">Download for Windows and Linux</a>
+        {:else if betaAccessUrl}
+          <a class="button" href={betaAccessUrl}>Request beta access</a>
         {:else}
-          <p>Invited testers are using the beta now.</p>
+          <a class="button button-soft" href="/releases">See release status</a>
         {/if}
-        {#if facts.accountPurposes.length}
-          <p class="status-purposes">A website account covers {facts.accountPurposes.join(', ')}.</p>
-        {/if}
+        {#if release?.releaseNotesUrl}<a class="text-link hero-text-link" href={release.releaseNotesUrl} rel="noreferrer">Read the release notes</a>{/if}
+      </div>
+    </div>
+    <div class="download-panel">
+      <ul class="platform-cards">
+        <li>
+          <a href="/releases">
+            <span class="platform-icon"><PlatformIcon name="windows" /></span>
+            <span class="platform-text"><strong>Windows</strong><small>{windowsVersions}, 64-bit installer</small></span>
+          </a>
+        </li>
+        <li>
+          <a href="/releases">
+            <span class="platform-icon"><PlatformIcon name="linux" /></span>
+            <span class="platform-text"><strong>Linux</strong><small>deb, rpm, and AppImage packages</small></span>
+          </a>
+        </li>
+      </ul>
+      <div class="beta-lists">
+        <section aria-labelledby="beta-available">
+          <h3 id="beta-available">In this beta</h3>
+          <ul class="feature-list feature-list-yes">{#each availableFeatures as feature (feature)}<li>{feature}</li>{/each}</ul>
+        </section>
+        <section aria-labelledby="beta-later">
+          <h3 id="beta-later">Not shipped yet</h3>
+          <ul class="feature-list feature-list-later">{#each laterFeatures as feature (feature)}<li>{feature}</li>{/each}</ul>
+        </section>
       </div>
     </div>
   </div>

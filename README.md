@@ -36,19 +36,23 @@ npm run ci
 
 That runs the design-token contract, lint, the type check, the production
 build, the SEO check, the product-facts check, and the release, sync-status,
-governance, and public-client contract suites against the built output.
+governance, public-client, and project-activity contract suites against the built output.
 The product-facts check validates the generated status and release files
 against the canonical parsers, then reads every built page and rejects
 availability claims that contradict the canonical status, and any
 import-format count other than the canonical one.
 
-No browser suite exists yet. `npm run test` builds the site, runs the
-product-facts check, runs the release, sync-status, governance, and
-public-client contract suites, and then prints a skip notice, so a build
-failure is still caught while the specs are missing. When they land they
+No browser suite exists yet. `npm run test` builds the site, checks product
+facts, and runs the release, sync-status, governance, public-client, and
+project-activity contracts. It then prints a browser-test skip notice.
+Build and contract failures still fail the command. When browser tests land they
 should use fictional intercepted API data, and cover the site working with
 every request aborted and no public page reading a route that carries a
 session.
+
+The home page shows commit counts from `src/lib/project-activity.json`. Run
+`npm run activity:refresh` before a release: `site:release:prepare` refuses
+to stage a release when that file is more than 14 days old.
 
 The `static-only` CI job is the exit gate for a static site: it builds with no
 API and no account portal at all, and fails if the shipped
