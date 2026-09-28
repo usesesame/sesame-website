@@ -56,7 +56,7 @@
       </div>
     </div>
     <div id="path">
-      <h2>Nothing leaves without your master password</h2>
+      <h2>Master password checks for sensitive actions</h2>
       <p>Exporting, backing up, saving a recovery kit, and showing or copying a password all pass one check in the Rust core.</p>
       <ol class="gate-flow">
         <li class="gate-step"><strong>You ask</strong><span>Export, back up, or show a password.</span></li>

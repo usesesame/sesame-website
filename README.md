@@ -42,10 +42,10 @@ against the canonical parsers, then reads every built page and rejects
 availability claims that contradict the canonical status, and any
 import-format count other than the canonical one.
 
-No browser suite exists yet. `npm run test` builds the site, runs the
-product-facts check, runs the release, sync-status, governance, and
-public-client contract suites, and then prints a skip notice, so a build
-failure is still caught while the specs are missing. When they land they
+No browser suite exists yet. `npm run test` builds the site, checks product
+facts, and runs the release, sync-status, governance, public-client, and
+project-activity contracts. It then prints a browser-test skip notice.
+Build and contract failures still fail the command. When browser tests land they
 should use fictional intercepted API data, and cover the site working with
 every request aborted and no public page reading a route that carries a
 session.
