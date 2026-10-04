@@ -41,26 +41,26 @@
       <p>{facts.supportDownloadAnswer}</p>
     </FaqItem>
     <FaqItem question="Does Sesame run on my computer?">
-      <p>Windows 10 and 11 on x64, and Linux through deb, rpm, and AppImage packages. The releases page lists every official installer with its checksum.</p>
+      <p>Sesame runs on 64-bit Windows 10 and 11, and on Linux through deb, rpm, and AppImage packages. The releases page lists every official installer with its checksum.</p>
     </FaqItem>
     <FaqItem question="How do I update?">
-      <p>Sesame checks for updates itself. Builds from 0.1.1 on update from inside the app; if you are still on 0.1.0, install a newer version by hand once.</p>
+      <p>On Windows, Sesame updates itself from inside the app. If you are still on 0.1.0, install a newer version by hand once. On Linux, download new versions from the releases page.</p>
     </FaqItem>
     <FaqItem question="What can I import?">
-      <p>{IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, major browsers, and other password managers.</p>
+      <p>Sesame imports {IMPORT_FORMAT_COUNT} formats from Bitwarden, 1Password, the major browsers, and other password managers.</p>
     </FaqItem>
     <FaqItem question="Does Sync work yet?">
       {#if facts.syncAvailable}
         <p>Yes. Sesame Sync is available for accounts that have it enabled.</p>
       {:else}
-        <p>No. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p>
+        <p>Not yet. The <a href="/roadmap#sync">roadmap</a> lists what has to pass first.</p>
       {/if}
     </FaqItem>
     <FaqItem question="Is there a mobile app or browser extension?">
-      <p>No mobile app yet. The browser helper is not in stores.</p>
+      <p>There is no mobile app yet, and the browser extension is not in the browser stores yet.</p>
     </FaqItem>
     <FaqItem question="Where is my vault stored?">
-      <p>On your computer.</p>
+      <p>Your vault is a file on your computer.</p>
     </FaqItem>
     <FaqItem question="Has Sesame been independently reviewed?">
       <p>Not yet. The <a href="/security">security page</a> shows what that means for the current release.</p>

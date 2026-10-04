@@ -30,7 +30,7 @@ export const routes: Route[] = [
     path: '/security',
     key: 'security',
     title: 'Security Model | Sesame Password Manager',
-    description: 'What stays on your computer, what the website stores, and how to check both against the published source.',
+    description: 'How Sesame protects your vault, what it cannot protect against, and what is still unfinished.',
     index: true,
   },
   {

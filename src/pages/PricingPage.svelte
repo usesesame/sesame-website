@@ -25,12 +25,12 @@
 
 <section class="page-hero compact-page-hero">
   <h1>The app is free</h1>
-  <p class="intro">{facts.syncAvailable ? 'Hosted Sync is an optional subscription.' : 'Hosted Sync is planned as an optional subscription. Sync is not available yet.'}</p>
+  <p class="intro">{facts.syncAvailable ? 'Hosted Sync is an optional subscription.' : 'Hosted Sync is planned as an optional subscription, but it is not available yet.'}</p>
 </section>
 <section class="section pricing-page">
   <div class="pricing-promise">
-    <strong>Payments are not open</strong>
-    <p>Registering interest does not start a subscription.</p>
+    <strong>Payments are not open yet</strong>
+    <p>Registering interest will not start a subscription.</p>
   </div>
   <div class="price-grid">
     {#each productState.plans as plan (plan.id ?? plan.name)}
@@ -66,7 +66,7 @@
     <h2>Before you choose</h2>
     {#each pricingFaqEntries(facts.syncAvailable) as entry (entry.question)}
       <FaqItem question={entry.question}>
-        <p>{entry.answer}{#if entry.syncInterestLink && syncInterestUrl} You can <a href={syncInterestUrl}>register interest in Sync</a>.{/if}</p>
+        <p>{entry.answer} {#if entry.syncInterestLink && syncInterestUrl}You can <a href={syncInterestUrl}>register interest in Sync</a>.{/if}</p>
       </FaqItem>
     {/each}
   </div>

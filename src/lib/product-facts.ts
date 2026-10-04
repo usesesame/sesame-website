@@ -11,7 +11,7 @@ export const fallbackPlans: ProductPlan[] = [
     price: '0',
     billing: 'none',
     available: true,
-    description: 'The whole app, free and open source under the AGPL.',
+    description: 'The whole app is free and open source under the AGPL.',
     includes: [
       'Encrypted vault',
       `${IMPORT_FORMAT_COUNT} import formats`,
@@ -28,7 +28,7 @@ export const fallbackPlans: ProductPlan[] = [
     annualPrice: SYNC_PRICES.annual.toFixed(2),
     billing: 'monthly',
     available: false,
-    description: 'Optional hosted sync between your own approved devices. Not available until its security review passes.',
+    description: 'We will host Sync between the devices you approve once it passes its security review.',
     includes: [
       'Approved devices',
       'End-to-end encryption',
@@ -68,7 +68,7 @@ export function productFacts(status: ProductStatus | null): ProductFacts {
   const syncAvailable = status?.cloudSyncAvailable === true
   const syncAvailabilitySentence = syncAvailable
     ? 'Sesame Sync is available for accounts that have it enabled.'
-    : 'Sesame Sync is not available yet. It stays disabled until its security review and release checks pass.'
+    : 'Sesame Sync is not available yet, and it stays off until its security review and release checks pass.'
 
   if (status?.publicDownload) {
     return {
@@ -114,11 +114,11 @@ export function pricingFaqEntries(syncAvailable: boolean): PricingFaqEntry[] {
     {
       question: 'What is free?',
       answer:
-        'The application, all of it: vault access, imports, 2FA, security checks, Windows Hello and PIN unlock, backup, restore, export, and recovery. It is AGPL software.',
+        'The whole app is free, including vault access, imports, 2FA, security checks, Windows Hello and PIN unlock, backup, restore, export, and recovery. It is open source under the AGPL.',
     },
     {
       question: 'Then what is the subscription for?',
-      answer: `Running hosted sync costs money to operate, so Sesame Sync is planned at ${syncPricePhrase('symbol')}. It syncs ciphertext between your own approved devices.`,
+      answer: `Running hosted sync costs money to operate, so Sesame Sync is planned at ${syncPricePhrase('symbol')}. It moves only encrypted data between the devices you approve.`,
     },
     {
       question: 'Can I sync without paying?',
@@ -130,7 +130,7 @@ export function pricingFaqEntries(syncAvailable: boolean): PricingFaqEntry[] {
     {
       question: 'What happens if I stop paying, or Sesame stops?',
       answer:
-        'Your vault is a local file you already have. It opens with your master password, recovery kit, PIN, or Windows Hello.',
+        'Nothing changes for your vault. It is a file you already have, and it still opens with your master password, recovery kit, PIN, or Windows Hello.',
     },
   ]
 }

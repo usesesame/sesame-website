@@ -50,9 +50,12 @@ should use fictional intercepted API data, and cover the site working with
 every request aborted and no public page reading a route that carries a
 session.
 
-The home page shows commit counts from `src/lib/project-activity.json`. Run
-`npm run activity:refresh` before a release: `site:release:prepare` refuses
-to stage a release when that file is more than 14 days old.
+The home page reads live commit counts from the API's `/v1/project/activity`
+route, which refreshes them from GitHub every 15 minutes. Without an API, or
+when that request fails, it shows the counts in
+`src/lib/project-activity.json`. Run `npm run activity:refresh` before a
+release, because `site:release:prepare` refuses to stage a release when that
+file is more than 14 days old.
 
 The `static-only` CI job is the exit gate for a static site: it builds with no
 API and no account portal at all, and fails if the shipped
