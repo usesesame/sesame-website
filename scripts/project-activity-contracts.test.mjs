@@ -37,3 +37,35 @@ test('the checked-in activity file has the shape the release gate reads', async 
   const problem = activityAgeProblem(activity, new Date(activity.generatedAt))
   assert.equal(problem, '')
 })
+
+test('live activity from the API is parsed strictly', async () => {
+  const { parseProjectActivity } = await import('../src/lib/project-activity-parse.ts')
+  const live = { generatedAt: '2026-10-04T10:00:00Z', windowDays: 30, repositories: [{ name: 'sesame-desktop', pushedAt: '2026-10-04T09:00:00Z', recentCommits: 467 }] }
+  assert.deepEqual(parseProjectActivity(live), live)
+  const refused = [
+    null,
+    'text',
+    { ...live, generatedAt: 'soon' },
+    { ...live, windowDays: 0 },
+    { ...live, windowDays: 1.5 },
+    { ...live, repositories: [] },
+    { ...live, repositories: Array.from({ length: 21 }, () => live.repositories[0]) },
+    { ...live, repositories: [{ ...live.repositories[0], recentCommits: -1 }] },
+    { ...live, repositories: [{ ...live.repositories[0], recentCommits: '467' }] },
+    { ...live, repositories: [{ ...live.repositories[0], recentCommits: 1_000_001 }] },
+    { ...live, repositories: [{ ...live.repositories[0], name: '<script>' }] },
+    { ...live, repositories: [{ ...live.repositories[0], pushedAt: 'yesterday' }] },
+    { ...live, generatedAt: '2026-10-04T10:00:00' },
+    { ...live, repositories: [{ ...live.repositories[0], pushedAt: '2026-10-04T09:00:00' }] },
+  ]
+  for (const value of refused) assert.equal(parseProjectActivity(value), null, JSON.stringify(value))
+})
+
+test('the home page asks the API for live activity and keeps the checked-in counts as a fallback', async () => {
+  const home = await readFile(new URL('../src/pages/HomePage.svelte', import.meta.url), 'utf8')
+  const state = await readFile(new URL('../src/lib/project-activity.svelte.ts', import.meta.url), 'utf8')
+  assert.match(home, /void loadProjectActivity\(\)/)
+  assert.match(state, /readPublic\('\/v1\/project\/activity'\)/)
+  assert.match(state, /import snapshot from '\.\/project-activity\.json'/)
+  assert.match(state, /repositories\.every\(\(repository\) => names\.has\(repository\.name\)\)/, 'a partial live response must not replace the fallback counts')
+})

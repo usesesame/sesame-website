@@ -41,6 +41,21 @@
 
   const signInUrl = accountUrl('/login')
   const accountHomeUrl = accountUrl('/account')
+  const mainLinks: { href: string; key: RouteKey; label: string }[] = [
+    { href: '/', key: 'home', label: 'Product' },
+    { href: '/security', key: 'security', label: 'Security' },
+    { href: '/pricing', key: 'pricing', label: 'Pricing' },
+    { href: '/roadmap', key: 'roadmap', label: 'Roadmap' },
+    { href: '/releases', key: 'releases', label: 'Releases' },
+    { href: '/support', key: 'support', label: 'Support' },
+  ]
+  let menuOpen = $state(false)
+  let menuSummary: HTMLElement | undefined = $state()
+  function closeMenuOnEscape(event: KeyboardEvent) {
+    if (event.key !== 'Escape' || !menuOpen) return
+    menuOpen = false
+    menuSummary?.focus()
+  }
 
   let headerScrolled: boolean | null = $state(null)
   $effect(() => watchScroll((scrolled) => { headerScrolled = scrolled }))
@@ -112,6 +127,8 @@
   <meta name="twitter:image" content={`${siteOrigin}/og-card.png`} />
 </svelte:head>
 
+<svelte:window onkeydown={closeMenuOnEscape} />
+
 <a class="skip-link" href="#top">Skip to content</a>
 
 <header class="site-header" data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
@@ -119,18 +136,27 @@
     <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
     <nav bind:this={navEl} aria-label="Main navigation" onpointerover={(event) => trackLinkTarget(event.target)} onpointerleave={() => settleIndicator()} onfocusin={(event) => trackLinkTarget(event.target)} onfocusout={() => settleIndicator()}>
       <span bind:this={indicatorEl} class="nav-indicator" class:instant={indicator.instant} aria-hidden="true" data-placed={indicator.placed ? '' : undefined}></span>
-      <a href="/" aria-current={route.key === 'home' ? 'page' : undefined}>Product</a>
-      <a href="/security" aria-current={route.key === 'security' ? 'page' : undefined}>Security</a>
-      <a href="/pricing" aria-current={route.key === 'pricing' ? 'page' : undefined}>Pricing</a>
-      <a href="/roadmap" aria-current={route.key === 'roadmap' ? 'page' : undefined}>Roadmap</a>
-      <a href="/releases" aria-current={route.key === 'releases' ? 'page' : undefined}>Releases</a>
-      <a href="/support" aria-current={route.key === 'support' ? 'page' : undefined}>Support</a>
+      {#each mainLinks as link (link.href)}
+        <a href={link.href} aria-current={route.key === link.key ? 'page' : undefined}>{link.label}</a>
+      {/each}
     </nav>
     <div class="header-account-actions">
       <a class="header-github" href={sourceOrg} rel="noreferrer" aria-label="Sesame source on GitHub" title="Sesame source on GitHub">
         <svg viewBox="0 0 16 16" width="19" height="19" aria-hidden="true" focusable="false" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z" /></svg>
       </a>
       {#if signInUrl}<a class="button button-sm button-soft" href={signInUrl}>Sign in</a>{/if}
+      <details class="mobile-menu" bind:open={menuOpen}>
+        <summary bind:this={menuSummary}>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">{#if menuOpen}<path d="M6 6l12 12M18 6 6 18" />{:else}<path d="M4 7h16M4 12h16M4 17h16" />{/if}</svg>
+          <span>Menu</span>
+        </summary>
+        <nav class="mobile-menu-panel" aria-label="Menu">
+          {#each mainLinks as link (link.href)}
+            <a href={link.href} aria-current={route.key === link.key ? 'page' : undefined}>{link.label}</a>
+          {/each}
+          {#if signInUrl}<a class="button button-soft" href={signInUrl}>Sign in</a>{/if}
+        </nav>
+      </details>
     </div>
   </div>
 </header>
@@ -143,7 +169,7 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
-      <p>Passwords, 2FA, and recovery details for Windows and Linux. Open source under the AGPL.</p>
+      <p>Sesame keeps your passwords, 2FA codes, and recovery details on Windows and Linux, and it is open source under the AGPL.</p>
       <p class="footer-status"><span class="dot"></span>{facts.betaLabel} · {facts.platformSummary}</p>
     </div>
     <nav class="footer-col" aria-label="Product">
