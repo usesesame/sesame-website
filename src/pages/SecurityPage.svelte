@@ -28,7 +28,7 @@
       <ul class="short-version">
         <li><strong>Your passwords stay on your computer.</strong> <span>{facts.syncAvailable ? 'Sync sends only encrypted data the server cannot open, and you do not need an account.' : 'The website and the server never receive your vault, and you do not need an account.'}</span></li>
         <li><strong>Only you can open the vault.</strong> <span>It opens with your master password or your recovery kit. We cannot open it, and we cannot reset your password for you.</span></li>
-        <li><strong>Sensitive actions ask for your password again.</strong> <span>Showing, copying, or exporting a password and making a backup all need your master password, even while the vault is unlocked.</span></li>
+        <li><strong>Sensitive actions ask for your password again.</strong> <span>Showing or copying a password and exporting your vault, a backup, or your recovery kit all need your master password, even while the vault is unlocked.</span></li>
         <li><strong>The browser extension cannot fill on its own.</strong> <span>It holds no passwords and waits for you to approve each fill in the desktop app.</span></li>
         <li><strong>You can check the code.</strong> <span>Sesame is open source, and every download can be traced to the source code it was built from.</span></li>
       </ul>

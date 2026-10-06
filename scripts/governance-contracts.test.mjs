@@ -95,6 +95,22 @@ test('every dependency ecosystem this repository uses is updated', () => {
   }
 })
 
+test('CI audits the npm lockfile for high advisories with the dependencies installed from it', () => {
+  const body = read('.github', 'workflows', 'ci.yml')
+  assert.match(body, /^ {2}audit:$/m, 'the website CI has no audit job')
+  const job = body.slice(body.search(/^ {2}audit:$/m)).split(/^ {2}[a-z0-9_-]+:$/m)[1]
+  assert.match(job, /run: npm ci\b/, 'the audit job does not install from the lockfile')
+  assert.match(job, /run: npm audit --audit-level=high\s*$/m, 'the audit job does not fail on high advisories')
+  assert.doesNotMatch(job, /--omit=dev|--production/, 'the audit job skips development dependencies')
+})
+
+test('a new package version waits seven days before npm or Dependabot takes it', () => {
+  assert.match(read('.npmrc'), /^min-release-age=7$/m, 'npm does not wait for a release to age')
+  const dependabot = read('.github', 'dependabot.yml')
+  const cooldowns = [...dependabot.matchAll(/^[ \t]*default-days:[ \t]*(\d+)/gm)].map((match) => Number(match[1]))
+  assert.deepEqual(cooldowns, [7, 7], 'each Dependabot ecosystem should wait seven days')
+})
+
 test('the security policy tells a reporter where to send a vulnerability', () => {
   assert.ok(statSync(join(root, 'SECURITY.md')).isFile())
   const body = read('SECURITY.md')
