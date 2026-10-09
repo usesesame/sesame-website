@@ -104,6 +104,15 @@ test('CI audits the npm lockfile for high advisories with the dependencies insta
   assert.doesNotMatch(job, /--omit=dev|--production/, 'the audit job skips development dependencies')
 })
 
+test('every CI checkout drops its credentials before dependencies install', () => {
+  const body = read('.github', 'workflows', 'ci.yml')
+  const checkouts = body.split('uses: actions/checkout@').slice(1).map((rest) => rest.split(/\n\s*\n/)[0])
+  assert.ok(checkouts.length > 0, 'ci.yml has no checkout step')
+  for (const checkout of checkouts) {
+    assert.match(checkout, /persist-credentials: false/, checkout)
+  }
+})
+
 test('a new package version waits seven days before npm or Dependabot takes it', () => {
   assert.match(read('.npmrc'), /^min-release-age=7$/m, 'npm does not wait for a release to age')
   const dependabot = read('.github', 'dependabot.yml')
