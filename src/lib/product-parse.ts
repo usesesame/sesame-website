@@ -48,7 +48,23 @@ function isReleaseUrl(value: unknown): value is string {
 }
 
 function isSha256(value: unknown): value is string {
-  return isString(value) && /^[0-9a-f]{64}$/i.test(value)
+  return isString(value) && /^[0-9a-f]{64}$/.test(value)
+}
+
+const timestampPattern = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,9})?(?:Z|[+-]([01]\d|2[0-3]):([0-5]\d))$/
+const maxPublicationSkewMs = 86_400_000
+
+function isPublicationTimestamp(value: unknown, now: Date): value is string {
+  if (!isString(value) || value.length > 40) return false
+  const match = timestampPattern.exec(value)
+  if (!match) return false
+  const [year, month, day, hour, minute, second] = match.slice(1, 7).map(Number)
+  const calendar = new Date(Date.UTC(year, month - 1, day, hour, minute, second))
+  const sameFields = calendar.getUTCFullYear() === year && calendar.getUTCMonth() === month - 1 && calendar.getUTCDate() === day
+    && calendar.getUTCHours() === hour && calendar.getUTCMinutes() === minute && calendar.getUTCSeconds() === second
+  if (!sameFields) return false
+  const parsed = Date.parse(value)
+  return !Number.isNaN(parsed) && parsed <= now.getTime() + maxPublicationSkewMs
 }
 
 function isRegistrationMode(value: unknown): value is RegistrationMode {
@@ -123,7 +139,7 @@ export function parsePlans(value: unknown): ProductPlan[] | null {
 
 function parseArtifact(value: unknown): ReleaseArtifact | null {
   if (!isRecord(value)) return null
-  if (!isString(value.name) || !isString(value.sha256) || !isBoolean(value.signed)) return null
+  if (!isString(value.name) || !isSha256(value.sha256) || !isBoolean(value.signed)) return null
   if (!isReleaseUrl(value.url)) return null
   const format = oneOf(value.format, artifactFormats)
   if (format === null) return null
@@ -139,10 +155,23 @@ function parseArtifacts(value: unknown): ReleaseArtifact[] | undefined | null {
     if (!artifact) return null
     artifacts.push(artifact)
   }
+  if (new Set(artifacts.map((artifact) => artifact.name)).size !== artifacts.length) return null
   return artifacts
 }
 
-export function parseProductRelease(value: unknown): ProductRelease | null {
+export function isDownloadable(release: Pick<ProductRelease, 'available' | 'version' | 'url' | 'sha256' | 'publishedAt'> | null | undefined): boolean {
+  return Boolean(release?.available && release.version?.trim() && release.url && release.sha256 && release.publishedAt)
+}
+
+function hasPublishedFiles(release: Pick<ProductRelease, 'url' | 'sha256' | 'artifacts'>): boolean {
+  return release.url !== undefined || release.sha256 !== undefined || (release.artifacts?.length ?? 0) > 0
+}
+
+function meetsAvailabilityRules(release: ProductRelease): boolean {
+  return release.available ? isDownloadable(release) : !hasPublishedFiles(release)
+}
+
+export function parseProductRelease(value: unknown, now: Date = new Date()): ProductRelease | null {
   if (!isRecord(value)) return null
   if (!isString(value.channel) || !isString(value.platform) || !isString(value.message)) return null
   if (!isBoolean(value.available) || !isBoolean(value.signed)) return null
@@ -152,7 +181,7 @@ export function parseProductRelease(value: unknown): ProductRelease | null {
   if (url === null) return null
   const sha256 = optionalField(value, 'sha256', isSha256)
   if (sha256 === null) return null
-  const publishedAt = optionalField(value, 'publishedAt', isString)
+  const publishedAt = optionalField(value, 'publishedAt', (field): field is string => isPublicationTimestamp(field, now))
   if (publishedAt === null) return null
   const releaseNotesUrl = optionalField(value, 'releaseNotesUrl', isReleaseUrl)
   if (releaseNotesUrl === null) return null
@@ -166,7 +195,7 @@ export function parseProductRelease(value: unknown): ProductRelease | null {
   if (releaseNotes === null) return null
   const artifacts = parseArtifacts(value.artifacts)
   if (artifacts === null) return null
-  return {
+  const release: ProductRelease = {
     channel: value.channel,
     platform: value.platform,
     available: value.available,
@@ -183,4 +212,5 @@ export function parseProductRelease(value: unknown): ProductRelease | null {
     rollbackNotice,
     artifacts,
   }
+  return meetsAvailabilityRules(release) ? release : null
 }

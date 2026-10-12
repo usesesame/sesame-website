@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { IMPORT_FORMAT_COUNT } from '../src/lib/product-facts.ts'
-import { parseProductRelease, parseProductStatus } from '../src/lib/product-parse.ts'
+import { isDownloadable, parseProductRelease, parseProductStatus } from '../src/lib/product-parse.ts'
 import { notFoundRoute, routes } from '../src/lib/routes.ts'
 
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -52,8 +52,11 @@ for (const route of checked) {
   for (const claim of html.match(/\b\d+\s+(?:import|supported)\s+formats\b|\b(?:import|supported)\s+\d+\s+formats\b/gi) ?? []) {
     if (claim.match(/\d+/)[0] !== String(IMPORT_FORMAT_COUNT)) errors.push(`${route.path}: format claim "${claim}" disagrees with IMPORT_FORMAT_COUNT`)
   }
-  if (route.path === '/' && release?.version && !html.includes(`"softwareVersion":"${release.version}"`)) {
+  if (route.path === '/' && isDownloadable(release) && !html.includes(`"softwareVersion":"${release.version}"`)) {
     errors.push(`${route.path}: structured data version disagrees with latest-release.json`)
+  }
+  if (route.path === '/' && !isDownloadable(release) && html.includes('"softwareVersion"')) {
+    errors.push(`${route.path}: structured data names a version that latest-release.json does not publish`)
   }
 
   if (publicDownload && /invite-only/i.test(html)) errors.push(`${route.path}: invite-only claim while the public download is open`)

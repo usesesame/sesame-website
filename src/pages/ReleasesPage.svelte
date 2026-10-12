@@ -2,10 +2,11 @@
   import { onMount } from 'svelte'
   import { BETA_SUPPORT } from '../lib/product'
   import type { ProductRelease } from '../lib/product'
+  import { isDownloadable } from '../lib/product-parse'
   import { loadLatestRelease, productState } from '../lib/product-state.svelte'
 
   const channels = $derived([productState.release, productState.linuxRelease])
-  const anyAvailable = $derived(channels.some((release) => release?.available))
+  const anyAvailable = $derived(channels.some((release) => isDownloadable(release)))
   const linuxRelease = $derived(productState.linuxRelease)
   const linuxArtifacts = $derived(linuxRelease?.artifacts?.length ? orderLinuxArtifacts(linuxRelease.artifacts) : [])
 
@@ -71,11 +72,11 @@
         <div class="release-panel-title">
           <span class="dot"></span>
           <div>
-            <strong>{release?.version ? `Sesame ${release.version} for ${platformLabel(release.platform)}` : `No published build for ${platformLabel(release?.platform)}`}</strong>
+            <strong>{release?.available && release.version ? `Sesame ${release.version} for ${platformLabel(release.platform)}` : `No published build for ${platformLabel(release?.platform)}`}</strong>
             <small>{release?.message || 'Internal verification in progress'}</small>
           </div>
         </div>
-        {#if release?.available && release.url}
+        {#if release && isDownloadable(release) && release.url}
           {#if release.platform === 'linux' && linuxArtifacts.length > 1}
             <button class="button button-sm" type="button" bind:this={linuxTrigger} onclick={openLinuxPicker}>Download for Linux</button>
           {:else}

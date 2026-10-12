@@ -1,6 +1,7 @@
 import { getLatestLinuxRelease, getLatestWindowsRelease, getPlans, getProductStatus } from './product'
 import { fallbackPlans } from './product-facts'
 import { parseProductRelease, parseProductStatus } from './product-parse'
+import { refreshChannel } from './release-summary'
 import rawRelease from './latest-release.json'
 import rawLinuxRelease from './latest-release-linux.json'
 import rawStatus from './product-status.json'
@@ -10,6 +11,7 @@ export const productState = $state({
   release: parseProductRelease(rawRelease),
   linuxRelease: parseProductRelease(rawLinuxRelease),
   plans: fallbackPlans,
+  releaseLive: { windows: false, linux: false },
 })
 
 export async function loadStatus(): Promise<void> {
@@ -23,8 +25,12 @@ export async function loadPlans(): Promise<void> {
 }
 
 export async function loadLatestRelease(): Promise<void> {
-  const windows = await getLatestWindowsRelease()
-  if (windows) productState.release = windows
-  const linux = await getLatestLinuxRelease()
-  if (linux) productState.linuxRelease = linux
+  const [windows, linux] = await Promise.all([
+    refreshChannel({ release: productState.release, live: productState.releaseLive.windows }, getLatestWindowsRelease),
+    refreshChannel({ release: productState.linuxRelease, live: productState.releaseLive.linux }, getLatestLinuxRelease),
+  ])
+  productState.release = windows.release
+  productState.releaseLive.windows = windows.live
+  productState.linuxRelease = linux.release
+  productState.releaseLive.linux = linux.live
 }

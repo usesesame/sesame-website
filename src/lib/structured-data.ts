@@ -1,9 +1,10 @@
 import { IMPORT_FORMAT_COUNT, pricingFaqEntries } from './product-facts'
-import { parseProductRelease, parseProductStatus } from './product-parse'
+import { isDownloadable, parseProductRelease, parseProductStatus } from './product-parse'
 import rawRelease from './latest-release.json'
 import rawStatus from './product-status.json'
 
 const release = parseProductRelease(rawRelease)
+const releasedVersion = isDownloadable(release) ? release?.version : undefined
 const status = parseProductStatus(rawStatus)
 
 export function ldJson(value: unknown): string {
@@ -38,7 +39,7 @@ export function homeGraph(origin: string, email: string) {
         applicationSubCategory: 'Password Manager',
         operatingSystem: 'Windows 10, Windows 11, Linux',
         url: `${origin}/`,
-        softwareVersion: release?.version ?? '0.0.0',
+        ...(releasedVersion ? { softwareVersion: releasedVersion } : {}),
         downloadUrl: 'https://github.com/usesesame/sesame-desktop/releases/latest',
         releaseNotes: 'https://github.com/usesesame/sesame-desktop/releases',
         description:

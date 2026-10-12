@@ -4,14 +4,20 @@
   import PlatformIcon from '../PlatformIcon.svelte'
   import ProductScreenshot from '../ProductScreenshot.svelte'
   import { IMPORT_FORMAT_COUNT, productFacts } from '../lib/product-facts'
-  import { loadStatus, productState } from '../lib/product-state.svelte'
+  import { loadLatestRelease, loadStatus, productState } from '../lib/product-state.svelte'
   import { countedLabel, lastPushLabel, loadProjectActivity, projectActivity } from '../lib/project-activity.svelte'
+  import { releaseSentence, summarizeRelease } from '../lib/release-summary'
   import { accountUrl } from '../lib/runtime-config'
   import { repositories, sourceOrg } from '../lib/source-links'
 
   const facts = $derived(productFacts(productState.status))
   const release = $derived(productState.release)
-  const releaseDate = $derived(release?.publishedAt ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(release.publishedAt)) : '')
+  const summaries = $derived([
+    summarizeRelease({ release: productState.release, live: productState.releaseLive.windows }, 'Windows'),
+    summarizeRelease({ release: productState.linuxRelease, live: productState.releaseLive.linux }, 'Linux'),
+  ].filter((summary) => summary !== null))
+  const releaseLine = $derived(releaseSentence(summaries))
+  const releaseNotesUrl = $derived(summaries.find((summary) => summary.releaseNotesUrl)?.releaseNotesUrl)
 
   const features = [
     {
@@ -64,6 +70,7 @@
 
   onMount(() => {
     void loadStatus()
+    void loadLatestRelease()
     void loadProjectActivity()
   })
 </script>
@@ -189,7 +196,7 @@
     <div class="download-copy">
       <p class="download-status"><span class="dot"></span>{facts.statusHeadline}</p>
       <h2>Try Sesame with test data</h2>
-      <p class="lede">{#if release?.version && releaseDate}Version {release.version} was released on {releaseDate}.{/if} Each release lists its SHA-256 checksums. Keep a separate backup of anything you cannot afford to lose.</p>
+      <p class="lede">{#if releaseLine}{releaseLine}{/if} Each release lists its SHA-256 checksums. Keep a separate backup of anything you cannot afford to lose.</p>
       <div class="hero-actions">
         {#if facts.publicDownload}
           <a class="button" href="/releases">Download for Windows and Linux</a>
@@ -198,7 +205,7 @@
         {:else}
           <a class="button button-soft" href="/releases">See release status</a>
         {/if}
-        {#if release?.releaseNotesUrl}<a class="text-link hero-text-link" href={release.releaseNotesUrl} rel="noreferrer">Read the release notes</a>{/if}
+        {#if releaseNotesUrl}<a class="text-link hero-text-link" href={releaseNotesUrl} rel="noreferrer">Read the release notes</a>{/if}
       </div>
     </div>
     <div class="download-panel">
