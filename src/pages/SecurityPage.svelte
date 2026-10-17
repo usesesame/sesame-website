@@ -130,7 +130,7 @@
         <div><dt>Opening a file</dt><dd>Sesame checks that a file is genuine before reading it, and refuses files that were tampered with, relabelled, or made by a newer version.</dd></div>
         <div><dt>Saving</dt><dd>Sesame writes a new file, checks it, and then swaps it in, so a failed save leaves the old vault as it was.</dd></div>
         <div><dt>Key in memory on Windows</dt><dd>The key stays out of the page file, and Sesame keeps it encrypted between uses.</dd></div>
-        <div><dt>Key in memory on Linux</dt><dd>The key stays out of swap, crash dumps, and child processes.</dd></div>
+        <div><dt>Key in memory on Linux</dt><dd>Sesame asks the system to keep the key out of swap, crash dumps, and child processes. If the system refuses, Sesame keeps the key in ordinary memory that it wipes on lock and writes a note to the diagnostics log.</dd></div>
         <div><dt>Breach check</dt><dd>Sesame sends only the first 5 characters of the password's SHA-1 hash to Have I Been Pwned.</dd></div>
         <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
       </dl>
