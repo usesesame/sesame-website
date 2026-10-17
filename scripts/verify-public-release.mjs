@@ -29,14 +29,21 @@ for (const snapshot of [windows, linux]) {
   }
 }
 
-const assets = new Map((release.assets ?? []).map((asset) => [asset.name, String(asset.digest ?? '').replace(/^sha256:/, '')]))
+const assets = new Map(
+  (release.assets ?? []).map((asset) => [
+    asset.name,
+    { url: asset.browser_download_url, sha256: String(asset.digest ?? '').replace(/^sha256:/, '') },
+  ]),
+)
 const published = [
-  ...(windows.url ? [{ name: windows.url.split('/').pop(), sha256: windows.sha256 }] : []),
-  ...(linux.artifacts ?? []).map((artifact) => ({ name: artifact.name, sha256: artifact.sha256 })),
+  ...(windows.url ? [{ name: windows.url.split('/').pop(), url: windows.url, sha256: windows.sha256 }] : []),
+  ...(linux.artifacts ?? []).map((artifact) => ({ name: artifact.name, url: artifact.url, sha256: artifact.sha256 })),
 ]
-for (const { name, sha256 } of published) {
-  if (!assets.has(name)) errors.push(`${name} is not an asset of ${release.tag_name}`)
-  else if (assets.get(name) !== sha256) errors.push(`${name} differs from the digest GitHub reports`)
+for (const { name, url, sha256 } of published) {
+  const asset = assets.get(name)
+  if (!asset) errors.push(`${name} is not an asset of ${release.tag_name}`)
+  else if (asset.sha256 !== sha256) errors.push(`${name} differs from the digest GitHub reports`)
+  else if (asset.url !== url) errors.push(`${name} differs from the download URL GitHub reports`)
 }
 
 const page = await fetch(`${origin}/releases`, { signal: AbortSignal.timeout(30_000) })
@@ -44,8 +51,9 @@ if (!page.ok) errors.push(`${origin}/releases returned ${page.status}`)
 else {
   const html = await page.text()
   if (!html.includes(`v${version}`) && !html.includes(version)) errors.push(`${origin}/releases does not mention ${version}`)
-  for (const { sha256 } of published) {
+  for (const { name, url, sha256 } of published) {
     if (!html.includes(sha256)) errors.push(`${origin}/releases is missing the digest ${sha256.slice(0, 12)}`)
+    if (!html.includes(url)) errors.push(`${origin}/releases does not link ${name} to ${url}`)
   }
 }
 
