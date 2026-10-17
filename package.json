@@ -14,6 +14,7 @@
         "activity:refresh": "node scripts/fetch-project-activity.mjs",
         "status:refresh": "node scripts/fetch-product-status.mjs",
         "seo:submit": "node scripts/submit-indexnow.mjs",
+        "release:verify-public": "node scripts/verify-public-release.mjs",
         "site:release:prepare": "node scripts/prepare-site-release.mjs",
         "site:release:deploy": "node scripts/deploy-site-release.mjs",
         "sync:contract": "node --test scripts/sync-status-contracts.test.mjs",
