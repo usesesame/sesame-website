@@ -2,17 +2,17 @@
   "channel": "beta",
   "platform": "windows",
   "available": true,
-  "version": "0.3.0",
-  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.3.0/Sesame_0.3.0_x64-setup.exe",
-  "sha256": "90d76f3acbfe65415c355478bf4c3e1ae6682d668aee30e4d010ce94abec6f52",
+  "version": "0.4.1",
+  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.4.1/Sesame_0.4.1_x64-setup.exe",
+  "sha256": "1b1d0c73d1e0db87ccd26278cc67aa9718f446a1b4b7e0c8de9b78fae379b8f1",
   "signed": true,
   "message": "This build has a verified Tauri updater signature.",
-  "publishedAt": "2026-10-04T22:12:41Z",
+  "publishedAt": "2026-10-18T14:13:20Z",
   "supportedWindows": [
     "Windows 10",
     "Windows 11"
   ],
-  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.3.0",
+  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.4.1",
   "signingKeyId": "updater-v1",
   "rollbackNotice": "Restoring an older build after this release is a binary rollback only; it does not lower the vault format. The older build may refuse a vault this release has resealed. Keep the pre-upgrade backup and the recorded compatibility decision, and restore that backup or run the recovery path before rolling back."
 }
