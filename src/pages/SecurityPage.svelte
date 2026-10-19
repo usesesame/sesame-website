@@ -1,14 +1,21 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import { extensionState } from '../lib/extension.svelte'
   import { productFacts } from '../lib/product-facts'
-  import { productState } from '../lib/product-state.svelte'
+  import { loadExtensions, productState } from '../lib/product-state.svelte'
   import { licenceUrl, securityPolicyUrl } from '../lib/source-links'
 
   const facts = $derived(productFacts(productState.status))
+  const extension = $derived(extensionState())
+
+  onMount(() => {
+    void loadExtensions()
+  })
 </script>
 
 <section class="page-hero">
   <h1>Your vault stays on your computer</h1>
-  <p class="intro">Sesame keeps your passwords in one encrypted file on your computer. Only the desktop app can open it, and only with your master password. This page explains what that protects, what it cannot protect, and what is still unfinished.</p>
+  <p class="intro">Sesame keeps your passwords in one encrypted file on your computer. Only the desktop app can open it, and only with your master password.</p>
 </section>
 
 <section class="section document-section">
@@ -26,10 +33,10 @@
     <div id="short">
       <h2>The short version</h2>
       <ul class="short-version">
-        <li><strong>Your passwords stay on your computer.</strong> <span>{facts.syncAvailable ? 'Sync sends only encrypted data the server cannot open, and you do not need an account.' : 'The website and the server never receive your vault, and you do not need an account.'}</span></li>
+        <li><strong>Your passwords stay on your computer.</strong> <span>{facts.syncAvailable ? 'Sync is off until you turn it on, and then it sends only encrypted data that the server cannot open. You do not need an account.' : 'The Sesame website never receives your vault. Sync is off until you turn it on, and then it sends only encrypted data to a server you run. You do not need an account.'}</span></li>
         <li><strong>Only you can open the vault.</strong> <span>It opens with your master password or your recovery kit. We cannot open it, and we cannot reset your password for you.</span></li>
-        <li><strong>Sensitive actions ask for your password again.</strong> <span>Showing or copying a password and exporting your vault, a backup, or your recovery kit all need your master password, even while the vault is unlocked.</span></li>
-        <li><strong>The browser extension cannot fill on its own.</strong> <span>It holds no passwords and waits for you to approve each fill in the desktop app.</span></li>
+        <li><strong>Sensitive actions ask for your password again.</strong> <span>Showing or copying a password, card number, security code, Wi-Fi password, SSH key, or licence key, and exporting your vault, a backup, or your recovery kit, all need your master password, even while the vault is unlocked.</span></li>
+        <li><strong>The browser extension cannot fill on its own.</strong> <span>It stores no passwords and waits for you to approve each fill in the desktop app.</span></li>
         <li><strong>You can check the code.</strong> <span>Sesame is open source, and every download can be traced to the source code it was built from.</span></li>
       </ul>
     </div>
@@ -39,8 +46,9 @@
       <p>Sesame has three parts. Only the desktop app reads your vault. You can create, unlock, import, back up, and restore it without an account or an internet connection.</p>
       <div class="security-map">
         <div class="map-outer">
-          <p><strong>Website and server</strong><span>They publish releases and run optional accounts, and they never receive your vault.</span></p>
-          <p><strong>Browser extension</strong><span>It holds no passwords and asks the app each time it fills one.</span></p>
+          <p><strong>Website and account service</strong><span>They publish releases and run optional accounts, and they never receive your vault.</span></p>
+          <p><strong>Your own server</strong><span>If you turn Sync on, it holds an encrypted copy of your vault that it cannot read.</span></p>
+          <p><strong>Browser extension</strong><span>It stores no passwords and asks the app each time it fills one.</span></p>
         </div>
         <div class="card map-app">
           <strong>Sesame desktop app</strong>
@@ -87,15 +95,15 @@
           </div>
         </section>
         <section>
-          <h3>Our server is broken into</h3>
+          <h3>A server is broken into</h3>
           <div>
-            <p>{facts.syncAvailable ? 'The server holds only encrypted data it cannot open.' : 'The server never has your vault.'} If you made an account, the server holds your email, a password hash, and your sessions, and none of that can open a vault.</p>
+            <p>{facts.syncAvailable ? 'A Sync server holds only encrypted data it cannot open.' : 'The Sesame website never has your vault. A server you run for Sync holds only encrypted data it cannot read, and your desktops check signed history before they accept a change.'} If you made an account, the Sesame website holds your email, a password hash, your sessions, your licence records, your linked desktops, your passkeys, your support requests, and a record of security events, and none of that can open a vault.</p>
           </div>
         </section>
         <section>
           <h3>Someone tampers with a download</h3>
           <div>
-            <p>Every installer is built in public on GitHub. Its Sigstore record names the exact source commit, and the releases page lists a checksum for every file. The app installs an update only when it carries Sesame's signature.</p>
+            <p>Every installer is built in public on GitHub. Its Sigstore record names the exact source commit, and the releases page lists a checksum for every installer and package. The app installs an update only when it carries Sesame's signature.</p>
           </div>
         </section>
         <section>
@@ -114,10 +122,11 @@
       <ul>
         <li>Malware running on your computer can read your screen, record your keys, and read the app's memory while the vault is unlocked.</li>
         <li>Malware in your browser can pretend to be the extension, so the approval in the Sesame window is the last check before a fill.</li>
-        <li>A PIN is a shortcut for this computer rather than a second lock. Software running as you can try PINs against a copy of the vault file, and each extra digit makes that ten times slower.</li>
-        <li>Changing your master password does not change backups, exports, or system backups you made before the change.</li>
+        <li>A PIN is a shortcut for this computer rather than a second lock. Software running as you can try PINs against a copy of the vault file, and each extra digit makes the search ten times larger.</li>
+        <li>Changing your master password tries to remove the local backups and says which remain, but it does not change exports or system backups you made before the change.</li>
         <li>Anyone who can write to the vault folder can put back an older copy of the vault, and Sesame does not notice that yet.</li>
         <li>Whoever learns your master password or recovery kit can open any copy of your vault, so keep the kit offline.</li>
+        <li>One-time codes, secure note contents, and notes still show without a password check, because the app treats them as less sensitive than the fields above.</li>
       </ul>
     </div>
 
@@ -131,6 +140,14 @@
         <div><dt>Saving</dt><dd>Sesame writes a new file, checks it, and then swaps it in, so a failed save leaves the old vault as it was.</dd></div>
         <div><dt>Key in memory on Windows</dt><dd>The key stays out of the page file, and Sesame keeps it encrypted between uses.</dd></div>
         <div><dt>Key in memory on Linux</dt><dd>Sesame asks the system to keep the key out of swap, crash dumps, and child processes. If the system refuses, Sesame keeps the key in ordinary memory that it wipes on lock and writes a note to the diagnostics log.</dd></div>
+        <div><dt>File size</dt><dd>Sesame pads the vault file before it encrypts it, so its size does not show how long an edit was.</dd></div>
+        <div><dt>Recovery kit</dt><dd>Replacing a recovery kit rotates the vault key, so the old kit no longer opens later versions of the vault.</dd></div>
+        <div><dt>Secret fields</dt><dd>Card numbers, security codes, Wi-Fi passwords, SSH keys, and licence keys stay in the app's native code, and copying one never passes it through the window.</dd></div>
+        <div><dt>Browser approval</dt><dd>An approval needs 750 milliseconds of focus in the Sesame window, so a click that lands as the window takes focus cannot approve a fill.</dd></div>
+        <div><dt>Window hardening</dt><dd>On Linux the web view runs in the WebKit sandbox, and Sesame refuses to run it when the sandbox cannot start. Both systems turn off the JavaScript JIT in the web view, and the windows cannot leave the app's own address.</dd></div>
+        <div><dt>Screen capture</dt><dd>On Windows, a copied secret stays out of clipboard history and Cloud Clipboard sync, and both windows stay out of screenshots, screen sharing, and Recall. A setting allows capture for support sessions.</dd></div>
+        <div><dt>Updates</dt><dd>Sesame checks an update download against its signed size, stops a stalled download, and follows redirects only to the release hosts.</dd></div>
+        <div><dt>Sync</dt><dd>Sync is off until you turn it on. Desktops check signed history before they accept changes, and a desktop warns you when a server offers an older copy or a second history that does not match.</dd></div>
         <div><dt>Breach check</dt><dd>Sesame sends only the first 5 characters of the password's SHA-1 hash to Have I Been Pwned.</dd></div>
         <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
       </dl>
@@ -140,10 +157,11 @@
       <h2>Not done yet</h2>
       <ul>
         <li>Sesame has not had an independent security audit yet, so please use test data for now.</li>
-        <li>The browser extension is not in the browser stores yet.</li>
+        <li>{#if extension.status === 'published'}The browser extension is in the Chrome Web Store only, and the Firefox version is experimental.{:else if extension.status === 'approved'}The Chrome Web Store has accepted the browser extension, and its listing is not live yet.{:else}The browser extension is not in a browser store yet.{/if}</li>
         <li>The Windows installer is not Authenticode signed yet, so SmartScreen warns on first run.</li>
         <li>Linux packages do not update themselves yet, so download new versions from the releases page.</li>
-        {#if !facts.syncAvailable}<li>Sync is turned off until it passes its own security review.</li>{/if}
+        <li>Sync has not had an independent security review{#if !facts.syncAvailable}, and the hosted Sesame service does not offer it yet{/if}.</li>
+        <li>The AppImage bundles Ubuntu 24.04 libraries that have open advisories with no fixed version yet, so prefer the deb or rpm package if your distribution has one.</li>
       </ul>
     </div>
 

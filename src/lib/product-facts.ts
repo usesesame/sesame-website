@@ -67,8 +67,8 @@ export function productFacts(status: ProductStatus | null): ProductFacts {
   const accountPurposes = status?.accountPurposes ?? []
   const syncAvailable = status?.cloudSyncAvailable === true
   const syncAvailabilitySentence = syncAvailable
-    ? 'Sesame Sync is available for accounts that have it enabled.'
-    : 'Sesame Sync is not available yet, and it stays off until its security review and release checks pass.'
+    ? 'Hosted Sync is available for accounts that have it enabled.'
+    : 'Hosted Sync is not available yet, but Sync itself is in the latest desktop release.'
 
   if (status?.publicDownload) {
     return {
@@ -82,7 +82,7 @@ export function productFacts(status: ProductStatus | null): ProductFacts {
       accountPurposes,
       supportDownloadAnswer: 'Yes. Sesame is a free download for Windows and Linux.',
       privacyControllerSentence:
-        'The public beta is open to download; its operator identity and postal contact will be published before the beta ends.',
+        'The public beta is open to download, and we will publish the operator identity and postal address before the beta ends.',
       termsAcceptSuffix: '',
     }
   }
@@ -98,7 +98,7 @@ export function productFacts(status: ProductStatus | null): ProductFacts {
     accountPurposes,
     supportDownloadAnswer: 'Not yet. Sesame is an invite-only beta.',
     privacyControllerSentence:
-      'The public beta remains invite-only; its operator identity and postal contact must be supplied in every invitation before the service is opened to the public.',
+      'The beta is invite-only, and every invitation includes the operator identity and postal address until the service opens to the public.',
     termsAcceptSuffix: ' or use an invite-only beta build',
   }
 }
@@ -118,13 +118,13 @@ export function pricingFaqEntries(syncAvailable: boolean): PricingFaqEntry[] {
     },
     {
       question: 'Then what is the subscription for?',
-      answer: `Running hosted sync costs money to operate, so Sesame Sync is planned at ${syncPricePhrase('symbol')}. It moves only encrypted data between the devices you approve.`,
+      answer: `Running hosted sync costs money to operate, so hosted Sesame Sync is planned at ${syncPricePhrase('symbol')}. It moves only encrypted data between the devices you approve.`,
     },
     {
       question: 'Can I sync without paying?',
       answer: syncAvailable
         ? 'Hosted Sync is available for accounts that have it enabled. The same service is in the server repository under the same licence if you would rather run it yourself.'
-        : 'The sync service is in the server repository under the same licence, so you can run it yourself. It is not enabled for anyone today, hosted or self-hosted, and it stays that way until its security review passes.',
+        : 'Yes. Sync is in the latest desktop release and is off until you turn it on, and the sync service is in the server repository under the same licence, so you can run it yourself. Hosted Sync is not available yet.',
       syncInterestLink: !syncAvailable,
     },
     {

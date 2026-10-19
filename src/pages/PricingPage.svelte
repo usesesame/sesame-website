@@ -25,7 +25,6 @@
 
 <section class="page-hero compact-page-hero">
   <h1>The app is free</h1>
-  <p class="intro">{facts.syncAvailable ? 'Hosted Sync is an optional subscription.' : 'Hosted Sync is planned as an optional subscription, but it is not available yet.'}</p>
 </section>
 <section class="section pricing-page">
   <div class="pricing-promise">
