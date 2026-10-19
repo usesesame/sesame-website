@@ -131,7 +131,7 @@
 
 <a class="skip-link" href="#top">Skip to content</a>
 
-<header class="site-header" data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
+<header class="site-header" data-intro={route.key === 'home' ? '' : undefined} data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
   <div class="site-header-inner">
     <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
     <nav bind:this={navEl} aria-label="Main navigation" onpointerover={(event) => trackLinkTarget(event.target)} onpointerleave={() => settleIndicator()} onfocusin={(event) => trackLinkTarget(event.target)} onfocusout={() => settleIndicator()}>
@@ -161,7 +161,7 @@
   </div>
 </header>
 
-<main id="top">
+<main id="top" tabindex="-1">
   <Page />
 </main>
 
@@ -203,7 +203,7 @@
   </div>
   <div class="footer-bottom">
     <span>© 2026 Sesame</span>
-    <span class="footer-privacy">AGPL-3.0-or-later · no trackers · no ads</span>
+    <span class="footer-privacy">Licensed under AGPL-3.0-or-later, with no trackers and no ads.</span>
     <span class="footer-domain">{siteHost}</span>
   </div>
 </footer>

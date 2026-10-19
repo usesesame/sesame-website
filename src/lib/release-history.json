@@ -1,0 +1,12 @@
+[
+  { "version": "0.4.1", "publishedAt": "2026-10-18", "summary": "Sync is in the release and works through a server you run, and secrets stay in native code behind a master password check." },
+  { "version": "0.3.0", "publishedAt": "2026-10-04", "summary": "Stricter PIN and master password rules, a way to request a new recovery kit if you lost yours but know your master password, and a security checkup that finds breached passwords." },
+  { "version": "0.2.5", "publishedAt": "2026-09-15", "summary": "Safer vault file saving, locked key memory on Linux, and a clear message when a save would pass the vault size limit." },
+  { "version": "0.2.4", "publishedAt": "2026-09-06", "summary": "Fixed an update from 0.1.1 through 0.2.2 that failed with a receipt mismatch." },
+  { "version": "0.2.3", "publishedAt": "2026-09-05", "summary": "Restoring a backup from an older release upgrades it, and a restore keeps a safety copy of your current vault." },
+  { "version": "0.2.2", "publishedAt": "2026-08-31", "summary": "The release process now carries Linux builds from start to finish." },
+  { "version": "0.2.1", "publishedAt": "2026-08-31", "summary": "Showing a saved password asks for the master password in a proper dialog." },
+  { "version": "0.2.0", "publishedAt": "2026-08-30", "summary": "Sesame runs on Linux, and writing a copy of your vault asks for your master password again." },
+  { "version": "0.1.1", "publishedAt": "2026-08-19", "summary": "Sesame can check for and install its own updates on Windows." },
+  { "version": "0.1.0", "publishedAt": "2026-08-18", "summary": "The first early access build, for Windows." }
+]

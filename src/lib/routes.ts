@@ -23,7 +23,7 @@ export const routes: Route[] = [
     path: '/',
     key: 'home',
     title: 'Sesame: Open Source Passwords, 2FA and Recovery',
-    description: 'An open source password vault for Windows and Linux. Import passwords, 2FA codes, and recovery details. Sesame never receives your vault. Free download.',
+    description: 'An open source password vault for Windows and Linux. Import passwords, 2FA codes, and recovery details. Sesame never receives your vault, and the app is free to download.',
     index: true,
   },
   {
@@ -37,7 +37,7 @@ export const routes: Route[] = [
     path: '/pricing',
     key: 'pricing',
     title: 'Pricing | Sesame',
-    description: 'The app is free. Sesame Sync is planned at EUR 1 monthly or EUR 10 yearly, or run it yourself.',
+    description: 'The app is free. Sesame Sync is planned at €1 a month or €10 a year, or run it yourself.',
     index: true,
   },
   {

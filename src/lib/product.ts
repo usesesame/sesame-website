@@ -1,4 +1,5 @@
 import { readPublic } from './api'
+import { parseExtensions, type PublicExtension } from './extension-parse'
 import { parsePlans, parseProductRelease, parseProductStatus } from './product-parse'
 
 export type ProductStatus = {
@@ -61,6 +62,10 @@ export function getProductStatus(): Promise<ProductStatus | null> {
 export async function getPlans(): Promise<ProductPlan[] | null> {
   const raw = await readPublic('/v1/plans')
   return raw === null ? null : parsePlans(raw)
+}
+
+export function getExtensions(): Promise<PublicExtension[] | null> {
+  return readPublic('/v1/extensions').then(parseExtensions)
 }
 
 export function getLatestWindowsRelease(): Promise<ProductRelease | null> {

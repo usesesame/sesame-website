@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { chromeExtensionState, parseExtensions } from '../src/lib/extension-parse.ts'
 import { IMPORT_FORMAT_COUNT } from '../src/lib/product-facts.ts'
 import { isDownloadable, parseProductRelease, parseProductStatus } from '../src/lib/product-parse.ts'
 import { notFoundRoute, routes } from '../src/lib/routes.ts'
@@ -24,6 +25,10 @@ if (!routes.some((route) => route.path === '/')) errors.push('route table has no
 
 const publicDownload = status?.publicDownload === true
 
+const extensions = parseExtensions(JSON.parse(await readFile(resolve(websiteRoot, 'src', 'lib', 'extension-status.json'), 'utf8')))
+if (!extensions) errors.push('src/lib/extension-status.json does not satisfy the extension status contract')
+const extensionState = chromeExtensionState(extensions ?? [])
+
 const claimsUpdaterSignature = (message) =>
   message.includes('updater signature') && !message.includes('no updater signature')
 
@@ -35,7 +40,7 @@ for (const [file, channel] of [['latest-release.json', release], ['latest-releas
     errors.push(`${file} reports signed=${channel.signed} while its message says otherwise`)
   }
 }
-if (!publicDownload && routes.some((route) => route.description.includes('Free download'))) {
+if (!publicDownload && routes.some((route) => /free (?:to )?download/i.test(route.description))) {
   errors.push('route descriptions promise a free download while the public download is closed')
 }
 
@@ -49,6 +54,8 @@ for (const route of checked) {
     errors.push(`${route.path}: no built page`)
     continue
   }
+  if (extensionState.status !== 'published' && html.includes('chromewebstore.google.com')) errors.push(`${route.path}: links the Chrome Web Store before the saved status says published`)
+  if (extensionState.status === 'published' && route.path === '/releases' && !html.includes(extensionState.listingUrl)) errors.push('/releases: the saved status says published but the page has no store link')
   for (const claim of html.match(/\b\d+\s+(?:import|supported)\s+formats\b|\b(?:import|supported)\s+\d+\s+formats\b/gi) ?? []) {
     if (claim.match(/\d+/)[0] !== String(IMPORT_FORMAT_COUNT)) errors.push(`${route.path}: format claim "${claim}" disagrees with IMPORT_FORMAT_COUNT`)
   }

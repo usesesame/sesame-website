@@ -1,9 +1,11 @@
-import { getLatestLinuxRelease, getLatestWindowsRelease, getPlans, getProductStatus } from './product'
+import { parseExtensions } from './extension-parse'
+import { getExtensions, getLatestLinuxRelease, getLatestWindowsRelease, getPlans, getProductStatus } from './product'
 import { fallbackPlans } from './product-facts'
 import { parseProductRelease, parseProductStatus } from './product-parse'
 import { refreshChannel } from './release-summary'
 import rawRelease from './latest-release.json'
 import rawLinuxRelease from './latest-release-linux.json'
+import rawExtensions from './extension-status.json'
 import rawStatus from './product-status.json'
 
 export const productState = $state({
@@ -11,12 +13,18 @@ export const productState = $state({
   release: parseProductRelease(rawRelease),
   linuxRelease: parseProductRelease(rawLinuxRelease),
   plans: fallbackPlans,
+  extensions: parseExtensions(rawExtensions) ?? [],
   releaseLive: { windows: false, linux: false },
 })
 
 export async function loadStatus(): Promise<void> {
   const value = await getProductStatus()
   if (value) productState.status = value
+}
+
+export async function loadExtensions(): Promise<void> {
+  const value = await getExtensions()
+  if (value) productState.extensions = value
 }
 
 export async function loadPlans(): Promise<void> {
