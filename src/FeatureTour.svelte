@@ -38,9 +38,11 @@
     const update = () => {
       queued = false
       if (!track || !window.matchMedia(pinned).matches) return
+      const range = scrollable()
+      if (!(range > 0)) return
       const offset = 68 - track.getBoundingClientRect().top
-      const progress = Math.min(0.9999, Math.max(0, offset / scrollable()))
-      active = Math.floor(progress * features.length)
+      const progress = Math.min(0.9999, Math.max(0, offset / range))
+      active = Math.min(features.length - 1, Math.floor(progress * features.length))
     }
     const onScroll = () => {
       if (queued) return
@@ -52,7 +54,7 @@
   })
 </script>
 
-<div class="tour-track" bind:this={track} style={`--steps: ${features.length}`}>
+<div class="tour-track" bind:this={track} data-steps={features.length}>
   <div class="tour-pin">
     <div class="tour">
       <div class="tour-side">

@@ -27,3 +27,20 @@ test('the releases page labels a platform whose version differs and keeps a Linu
   assert.match(releases, /group\.version !== latest\?\.version/)
   assert.match(releases, /else if \(linux && isDownloadable\(linux\) && linux\.url\)/)
 })
+
+test('no page markup carries an inline style, because the site policy allows styles from its own origin only', async () => {
+  const { readdir } = await import('node:fs/promises')
+  const walk = async (dir) => (await readdir(new URL(`../src/${dir}`, import.meta.url), { withFileTypes: true })).flatMap((entry) => entry.isDirectory() ? [] : [`${dir}/${entry.name}`])
+  const files = [...(await walk('.')), ...(await walk('pages'))].filter((file) => file.endsWith('.svelte'))
+  assert.ok(files.length > 5)
+  for (const file of files) {
+    const source = await read(...file.split('/'))
+    assert.doesNotMatch(source, /\sstyle=[{"']/, `${file} sets an inline style attribute`)
+  }
+})
+
+test('the feature tour never selects a feature outside its list', async () => {
+  const tour = await read('FeatureTour.svelte')
+  assert.match(tour, /if \(!\(range > 0\)\) return/)
+  assert.match(tour, /Math\.min\(features\.length - 1, Math\.floor\(progress \* features\.length\)\)/)
+})
