@@ -232,7 +232,7 @@
 </section>
 
 <nav class="slide-dots" aria-label="Sections">
-  <span class="slide-thumb" aria-hidden="true" style={`transform: translateY(${Math.max(0, slides.findIndex((slide) => slide.id === activeSlide)) * 24}px)`}></span>
+  <span class="slide-thumb" aria-hidden="true" data-index={Math.max(0, slides.findIndex((slide) => slide.id === activeSlide))}></span>
   {#each slides as slide (slide.id)}
     <a href={`#${slide.id}`} aria-label={slide.label} title={slide.label} aria-current={activeSlide === slide.id ? 'true' : undefined} onclick={(event) => glideToSlide(event, slide.id)}></a>
   {/each}
