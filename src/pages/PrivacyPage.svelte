@@ -9,7 +9,7 @@
 
 <section class="page-hero compact-page-hero legal-hero">
   <h1>Privacy policy</h1>
-  <p class="intro">Sesame keeps your vault on your computer and never receives it. This policy explains the limited data the website and account service handle, what the browser extension does, and your rights under the GDPR, UK GDPR, and similar laws.</p>
+  <p class="intro">Sesame keeps your vault on your computer and cannot read it. This policy explains the limited data the website and account service handle, what the browser extension does, and your rights under the GDPR, UK GDPR, and similar laws.</p>
   <p class="page-meta">Version {LEGAL_VERSION} · Updated {LEGAL_UPDATED} · Applies to {siteHost}, the Sesame website account, and the Sesame browser extension</p>
 </section>
 <section class="section document-section">
@@ -32,7 +32,7 @@
 
     <div id="data">
       <h2>What we process</h2>
-      <p>The desktop app keeps your vault entries, unlock material, imported exports, 2FA seeds, backup codes, and recovery notes on your device. The website and the account service are not built to receive them. If you turn on Sync, the desktop app sends an encrypted copy of your vault to a server you run, and Sesame never receives it.</p>
+      <p>The desktop app keeps your vault entries, unlock material, imported exports, 2FA seeds, backup codes, and recovery notes on your device. The website and the account service are not built to receive them. If you turn on Sync, the desktop app sends an encrypted copy of your vault to the sync server you choose. {facts.syncAvailable ? 'That is a server you run or Sesame\'s hosted Sync.' : 'That is a server you run, because hosted Sync is not available yet.'} The copy is encrypted on your device, so the server holds data it cannot read.</p>
       <p>If you create a website account, the account service handles this data:</p>
       <ul>
         <li>Your email address, whether it is verified, a salted password hash, and the Terms and Privacy Policy versions you accepted.</li>
@@ -65,7 +65,7 @@
         <li>Hetzner Online GmbH in Falkenstein, Germany, hosts the server, the account database, and the mail relay that sends account email. All account data is stored there, inside the EU.</li>
         <li>Cloudflare, Inc. in the United States provides DNS for the domain and forwards mail sent to published contact addresses, such as the privacy address, to an operator mailbox.</li>
       </ul>
-      <p>Account email goes out through Sesame's own mail relay on the Hetzner server, so no outside mail service sees verification, recovery, or email change messages.</p>
+      <p>Account email goes out through Sesame's own mail relay on the Hetzner server, so Sesame uses no outside outgoing mail service for verification, recovery, or email change messages.</p>
     </div>
 
     <div id="transfers">

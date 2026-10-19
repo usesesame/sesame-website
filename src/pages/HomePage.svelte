@@ -80,6 +80,10 @@
     event.preventDefault()
     history.replaceState(null, '', `#${id}`)
     glideTo(Math.max(0, target.getBoundingClientRect().top + window.scrollY - 68))
+    if (event.detail === 0) {
+      target.tabIndex = -1
+      target.focus({ preventScroll: true })
+    }
   }
 
   onMount(() => {

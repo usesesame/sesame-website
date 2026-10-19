@@ -23,14 +23,18 @@ export function glideTo(top: number) {
   frame = requestAnimationFrame(step)
 }
 
+function stopOnUnhandledKey(event: KeyboardEvent) {
+  if (!event.defaultPrevented) stopGlide()
+}
+
 export function stopGlideOnInput() {
   window.addEventListener('wheel', stopGlide, { passive: true })
   window.addEventListener('touchstart', stopGlide, { passive: true })
-  window.addEventListener('keydown', stopGlide)
+  window.addEventListener('keydown', stopOnUnhandledKey)
   return () => {
     stopGlide()
     window.removeEventListener('wheel', stopGlide)
     window.removeEventListener('touchstart', stopGlide)
-    window.removeEventListener('keydown', stopGlide)
+    window.removeEventListener('keydown', stopOnUnhandledKey)
   }
 }

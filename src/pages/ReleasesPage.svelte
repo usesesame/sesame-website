@@ -10,7 +10,7 @@
   import { releasesUrl } from '../lib/source-links'
 
   type FileRow = { key: string; label: string; detail: string; name: string; url: string; sha256: string }
-  type Group = { platform: 'windows' | 'linux'; title: string; files: FileRow[] }
+  type Group = { platform: 'windows' | 'linux'; title: string; version: string; files: FileRow[] }
 
   const extension = $derived(extensionState())
   const windows = $derived(productState.release)
@@ -73,6 +73,7 @@
       result.push({
         platform: 'windows',
         title: 'Windows',
+        version: windows.version ?? '',
         files: [{ key: 'windows', label: 'Installer', detail: 'Windows 10 and 11, 64-bit', name: fileName(windows.url), url: windows.url, sha256: windows.sha256 ?? '' }],
       })
     }
@@ -80,6 +81,7 @@
       result.push({
         platform: 'linux',
         title: 'Linux',
+        version: linux.version ?? '',
         files: orderLinuxArtifacts(linux.artifacts).map((artifact) => ({
           key: artifact.name,
           label: artifact.format === 'appimage' ? 'AppImage' : artifact.format.toUpperCase(),
@@ -88,6 +90,14 @@
           url: artifact.url,
           sha256: artifact.sha256,
         })),
+      })
+    }
+    else if (linux && isDownloadable(linux) && linux.url) {
+      result.push({
+        platform: 'linux',
+        title: 'Linux',
+        version: linux.version ?? '',
+        files: [{ key: 'linux', label: 'Package', detail: 'Linux, x86_64', name: fileName(linux.url), url: linux.url, sha256: linux.sha256 ?? '' }],
       })
     }
     return result
@@ -116,7 +126,7 @@
         <div class="release-group">
           <div class="release-group-head">
             <PlatformIcon name={group.platform} size={34} />
-            <h3>{group.title}</h3>
+            <h3>{group.title}{#if group.version && group.version !== latest?.version} {group.version}{/if}</h3>
           </div>
           <ul class="release-files">
             {#each group.files as file (file.key)}
