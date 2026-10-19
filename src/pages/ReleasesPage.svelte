@@ -1,22 +1,53 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { BETA_SUPPORT } from '../lib/product'
+  import { onMount, tick } from 'svelte'
+  import history from '../lib/release-history.json'
   import type { ProductRelease } from '../lib/product'
+  import PlatformIcon from '../PlatformIcon.svelte'
+  import { chromeExtensionNeeds, extensionState } from '../lib/extension.svelte'
   import { isDownloadable } from '../lib/product-parse'
-  import { loadLatestRelease, productState } from '../lib/product-state.svelte'
+  import { loadExtensions, loadLatestRelease, productState } from '../lib/product-state.svelte'
+  import { formatReleaseDate, summarizeRelease } from '../lib/release-summary'
+  import { releasesUrl } from '../lib/source-links'
 
-  const channels = $derived([productState.release, productState.linuxRelease])
-  const anyAvailable = $derived(channels.some((release) => isDownloadable(release)))
-  const linuxRelease = $derived(productState.linuxRelease)
-  const linuxArtifacts = $derived(linuxRelease?.artifacts?.length ? orderLinuxArtifacts(linuxRelease.artifacts) : [])
+  type FileRow = { key: string; label: string; detail: string; name: string; url: string; sha256: string }
+  type Group = { platform: 'windows' | 'linux'; title: string; files: FileRow[] }
 
-  let linuxDialog: HTMLDialogElement | undefined = $state()
-  let linuxTrigger: HTMLButtonElement | undefined = $state()
+  const extension = $derived(extensionState())
+  const windows = $derived(productState.release)
+  const linux = $derived(productState.linuxRelease)
+  const anyAvailable = $derived([windows, linux].some((release) => isDownloadable(release)))
+  const latest = $derived(summarizeRelease({ release: windows, live: productState.releaseLive.windows }, 'Windows') ?? summarizeRelease({ release: linux, live: productState.releaseLive.linux }, 'Linux'))
+  const releaseNotesUrl = $derived(latest?.releaseNotesUrl)
+  let dialog: HTMLDialogElement | undefined = $state()
+  let trigger: HTMLElement | null = null
+  let cancelButton: HTMLButtonElement | undefined = $state()
+  let pending = $state<{ platform: Group['platform']; file: FileRow } | null>(null)
+
+  async function askBeforeDownload(event: MouseEvent, platform: Group['platform'], file: FileRow) {
+    event.preventDefault()
+    trigger = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+    pending = { platform, file }
+    if (!dialog?.open) dialog?.showModal()
+    await tick()
+    cancelButton?.focus()
+  }
+
+  function closeDialog() {
+    dialog?.close()
+  }
+
+  function closeFromBackdrop(event: MouseEvent) {
+    if (event.target === dialog) closeDialog()
+  }
+
+  function restoreTrigger() {
+    trigger?.focus()
+  }
 
   const linuxPackageOrder = ['deb', 'rpm', 'appimage'] as const
 
-  function orderLinuxArtifacts(artifacts: NonNullable<ProductRelease['artifacts']>): NonNullable<ProductRelease['artifacts']> {
-    return [...artifacts].sort((first, second) => linuxPackageOrder.indexOf(first.format as 'deb') - linuxPackageOrder.indexOf(second.format as 'deb'))
+  function fileName(url: string): string {
+    return decodeURIComponent(url.split('/').pop() ?? url)
   }
 
   function linuxPackageDetail(format: string): string {
@@ -26,164 +57,139 @@
       case 'rpm':
         return 'Fedora 40 and newer, RHEL 9 with EPEL, Rocky, AlmaLinux, and derivatives'
       case 'appimage':
-        return 'Any current distribution; mark executable and run'
-      case 'nsis':
-        return 'Windows 10 and 11, x64'
+        return 'Any current distribution. Mark it executable and run it.'
       default:
         return format.toUpperCase()
     }
   }
 
-  function openLinuxPicker() {
-    if (!linuxDialog?.open) linuxDialog?.showModal()
+  function orderLinuxArtifacts(artifacts: NonNullable<ProductRelease['artifacts']>): NonNullable<ProductRelease['artifacts']> {
+    return [...artifacts].sort((first, second) => linuxPackageOrder.indexOf(first.format as 'deb') - linuxPackageOrder.indexOf(second.format as 'deb'))
   }
 
-  function closeLinuxPicker() {
-    linuxDialog?.close()
-  }
+  const groups = $derived.by((): Group[] => {
+    const result: Group[] = []
+    if (windows && isDownloadable(windows) && windows.url) {
+      result.push({
+        platform: 'windows',
+        title: 'Windows',
+        files: [{ key: 'windows', label: 'Installer', detail: 'Windows 10 and 11, 64-bit', name: fileName(windows.url), url: windows.url, sha256: windows.sha256 ?? '' }],
+      })
+    }
+    if (linux && isDownloadable(linux) && linux.artifacts?.length) {
+      result.push({
+        platform: 'linux',
+        title: 'Linux',
+        files: orderLinuxArtifacts(linux.artifacts).map((artifact) => ({
+          key: artifact.name,
+          label: artifact.format === 'appimage' ? 'AppImage' : artifact.format.toUpperCase(),
+          detail: linuxPackageDetail(artifact.format),
+          name: artifact.name,
+          url: artifact.url,
+          sha256: artifact.sha256,
+        })),
+      })
+    }
+    return result
+  })
 
-  function closeLinuxPickerFromBackdrop(event: MouseEvent) {
-    if (event.target === linuxDialog) closeLinuxPicker()
-  }
-
-  function restoreLinuxTrigger() {
-    linuxTrigger?.focus()
-  }
-
-  function platformLabel(platform: string | undefined): string {
-    return platform === 'linux' ? 'Linux' : 'Windows'
-  }
+  const earlier = $derived(history.filter((entry) => entry.version !== latest?.version))
 
   onMount(() => {
     void loadLatestRelease()
+    void loadExtensions()
   })
 </script>
 
 <section class="page-hero compact-page-hero">
-  <h1>Desktop builds</h1>
-  <p class="intro">Only releases listed here are official. Every installer ships with a published SHA-256 and Sigstore evidence tying it to the exact build, and the Windows installer also carries a Tauri updater signature.</p>
-  <p class="intro release-live-status">Live availability is at <a href="https://status.usesesame.app" rel="noreferrer">status.usesesame.app</a>.</p>
+  <h1>Releases</h1>
 </section>
 
 <section class="section release-section">
-  {#each channels as release (release?.platform ?? 'windows')}
-    <article class="card release-panel">
-      <header class="release-panel-head">
-        <div class="release-panel-title">
-          <span class="dot"></span>
-          <div>
-            <strong>{release?.available && release.version ? `Sesame ${release.version} for ${platformLabel(release.platform)}` : `No published build for ${platformLabel(release?.platform)}`}</strong>
-            <small>{release?.message || 'Internal verification in progress'}</small>
+  {#if anyAvailable && latest}
+    <div class="release-latest">
+      <p class="release-latest-label">Latest release</p>
+      <h2 class="release-version">Sesame {latest.version}</h2>
+      <p class="release-date">Released {latest.publishedOn}. {#if releaseNotesUrl}<a href={releaseNotesUrl} rel="noreferrer">Read the release notes</a>.{/if}</p>
+
+      {#each groups as group (group.platform)}
+        <div class="release-group">
+          <div class="release-group-head">
+            <PlatformIcon name={group.platform} size={34} />
+            <h3>{group.title}</h3>
           </div>
+          <ul class="release-files">
+            {#each group.files as file (file.key)}
+              <li>
+                <div class="release-file-main">
+                  <strong>{file.label}</strong>
+                  <span>{file.detail}</span>
+                </div>
+                <div class="release-file-hash">
+                  <span>{file.name}</span>
+                  <code>{file.sha256}</code>
+                </div>
+                <a class="button button-sm button-soft" href={file.url} onclick={(event) => askBeforeDownload(event, group.platform, file)}>Download</a>
+              </li>
+            {/each}
+          </ul>
         </div>
-        {#if release && isDownloadable(release) && release.url}
-          {#if release.platform === 'linux' && linuxArtifacts.length > 1}
-            <button class="button button-sm" type="button" bind:this={linuxTrigger} onclick={openLinuxPicker}>Download for Linux</button>
-          {:else}
-            <a class="button button-sm" href={release.url}>Download for {platformLabel(release.platform)}</a>
-          {/if}
-        {:else}
-          <span class="release-unavailable">No public artifact</span>
-        {/if}
-      </header>
-      {#if release?.available}
-        <div class="release-panel-grid">
-          <section>
-            <h2>{platformLabel(release.platform)} installers and hashes</h2>
-            {#if release.artifacts?.length}
-              <div class="artifact-list">
-                {#each release.artifacts as artifact (artifact.name)}
-                  <article>
-                    <div>
-                      <strong>{artifact.name}</strong>
-                      <span>{artifact.format.toUpperCase()} · {artifact.signed ? 'Tauri updater signature verified' : 'Sigstore evidence verified; no updater signature'}</span>
-                      <code>{artifact.sha256}</code>
-                    </div>
-                    <a class="button button-sm" href={artifact.url}>Download</a>
-                  </article>
-                {/each}
-              </div>
-            {:else if release.sha256}
-              <div class="release-checksum"><span>SHA-256</span><code>{release.sha256}</code></div>
-            {:else}
-              <p>Release metadata is incomplete, so downloads are paused.</p>
-            {/if}
-          </section>
-          <section>
-            <h2>Release notes</h2>
-            {#if release.releaseNotes?.length}
-              <ul>{#each release.releaseNotes as note (note)}<li>{note}</li>{/each}</ul>
-            {:else if release.releaseNotesUrl}
-              <p><a class="text-link" href={release.releaseNotesUrl}>Read the release notes</a></p>
-            {:else}
-              <p>No release notes were published for this build.</p>
-            {/if}
-          </section>
+      {/each}
+
+      <div class="release-group">
+        <div class="release-group-head">
+          <h3>Browser extension</h3>
         </div>
-        <footer class="rollback-notice"><strong>Rollback notice</strong><p>{release.rollbackNotice || 'No rollback notice is active for this release.'}</p></footer>
-      {/if}
-    </article>
-  {/each}
-  {#if linuxArtifacts.length}
-    <dialog
-      class="linux-picker-dialog"
-      bind:this={linuxDialog}
-      aria-label="Choose a Linux package"
-      onclick={closeLinuxPickerFromBackdrop}
-      onclose={restoreLinuxTrigger}
-    >
-      <div class="linux-picker-panel">
-        <div class="linux-picker-head">
-          <div>
-            <strong>Choose a Linux package</strong>
-            <span>Sesame {linuxRelease?.version} for x86_64 (amd64)</span>
-          </div>
-          <button class="linux-picker-close" type="button" aria-label="Close the Linux package picker" onclick={closeLinuxPicker}>Close</button>
-        </div>
-        <ul class="linux-picker-list">
-          {#each linuxArtifacts as artifact (artifact.name)}
-            <li>
-              <div>
-                <strong>{artifact.name}</strong>
-                <span>{linuxPackageDetail(artifact.format)}</span>
-                <code>{artifact.sha256}</code>
-                <small>{artifact.signed ? 'Tauri updater signature verified' : 'Sigstore evidence verified; no updater signature'}</small>
-              </div>
-              <a class="button button-sm" href={artifact.url}>Download</a>
-            </li>
-          {/each}
+        <ul class="release-files">
+          <li>
+            <div class="release-file-main">
+              <strong>Chrome</strong>
+              <span>{chromeExtensionNeeds}</span>
+            </div>
+            <div class="release-file-hash">
+              <span>{extension.status === 'published' ? 'Chrome Web Store' : extension.status === 'approved' ? 'Accepted by the Chrome Web Store' : 'Not in a browser store yet'}</span>
+              <small>{extension.status === 'published' ? 'Install it from the store listing.' : extension.status === 'approved' ? 'The listing goes live soon.' : 'You can build it from source.'}</small>
+            </div>
+            {#if extension.status === 'published'}<a class="button button-sm button-soft" href={extension.listingUrl} rel="noreferrer">Open the store</a>{:else}<span class="release-soon">{extension.status === 'approved' ? 'Coming soon' : 'Not yet'}</span>{/if}
+          </li>
         </ul>
-        <p class="linux-picker-note">Every package was built in public CI from the released tag and carries Sigstore evidence. Verify the SHA-256 after download.</p>
       </div>
-    </dialog>
-  {/if}
-  {#if !anyAvailable}
-    <div class="card release-requirements">
-      <h2>Nothing to download yet</h2>
-      <p>No desktop build has cleared the release gate yet. When one does, it appears here with its checksum and signature.</p>
+
+      <p class="release-note">Each file is built in public and carries Sigstore evidence. Windows on Arm is not supported.</p>
+    </div>
+  {:else}
+    <div class="release-latest">
+      <h2 class="release-version">Nothing to download yet</h2>
+      <p class="release-date">No desktop build has cleared the release gate yet.</p>
     </div>
   {/if}
-  <div class="release-info-grid">
-    <section class="card release-requirements compatibility-notes">
-      <h2>Beta compatibility</h2>
-      <dl>
-        {#each BETA_SUPPORT.platforms as platform (platform.name)}
-          <div><dt>{platform.name}</dt><dd>{platform.detail}</dd></div>
-        {/each}
-        <div><dt>Architecture</dt><dd>{BETA_SUPPORT.architectures.join(', ')}</dd></div>
-        <div><dt>Not supported</dt><dd>{BETA_SUPPORT.unsupported.join(', ')}</dd></div>
-      </dl>
-      <p>{BETA_SUPPORT.note}</p>
-    </section>
-    <section class="card release-requirements">
-      <h2>Release gate</h2>
-      <ol>
-        <li>The NSIS installer has a valid Tauri updater signature, and every installer carries Sigstore evidence for Sesame's exact protected tag workflow.</li>
-        <li>Published SHA-256 hashes match the tested files. Production releases also require Authenticode signing.</li>
-        <li>Clean profiles on a supported Windows version and on a current Linux distribution pass install, unlock, import, backup, restore, export, uninstall, and in-app upgrade checks.</li>
-        <li>Release-blocking security findings are resolved.</li>
-      </ol>
-    </section>
+
+  <div class="release-history">
+    <h2>Earlier releases</h2>
+    <ol>
+      {#each earlier as entry (entry.version)}
+        <li>
+          <time datetime={entry.publishedAt}>{formatReleaseDate(entry.publishedAt)}</time>
+          <div>
+            <strong>Sesame {entry.version}</strong>
+            <p>{entry.summary}</p>
+          </div>
+          <a href={`${releasesUrl}/tag/v${entry.version}`} rel="noreferrer">Release notes</a>
+        </li>
+      {/each}
+    </ol>
   </div>
-  <p class="release-warning">Beta installers carry no Authenticode signature, so Windows shows an unknown-publisher warning. Verify the published SHA-256 and Sigstore evidence instead.</p>
 </section>
+
+<dialog class="download-dialog" bind:this={dialog} aria-labelledby="download-dialog-title" onclick={closeFromBackdrop} onclose={restoreTrigger}>
+  {#if pending}
+    <div class="download-dialog-panel">
+      <h2 id="download-dialog-title">Back up your vault first</h2>
+      <p>An older build may refuse a vault this release has resealed, so keep a backup before you install. {#if pending.platform === 'windows'}The beta installer is not Authenticode signed, so Windows shows an unknown-publisher warning. {/if}Check the SHA-256 after you download.</p>
+      <div class="download-dialog-actions">
+        <button class="button button-soft" type="button" bind:this={cancelButton} onclick={closeDialog}>Cancel</button>
+        <a class="button" href={pending.file.url} onclick={closeDialog}>Download</a>
+      </div>
+    </div>
+  {/if}
+</dialog>

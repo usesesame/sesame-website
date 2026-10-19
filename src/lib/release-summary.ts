@@ -50,3 +50,8 @@ export function releaseSentence(summaries: ReleaseSummary[]): string {
   if (summaries.every((summary) => summary.live)) return `${joined.charAt(0).toUpperCase()}${joined.slice(1)}.`
   return `The release list saved with this site shows that ${joined}.`
 }
+
+export function formatReleaseDate(isoDate: string): string {
+  const date = new Date(isoDate)
+  return Number.isNaN(date.getTime()) ? isoDate : dateFormat.format(date)
+}
