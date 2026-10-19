@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadEnv } from 'vite'
+import { parseExtensions } from '../src/lib/extension-parse.ts'
 import { parseProductRelease, parseProductStatus } from '../src/lib/product-parse.ts'
 
 // The site is prerendered, so whatever this writes is what a crawler and the
@@ -49,3 +50,16 @@ const linuxRelease = parseProductRelease(await linuxResponse.json())
 if (!linuxRelease) throw new Error(`${api}/v1/releases/latest returned a payload outside the canonical release contract.`)
 await writeFile(linuxTarget, `${JSON.stringify(linuxRelease, null, 2)}\n`, 'utf8')
 console.log(`Latest Linux release: ${linuxRelease.version ?? 'none'}, available=${linuxRelease.available}`)
+
+// The server answers 404 on an older API or an operator deployment. Keep the saved status then.
+const extensionTarget = resolve(websiteRoot, 'src', 'lib', 'extension-status.json')
+const extensionResponse = await fetch(`${api}/v1/extensions`, { signal: AbortSignal.timeout(30_000) })
+if (extensionResponse.status === 404) {
+  console.log('Extension status kept: the API does not serve /v1/extensions.')
+} else {
+  if (!extensionResponse.ok) throw new Error(`${api}/v1/extensions returned ${extensionResponse.status}`)
+  const extensions = parseExtensions(await extensionResponse.json())
+  if (!extensions) throw new Error(`${api}/v1/extensions returned a payload outside the extension status contract.`)
+  await writeFile(extensionTarget, `${JSON.stringify({ extensions }, null, 2)}\n`, 'utf8')
+  console.log(`Extension status refreshed: ${extensions.map((entry) => `${entry.store} ${entry.status}`).join(', ') || 'none'}`)
+}
