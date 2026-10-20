@@ -14,3 +14,5 @@ export const securityPolicyUrl = `${sourceOrg}/sesame-desktop/security/policy`
 export const selfHostingUrl = `${sourceOrg}/sesame-server/blob/main/SELF-HOSTING.md`
 
 export const releasesUrl = `${sourceOrg}/sesame-desktop/releases`
+
+export const extensionSourceUrl = `${sourceOrg}/sesame-browser-extension`

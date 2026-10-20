@@ -51,3 +51,15 @@ test('unknown stores, statuses, versions and shapes are rejected', () => {
 test('a published record outside Chrome is rejected until the site knows its store address', () => {
   assert.equal(parseExtensions({ extensions: [{ store: 'firefox', version: '0.1.0', status: 'published', listingUrl: 'https://addons.mozilla.org/x' }] }), null)
 })
+
+test('a published Chrome listing may come without a version', () => {
+  const parsed = parseExtensions({ extensions: [{ store: 'chrome', status: 'published', listingUrl: listing }] })
+  assert.deepEqual(parsed, [{ store: 'chrome', status: 'published', listingUrl: listing }])
+  assert.deepEqual(chromeExtensionState(parsed), { status: 'published', listingUrl: listing })
+})
+
+test('a version that is present must still be a full version number', () => {
+  for (const version of ['', '1', '0.1', 'v0.1.0', 1, null]) {
+    assert.equal(parseExtensions({ extensions: [{ store: 'chrome', version, status: 'published', listingUrl: listing }] }), null, String(version))
+  }
+})
