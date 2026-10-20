@@ -123,7 +123,7 @@ usesesame.app {
     Permissions-Policy "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security "max-age=63072000; includeSubDomains"
     Content-Security-Policy "default-src 'self'; script-src 'self' ${inlineHash}; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.test.invalid; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
-    Cache-Control "no-cache"
+    ?Cache-Control "no-cache"
     -Server
   }
   header /assets/* Cache-Control "public, max-age=31536000, immutable"

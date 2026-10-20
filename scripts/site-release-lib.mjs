@@ -325,7 +325,7 @@ export function parseCaddyfileHeaders(caddyfileText) {
         const entry = lines[index].trim()
         if (!entry || entry.startsWith('#') || entry.startsWith('-')) continue
         const parts = entry.match(/^(\S+)\s+"?([^"]*)"?$/)
-        if (parts) directives.set(parts[1].toLowerCase(), parts[2])
+        if (parts) directives.set(parts[1].replace(/^\?/, '').toLowerCase(), parts[2])
       }
     }
     const matcher = line.match(/^header\s+(\S+)\s+(\S+)\s+"([^"]*)"$/)
