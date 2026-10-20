@@ -91,6 +91,9 @@ export function assertHeaderPolicy(policy, { inlineScriptHashes }) {
   if (!hsts || !hsts.includes('includeSubDomains') || !/max-age=\d+/.test(hsts)) {
     throw new Error('The built _headers carries no usable Strict-Transport-Security.')
   }
+  if (policy.directives.get('cache-control') !== 'no-cache') {
+    throw new Error('The built _headers does not make pages revalidate with Cache-Control: no-cache.')
+  }
   const assetsRule = policy.rules.find((rule) => rule.path === '/assets/*' && rule.name === 'cache-control')
   if (!assetsRule || !assetsRule.value.includes('immutable') || !assetsRule.value.includes('max-age=31536000')) {
     throw new Error('The built _headers does not give /assets/* a long immutable cache.')
@@ -322,7 +325,7 @@ export function parseCaddyfileHeaders(caddyfileText) {
         const entry = lines[index].trim()
         if (!entry || entry.startsWith('#') || entry.startsWith('-')) continue
         const parts = entry.match(/^(\S+)\s+"?([^"]*)"?$/)
-        if (parts) directives.set(parts[1].toLowerCase(), parts[2])
+        if (parts) directives.set(parts[1].replace(/^\?/, '').toLowerCase(), parts[2])
       }
     }
     const matcher = line.match(/^header\s+(\S+)\s+(\S+)\s+"([^"]*)"$/)
