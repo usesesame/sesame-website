@@ -7,7 +7,7 @@
   import { isDownloadable } from '../lib/product-parse'
   import { loadExtensions, loadLatestRelease, productState } from '../lib/product-state.svelte'
   import { formatReleaseDate, summarizeRelease } from '../lib/release-summary'
-  import { releasesUrl } from '../lib/source-links'
+  import { extensionSourceUrl, releasesUrl } from '../lib/source-links'
 
   type FileRow = { key: string; label: string; detail: string; name: string; url: string; sha256: string }
   type Group = { platform: 'windows' | 'linux'; title: string; version: string; files: FileRow[] }
@@ -158,7 +158,7 @@
             </div>
             <div class="release-file-hash">
               <span>{extension.status === 'published' ? 'Chrome Web Store' : extension.status === 'approved' ? 'Accepted by the Chrome Web Store' : 'Not in a browser store yet'}</span>
-              <small>{extension.status === 'published' ? 'Install it from the store listing.' : extension.status === 'approved' ? 'The listing goes live soon.' : 'You can build it from source.'}</small>
+              <small>{extension.status === 'published' ? 'Install it from the store listing.' : extension.status === 'approved' ? 'The listing goes live soon.' : 'You can build it from source.'} The source is on <a href={extensionSourceUrl} rel="noreferrer">GitHub</a>.</small>
             </div>
             {#if extension.status === 'published'}<a class="button button-sm button-soft" href={extension.listingUrl} rel="noreferrer">Open the store</a>{:else}<span class="release-soon">{extension.status === 'approved' ? 'Coming soon' : 'Not yet'}</span>{/if}
           </li>

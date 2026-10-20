@@ -1,6 +1,6 @@
 export type PublicExtension = {
   store: 'chrome' | 'edge' | 'firefox'
-  version: string
+  version?: string
   status: 'approved' | 'published'
   listingUrl?: string
 }
@@ -18,11 +18,12 @@ function parseExtension(value: unknown): PublicExtension | null {
   if (!isRecord(value)) return null
   const { store, version, status, listingUrl } = value
   if (typeof store !== 'string' || !(stores as readonly string[]).includes(store)) return null
-  if (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version)) return null
+  if (version !== undefined && (typeof version !== 'string' || !/^\d+\.\d+\.\d+$/.test(version))) return null
   if (status !== 'approved' && status !== 'published') return null
-  if (status === 'approved') return listingUrl === undefined ? { store: store as PublicExtension['store'], version, status } : null
+  const versioned = version === undefined ? {} : { version }
+  if (status === 'approved') return listingUrl === undefined ? { store: store as PublicExtension['store'], ...versioned, status } : null
   if (store !== 'chrome' || typeof listingUrl !== 'string' || !chromeListing.test(listingUrl)) return null
-  return { store, version, status, listingUrl }
+  return { store, ...versioned, status, listingUrl }
 }
 
 export function parseExtensions(value: unknown): PublicExtension[] | null {

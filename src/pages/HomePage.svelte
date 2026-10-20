@@ -10,7 +10,7 @@
   import { countedLabel, loadProjectActivity, projectActivity } from '../lib/project-activity.svelte'
   import { releaseSentence, summarizeRelease } from '../lib/release-summary'
   import { accountUrl } from '../lib/runtime-config'
-  import { licenceUrl, sourceOrg } from '../lib/source-links'
+  import { extensionSourceUrl, licenceUrl, sourceOrg } from '../lib/source-links'
 
   const facts = $derived(productFacts(productState.status))
   const release = $derived(productState.release)
@@ -221,10 +221,17 @@
           <span><strong>Linux</strong><small>deb, rpm, and AppImage packages</small></span>
         </a>
       </li>
-      <li>
-        <a href={extension.status === 'published' ? extension.listingUrl : '/roadmap#browser'} rel={extension.status === 'published' ? 'noreferrer' : undefined} class="platform-plain">
-          <span><strong>Chrome extension</strong><small>{extension.status === 'published' ? 'Add it from the Chrome Web Store.' : extension.status === 'approved' ? 'Accepted by the Chrome Web Store and coming soon.' : 'Not in a browser store yet.'} {chromeExtensionNeeds}</small></span>
-        </a>
+      <li class="platform-split">
+        <div>
+          <span>
+            <strong>Chrome extension</strong>
+            <small>{extension.status === 'published' ? 'Add it from the Chrome Web Store.' : extension.status === 'approved' ? 'Accepted by the Chrome Web Store and coming soon.' : 'Not in a browser store yet.'} {chromeExtensionNeeds}</small>
+            <span class="platform-links">
+              {#if extension.status === 'published'}<a href={extension.listingUrl} rel="noreferrer">Chrome Web Store</a>{:else}<a href="/roadmap#browser">See its status</a>{/if}
+              <a href={extensionSourceUrl} rel="noreferrer">Source on GitHub</a>
+            </span>
+          </span>
+        </div>
       </li>
     </ul>
   </div>
