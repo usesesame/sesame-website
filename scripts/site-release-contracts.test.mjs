@@ -26,6 +26,7 @@ const headersText = (hash = inlineHash, api = '') => `/*
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Strict-Transport-Security: max-age=63072000; includeSubDomains
   Content-Security-Policy: default-src 'self'; script-src 'self'${hash ? ` ${hash}` : ''}; style-src 'self'; img-src 'self' data:; connect-src 'self'${api ? ` ${api}` : ''}; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Cache-Control: no-cache
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
@@ -72,7 +73,7 @@ test('a staged release is content-addressed, complete, and validates against its
   } finally { await rm(root, { recursive: true, force: true }) }
 })
 
-test('validation rejects broken links, placeholder residue, stale hashes, and unused connect-src origins', async () => {
+test('validation rejects broken links, placeholder residue, stale hashes, cacheable pages, and unused connect-src origins', async () => {
   const root = await mkdtemp(path.join(tmpdir(), 'site-release-bad-'))
   try {
     const cases = []
@@ -91,6 +92,10 @@ test('validation rejects broken links, placeholder residue, stale hashes, and un
     const hashless = path.join(root, 'hashless')
     await siteFixture(hashless, { headersHash: null })
     cases.push([await stageSiteRelease(hashless, path.join(root, 'releases')), /script-src hashes/])
+
+    const cacheable = path.join(root, 'cacheable')
+    await siteFixture(cacheable, { files: { '_headers': headersText(inlineHash).replace('  Cache-Control: no-cache\n', '') } })
+    cases.push([await stageSiteRelease(cacheable, path.join(root, 'releases')), /revalidate/])
 
     const unusedOrigin = path.join(root, 'unused-origin')
     await siteFixture(unusedOrigin, { api: 'https://api.usesesame.app' })
@@ -118,6 +123,7 @@ usesesame.app {
     Permissions-Policy "camera=(), microphone=(), geolocation=()"
     Strict-Transport-Security "max-age=63072000; includeSubDomains"
     Content-Security-Policy "default-src 'self'; script-src 'self' ${inlineHash}; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.test.invalid; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    Cache-Control "no-cache"
     -Server
   }
   header /assets/* Cache-Control "public, max-age=31536000, immutable"
