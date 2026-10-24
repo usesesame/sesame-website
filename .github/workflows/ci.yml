@@ -71,7 +71,7 @@ jobs:
       - run: npm ci
 
       - name: Audit npm dependencies
-        run: npm audit --audit-level=high
+        run: node scripts/audit-dependencies.mjs
 
   # The same site with both optional services configured, so the links and the
   # metadata refresh are exercised too.

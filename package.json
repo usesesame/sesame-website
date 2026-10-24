@@ -18,7 +18,7 @@
         "site:release:prepare": "node scripts/prepare-site-release.mjs",
         "site:release:deploy": "node scripts/deploy-site-release.mjs",
         "sync:contract": "node --test scripts/sync-status-contracts.test.mjs",
-        "governance:contract": "node --test scripts/governance-contracts.test.mjs",
+        "governance:contract": "node --test scripts/governance-contracts.test.mjs scripts/advisory-exceptions-contracts.test.mjs",
         "client:contract": "node --test scripts/public-client-contracts.test.mjs",
         "activity:contract": "node --test scripts/project-activity-contracts.test.mjs",
         "extension:contract": "node --test scripts/extension-contracts.test.mjs",
