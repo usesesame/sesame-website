@@ -100,7 +100,8 @@ test('CI audits the npm lockfile for high advisories with the dependencies insta
   assert.match(body, /^ {2}audit:$/m, 'the website CI has no audit job')
   const job = body.slice(body.search(/^ {2}audit:$/m)).split(/^ {2}[a-z0-9_-]+:$/m)[1]
   assert.match(job, /run: npm ci\b/, 'the audit job does not install from the lockfile')
-  assert.match(job, /run: npm audit --audit-level=high\s*$/m, 'the audit job does not fail on high advisories')
+  assert.match(job, /run: node scripts\/audit-dependencies\.mjs\s*$/m, 'the audit job does not fail on high advisories through the reviewed exceptions')
+  assert.doesNotMatch(job, /run: npm audit\b/, 'a bare npm audit ignores the reviewed exceptions')
   assert.doesNotMatch(job, /--omit=dev|--production/, 'the audit job skips development dependencies')
 })
 
@@ -110,6 +111,13 @@ test('every CI checkout drops its credentials before dependencies install', () =
   assert.ok(checkouts.length > 0, 'ci.yml has no checkout step')
   for (const checkout of checkouts) {
     assert.match(checkout, /persist-credentials: false/, checkout)
+  }
+})
+
+test('npm installs run no package scripts and fetch no git dependencies', () => {
+  const policy = read('.npmrc').split(/\r?\n/)
+  for (const line of ['ignore-scripts=true', 'allow-git=none']) {
+    assert.ok(policy.includes(line), `.npmrc no longer pins ${line}`)
   }
 })
 
