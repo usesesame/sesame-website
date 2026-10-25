@@ -124,9 +124,9 @@
         <li>Malware in your browser can pretend to be the extension, so the approval in the Sesame window is the last check before a fill.</li>
         <li>A PIN is a shortcut for this computer rather than a second lock. Software running as you can try PINs against a copy of the vault file, and each extra digit makes the search ten times larger.</li>
         <li>Changing your master password tries to remove the local backups and says which remain, but it does not change exports or system backups you made before the change.</li>
-        <li>Anyone who can write to the vault folder can put back an older copy of the vault, and Sesame does not notice that yet.</li>
+        <li>Anyone who can write to the vault folder can put back an older copy of the vault. Sesame keeps a record on this computer of the newest vault it has opened and asks you to confirm before it uses an older one, but a program running as you can delete that record.</li>
         <li>Whoever learns your master password or recovery kit can open any copy of your vault, so keep the kit offline.</li>
-        <li>One-time codes, secure note contents, and notes still show without a password check, because the app treats them as less sensitive than the fields above.</li>
+        <li>One-time codes, login notes, and secure notes that you have not locked still show without a password check, because the window has to display them. A locked secure note keeps its text out of the window until the check passes, and a vault with a locked note does not open in an older Sesame.</li>
       </ul>
     </div>
 
@@ -135,7 +135,7 @@
       <p>This part is for readers who want to check the design against the source code.</p>
       <dl class="hardening-facts">
         <div><dt>Encryption</dt><dd>XChaCha20-Poly1305</dd></div>
-        <div><dt>Master password to key</dt><dd>Sesame uses Argon2id with at least 64 MiB of memory and 3 passes, and refuses files with weaker settings.</dd></div>
+        <div><dt>Master password to key</dt><dd>New vaults and a changed master password use Argon2id with 128 MiB of memory and 3 passes. Sesame still opens older vaults that use at least 64 MiB, and refuses files with weaker settings.</dd></div>
         <div><dt>Opening a file</dt><dd>Sesame checks that a file is genuine before reading it, and refuses files that were tampered with, relabelled, or made by a newer version.</dd></div>
         <div><dt>Saving</dt><dd>Sesame writes a new file, checks it, and then swaps it in, so a failed save leaves the old vault as it was.</dd></div>
         <div><dt>Key in memory on Windows</dt><dd>The key stays out of the page file, and Sesame keeps it encrypted between uses.</dd></div>
@@ -148,7 +148,7 @@
         <div><dt>Screen capture</dt><dd>On Windows, a copied secret stays out of clipboard history and Cloud Clipboard sync, and both windows stay out of screenshots, screen sharing, and Recall. A setting allows capture for support sessions.</dd></div>
         <div><dt>Updates</dt><dd>Sesame checks an update download against its signed size, stops a stalled download, and follows redirects only to the release hosts.</dd></div>
         <div><dt>Sync</dt><dd>Sync is off until you turn it on. Desktops check signed history before they accept changes, and a desktop warns you when a server offers an older copy or a second history that does not match.</dd></div>
-        <div><dt>Moving the vault key</dt><dd>When Sync gives your vault key to a device that has the newer key, it adds a post-quantum key exchange, ML-KEM-768 combined with X25519. Once any device in your vault has the newer key, Sesame refuses a new device that offers only the older key unless you allow it for that pairing. Nobody independent has reviewed this exchange.</dd></div>
+        <div><dt>Moving the vault key</dt><dd>When Sync gives your vault key to a device that has the newer key, it adds a post-quantum key exchange, ML-KEM-768 combined with X25519. Once any device in your vault has the newer key, Sesame refuses a new device that offers only the older key unless you allow it for that pairing. Changing the vault key shows the new recovery kit first and waits until you confirm that you saved it. Nobody independent has reviewed this exchange.</dd></div>
         <div><dt>Breach check</dt><dd>Sesame sends only the first 5 characters of the password's SHA-1 hash to Have I Been Pwned.</dd></div>
         <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
       </dl>
