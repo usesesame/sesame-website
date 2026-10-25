@@ -157,7 +157,7 @@
     <div id="unfinished">
       <h2>Not done yet</h2>
       <ul>
-        <li>Sesame has not had an independent security audit yet, so please use test data for now.</li>
+        <li>No independent reviewer has audited Sesame yet, so keep an encrypted backup and move over a few accounts at a time.</li>
         <li>{#if extension.status === 'published'}The browser extension is in the Chrome Web Store only, and the Firefox version is experimental.{:else if extension.status === 'approved'}The Chrome Web Store has accepted the browser extension, and its listing is not live yet.{:else}The browser extension is not in a browser store yet.{/if}</li>
         <li>The Windows installer is not Authenticode signed yet, so SmartScreen warns on first run.</li>
         <li>Linux packages do not update themselves yet, so download new versions from the releases page.</li>

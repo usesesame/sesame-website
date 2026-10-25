@@ -134,7 +134,7 @@
       {/if}
       <a class="text-link hero-text-link" href="#product" onclick={(event) => glideToSlide(event, 'product')}>See how it works</a>
     </div>
-    <p class="hero-caveat">Beta software without an independent security audit. Use test data for now.</p>
+    <p class="hero-caveat">Beta software that no independent reviewer has audited. Keep an encrypted backup and start with a few accounts.</p>
   </div>
 
   <div class="hero-product-shot enter">
@@ -195,7 +195,7 @@
 <section id="download" class="home-section home-section-download">
   <div class="section home-section-inner download-layout">
     <div class="download-copy">
-      <h2 class="section-heading">Try Sesame with test data</h2>
+      <h2 class="section-heading">Try Sesame on a few accounts first</h2>
       <p class="lede">{#if releaseLine}{releaseLine}{/if} Each release lists its SHA-256 checksums. Sesame does not have {notShipped} yet.</p>
       <div class="hero-actions">
         {#if facts.publicDownload}
