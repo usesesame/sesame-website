@@ -53,11 +53,11 @@
   function linuxPackageDetail(format: string): string {
     switch (format) {
       case 'deb':
-        return 'Debian 13 and newer, Ubuntu 24.04 and newer, and derivatives'
+        return 'Install-checked on Ubuntu 24.04 in the release build'
       case 'rpm':
-        return 'Fedora 40 and newer, RHEL 9 with EPEL, Rocky, AlmaLinux, and derivatives'
+        return 'Install-checked on Ubuntu 24.04 in the release build'
       case 'appimage':
-        return 'Any current distribution. Mark it executable and run it.'
+        return 'Needs GLib 2.80 or newer. Mark it executable and run it.'
       default:
         return format.toUpperCase()
     }
