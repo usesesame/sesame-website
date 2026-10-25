@@ -148,6 +148,7 @@
         <div><dt>Screen capture</dt><dd>On Windows, a copied secret stays out of clipboard history and Cloud Clipboard sync, and both windows stay out of screenshots, screen sharing, and Recall. A setting allows capture for support sessions.</dd></div>
         <div><dt>Updates</dt><dd>Sesame checks an update download against its signed size, stops a stalled download, and follows redirects only to the release hosts.</dd></div>
         <div><dt>Sync</dt><dd>Sync is off until you turn it on. Desktops check signed history before they accept changes, and a desktop warns you when a server offers an older copy or a second history that does not match.</dd></div>
+        <div><dt>Moving the vault key</dt><dd>When Sync gives your vault key to another device, it adds a post-quantum key exchange, ML-KEM-768 combined with X25519, if that device has the newer key. Nobody independent has reviewed it. Sesame also refuses a new device that offers only the older key unless you allow it for that pairing.</dd></div>
         <div><dt>Breach check</dt><dd>Sesame sends only the first 5 characters of the password's SHA-1 hash to Have I Been Pwned.</dd></div>
         <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
       </dl>
@@ -161,6 +162,7 @@
         <li>The Windows installer is not Authenticode signed yet, so SmartScreen warns on first run.</li>
         <li>Linux packages do not update themselves yet, so download new versions from the releases page.</li>
         <li>Sync has not had an independent security review{#if !facts.syncAvailable}, and the hosted Sesame service does not offer it yet{/if}.</li>
+        <li>The post-quantum key exchange does not protect a vault key that was sent to a device before it had the newer key, and changing the vault key protects only what is written afterwards. Device signatures, the pairing code exchange, and the connection to the Sesame service are not post-quantum, and Sesame is not quantum safe.</li>
         <li>The AppImage bundles Ubuntu 24.04 libraries that have open advisories with no fixed version yet, so prefer the deb or rpm package if your distribution has one.</li>
       </ul>
     </div>
