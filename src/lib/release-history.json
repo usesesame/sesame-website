@@ -1,4 +1,5 @@
 [
+  { "version": "0.4.3", "publishedAt": "2026-10-20", "summary": "Browser fill works again from installed Linux builds, the AppImage sets up browser fill, and the AppImage uses your system's GLib." },
   { "version": "0.4.1", "publishedAt": "2026-10-18", "summary": "Sync is in the release and works through a server you run, and secrets stay in native code behind a master password check." },
   { "version": "0.3.0", "publishedAt": "2026-10-04", "summary": "Stricter PIN and master password rules, a way to request a new recovery kit if you lost yours but know your master password, and a security checkup that finds breached passwords." },
   { "version": "0.2.5", "publishedAt": "2026-09-15", "summary": "Safer vault file saving, locked key memory on Linux, and a clear message when a save would pass the vault size limit." },
