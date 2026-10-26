@@ -1,4 +1,5 @@
 [
+  { "version": "0.5.1", "publishedAt": "2026-10-26", "summary": "Sync shows changes from another device at once and stops writing new versions in turns, device names survive a vault key change, new logins suggest what you already use, and dialogs and quick access no longer flash or close early." },
   { "version": "0.4.3", "publishedAt": "2026-10-20", "summary": "Browser fill works again from installed Linux builds, the AppImage sets up browser fill, and the AppImage uses your system's GLib." },
   { "version": "0.4.1", "publishedAt": "2026-10-18", "summary": "Sync is in the release and works through a server you run, and secrets stay in native code behind a master password check." },
   { "version": "0.3.0", "publishedAt": "2026-10-04", "summary": "Stricter PIN and master password rules, a way to request a new recovery kit if you lost yours but know your master password, and a security checkup that finds breached passwords." },
