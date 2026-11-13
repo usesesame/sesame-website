@@ -1,4 +1,5 @@
 [
+  { "version": "0.5.2", "publishedAt": "2026-11-13", "summary": "Sesame decodes website icons itself, locks the vault when the window process stops, refuses downloads and permission requests, and drops 21 packages the AppImage never used." },
   { "version": "0.5.1", "publishedAt": "2026-10-26", "summary": "Sync shows changes from another device at once and stops writing new versions in turns, device names survive a vault key change, new logins suggest what you already use, and dialogs and quick access no longer flash or close early." },
   { "version": "0.4.3", "publishedAt": "2026-10-20", "summary": "Browser fill works again from installed Linux builds, the AppImage sets up browser fill, and the AppImage uses your system's GLib." },
   { "version": "0.4.1", "publishedAt": "2026-10-18", "summary": "Sync is in the release and works through a server you run, and secrets stay in native code behind a master password check." },
