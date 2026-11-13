@@ -2,25 +2,25 @@
   "channel": "beta",
   "platform": "windows",
   "available": true,
-  "version": "0.5.1",
-  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.1/Sesame_0.5.1_x64-setup.exe",
-  "sha256": "07bef877f865a0e15626ce48d9f30422ddaf15f8885d7758c66a8b6904080db1",
+  "version": "0.5.2",
+  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.2/Sesame_0.5.2_x64-setup.exe",
+  "sha256": "b673f46bebdd1675f9a793ebd967e760a52b1aa02d2d9a784bd18440e3222fef",
   "signed": true,
   "message": "This build has a verified Tauri updater signature.",
-  "publishedAt": "2026-10-26T16:40:22Z",
+  "publishedAt": "2026-11-13T18:15:07Z",
   "supportedWindows": [
     "Windows 10",
     "Windows 11"
   ],
-  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.5.1",
+  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.5.2",
   "signingKeyId": "updater-v1",
   "rollbackNotice": "",
   "artifacts": [
     {
-      "name": "Sesame_0.5.1_x64-setup.exe",
+      "name": "Sesame_0.5.2_x64-setup.exe",
       "format": "nsis",
-      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.1/Sesame_0.5.1_x64-setup.exe",
-      "sha256": "07bef877f865a0e15626ce48d9f30422ddaf15f8885d7758c66a8b6904080db1",
+      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.2/Sesame_0.5.2_x64-setup.exe",
+      "sha256": "b673f46bebdd1675f9a793ebd967e760a52b1aa02d2d9a784bd18440e3222fef",
       "signed": true
     }
   ]
