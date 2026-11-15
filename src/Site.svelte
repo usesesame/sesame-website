@@ -71,13 +71,21 @@
     indicatorEl.style.width = `${indicator.width}px`
   })
 
+  let indicatorShown = false
+
   function placeIndicator(link: HTMLElement, instant: boolean) {
-    indicator = { left: link.offsetLeft, width: link.offsetWidth, placed: true, instant }
+    indicator = { left: link.offsetLeft, width: link.offsetWidth, placed: true, instant: instant || !indicatorShown }
+    indicatorShown = true
   }
 
   function settleIndicator(instant = false) {
-    const link = navEl?.querySelector<HTMLAnchorElement>('a[aria-current="page"]') ?? navEl?.querySelector('a')
-    if (link instanceof HTMLElement) placeIndicator(link, instant)
+    const link = navEl?.querySelector<HTMLAnchorElement>('a[aria-current="page"]')
+    if (link instanceof HTMLElement) {
+      placeIndicator(link, instant)
+      return
+    }
+    indicator = { left: 0, width: 0, placed: false, instant: true }
+    indicatorShown = false
   }
 
   function trackLinkTarget(target: EventTarget | null) {
@@ -156,6 +164,7 @@
           {/each}
           {#if signInUrl}<a class="button button-soft" href={signInUrl}>Sign in</a>{/if}
         </nav>
+        {#if menuOpen}<button class="mobile-menu-scrim" type="button" tabindex="-1" aria-label="Close menu" onclick={() => { menuOpen = false }}></button>{/if}
       </details>
     </div>
   </div>
@@ -170,7 +179,7 @@
     <div class="footer-brand">
       <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
       <p>Sesame keeps your passwords, 2FA codes, and recovery details on Windows and Linux, and it is open source under the AGPL.</p>
-      <p class="footer-status"><span class="dot"></span>{facts.betaLabel} · {facts.platformSummary}</p>
+      <p class="footer-status">{facts.betaLabel} · {facts.platformSummary}</p>
     </div>
     <nav class="footer-col" aria-label="Product">
       <strong>Product</strong>

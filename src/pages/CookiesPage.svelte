@@ -12,7 +12,7 @@
     <strong>On this page</strong>
     <a href="#about">About cookies</a>
     <a href="#used">Cookies we use</a>
-    <a href="#consent">Consent &amp; legal basis</a>
+    <a href="#consent">Consent and choices</a>
     <a href="#manage">Managing cookies</a>
   </nav>
   <article class="document-copy">

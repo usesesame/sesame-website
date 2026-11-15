@@ -103,6 +103,10 @@
     return result
   })
 
+  function hashGroups(hash: string): string[] {
+    return hash.match(/.{1,8}/g) ?? []
+  }
+
   const earlier = $derived(history.filter((entry) => entry.version !== latest?.version))
 
   onMount(() => {
@@ -111,22 +115,27 @@
   })
 </script>
 
-<section class="page-hero compact-page-hero">
-  <h1>Releases</h1>
+<section class="page-hero compact-page-hero release-hero">
+  {#if anyAvailable && latest}
+    <h1>Sesame <span class="mono">{latest.version}</span></h1>
+    <p class="intro">This is the latest release, published on {latest.publishedOn}. {#if releaseNotesUrl}<a href={releaseNotesUrl} rel="noreferrer">Read the release notes</a>.{/if}</p>
+  {:else}
+    <h1>Releases</h1>
+    <p class="intro">No desktop build has cleared the release gate yet, so there is nothing to download.</p>
+  {/if}
 </section>
 
 <section class="section release-section">
   {#if anyAvailable && latest}
-    <div class="release-latest">
-      <p class="release-latest-label">Latest release</p>
-      <h2 class="release-version">Sesame {latest.version}</h2>
-      <p class="release-date">Released {latest.publishedOn}. {#if releaseNotesUrl}<a href={releaseNotesUrl} rel="noreferrer">Read the release notes</a>.{/if}</p>
+    <div class="release-downloads">
+      <h2>Downloads</h2>
+      <p class="release-note">Each desktop file is built in public and carries Sigstore evidence. Windows on Arm is not supported.</p>
 
       {#each groups as group (group.platform)}
         <div class="release-group">
           <div class="release-group-head">
             <PlatformIcon name={group.platform} size={34} />
-            <h3>{group.title}{#if group.version && group.version !== latest?.version} {group.version}{/if}</h3>
+            <h3>{group.title}{#if group.version && group.version !== latest?.version} <span class="mono">{group.version}</span>{/if}</h3>
           </div>
           <ul class="release-files">
             {#each group.files as file (file.key)}
@@ -137,7 +146,7 @@
                 </div>
                 <div class="release-file-hash">
                   <span>{file.name}</span>
-                  <code>{file.sha256}</code>
+                  <code>{#each hashGroups(file.sha256) as part, index (index)}{#if index > 0}<wbr />{/if}<span>{part}</span>{/each}</code>
                 </div>
                 <a class="button button-sm button-soft" href={file.url} onclick={(event) => askBeforeDownload(event, group.platform, file)}>Download</a>
               </li>
@@ -164,13 +173,6 @@
           </li>
         </ul>
       </div>
-
-      <p class="release-note">Each file is built in public and carries Sigstore evidence. Windows on Arm is not supported.</p>
-    </div>
-  {:else}
-    <div class="release-latest">
-      <h2 class="release-version">Nothing to download yet</h2>
-      <p class="release-date">No desktop build has cleared the release gate yet.</p>
     </div>
   {/if}
 
@@ -181,7 +183,7 @@
         <li>
           <time datetime={entry.publishedAt}>{formatReleaseDate(entry.publishedAt)}</time>
           <div>
-            <strong>Sesame {entry.version}</strong>
+            <strong>Sesame <span class="mono">{entry.version}</span></strong>
             <p>{entry.summary}</p>
           </div>
           <a href={`${releasesUrl}/tag/v${entry.version}`} rel="noreferrer">Release notes</a>

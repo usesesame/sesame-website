@@ -235,7 +235,7 @@
       </li>
     </ul>
   </div>
-  <p id="status" class="project-line">Sesame is licensed under <a href={licenceUrl} rel="noreferrer">AGPL-3.0-or-later</a>, and its four repositories had <a href={sourceOrg} rel="noreferrer">{recentCommits.toLocaleString('en-GB')} commits</a> in the last {projectActivity.current.windowDays} days, counted {countedLabel(projectActivity.current, projectActivity.live)}.</p>
+  <p id="status" class="project-line">Sesame is licensed under <a href={licenceUrl} rel="noreferrer">AGPL-3.0-or-later</a>, and its four repositories had <a href={sourceOrg} rel="noreferrer"><span class="mono">{recentCommits.toLocaleString('en-GB')}</span> commits</a> in the last {projectActivity.current.windowDays} days, counted {countedLabel(projectActivity.current, projectActivity.live)}.</p>
 </section>
 
 <nav class="slide-dots" aria-label="Sections">

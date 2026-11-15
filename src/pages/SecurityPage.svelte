@@ -134,8 +134,8 @@
       <h2>Technical details</h2>
       <p>This part is for readers who want to check the design against the source code.</p>
       <dl class="hardening-facts">
-        <div><dt>Encryption</dt><dd>XChaCha20-Poly1305</dd></div>
-        <div><dt>Master password to key</dt><dd>New vaults and a changed master password use Argon2id with 128 MiB of memory and 3 passes. Sesame still opens older vaults that use at least 64 MiB, and refuses files with weaker settings.</dd></div>
+        <div><dt>Encryption</dt><dd><span class="mono">XChaCha20-Poly1305</span></dd></div>
+        <div><dt>Master password to key</dt><dd>New vaults and a changed master password use <span class="mono">Argon2id</span> with <span class="mono">128 MiB</span> of memory and <span class="mono">3</span> passes. Sesame still opens older vaults that use at least <span class="mono">64 MiB</span>, and refuses files with weaker settings.</dd></div>
         <div><dt>Opening a file</dt><dd>Sesame checks that a file is genuine before reading it, and refuses files that were tampered with, relabelled, or made by a newer version.</dd></div>
         <div><dt>Saving</dt><dd>Sesame writes a new file, checks it, and then swaps it in, so a failed save leaves the old vault as it was.</dd></div>
         <div><dt>Key in memory on Windows</dt><dd>The key stays out of the page file, and Sesame keeps it encrypted between uses.</dd></div>
@@ -143,13 +143,13 @@
         <div><dt>File size</dt><dd>Sesame pads the vault file before it encrypts it, so its size does not show how long an edit was.</dd></div>
         <div><dt>Recovery kit</dt><dd>Replacing a recovery kit rotates the vault key, so the old kit no longer opens later versions of the vault.</dd></div>
         <div><dt>Secret fields</dt><dd>Card numbers, security codes, Wi-Fi passwords, SSH keys, and licence keys stay in the app's native code, and copying one never passes it through the window.</dd></div>
-        <div><dt>Browser approval</dt><dd>An approval needs 750 milliseconds of focus in the Sesame window, so a click that lands as the window takes focus cannot approve a fill.</dd></div>
+        <div><dt>Browser approval</dt><dd>An approval needs <span class="mono">750</span> milliseconds of focus in the Sesame window, so a click that lands as the window takes focus cannot approve a fill.</dd></div>
         <div><dt>Window hardening</dt><dd>On Linux the web view runs in the WebKit sandbox, and Sesame refuses to run it when the sandbox cannot start. Both systems turn off the JavaScript JIT in the web view, and the windows cannot leave the app's own address.</dd></div>
         <div><dt>Screen capture</dt><dd>On Windows, a copied secret stays out of clipboard history and Cloud Clipboard sync, and both windows stay out of screenshots, screen sharing, and Recall. A setting allows capture for support sessions.</dd></div>
         <div><dt>Updates</dt><dd>Sesame checks an update download against its signed size, stops a stalled download, and follows redirects only to the release hosts.</dd></div>
         <div><dt>Sync</dt><dd>Sync is off until you turn it on. Desktops check signed history before they accept changes, and a desktop warns you when a server offers an older copy or a second history that does not match.</dd></div>
-        <div><dt>Moving the vault key</dt><dd>When Sync gives your vault key to a device that has the newer key, it adds a post-quantum key exchange, ML-KEM-768 combined with X25519. Once any device in your vault has the newer key, Sesame refuses a new device that offers only the older key unless you allow it for that pairing. Changing the vault key shows the new recovery kit first and waits until you confirm that you saved it. Nobody independent has reviewed this exchange.</dd></div>
-        <div><dt>Breach check</dt><dd>Sesame sends only the first 5 characters of the password's SHA-1 hash to Have I Been Pwned.</dd></div>
+        <div><dt>Moving the vault key</dt><dd>When Sync gives your vault key to a device that has the newer key, it adds a post-quantum key exchange, <span class="mono">ML-KEM-768</span> combined with <span class="mono">X25519</span>. Once any device in your vault has the newer key, Sesame refuses a new device that offers only the older key unless you allow it for that pairing. Changing the vault key shows the new recovery kit first and waits until you confirm that you saved it. Nobody independent has reviewed this exchange.</dd></div>
+        <div><dt>Breach check</dt><dd>Sesame sends only the first <span class="mono">5</span> characters of the password's <span class="mono">SHA-1</span> hash to Have I Been Pwned.</dd></div>
         <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
       </dl>
     </div>
