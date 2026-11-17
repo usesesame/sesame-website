@@ -25,7 +25,3 @@ export function countedLabel(activity: ProjectActivity, live: boolean): string {
   const at = new Date(activity.generatedAt)
   return live ? `${dateFormat.format(at)}, ${timeFormat.format(at)} UTC` : dateFormat.format(at)
 }
-
-export function lastPushLabel(pushedAt: string): string {
-  return dateFormat.format(new Date(pushedAt))
-}
