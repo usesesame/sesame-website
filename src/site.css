@@ -73,7 +73,6 @@ strong { font-weight: var(--weight-bold); }
 }
 .button.button-soft:hover { background: var(--button-secondary-hover-bg); }
 .button.button-soft:active { background: var(--control-active-bg), var(--button-secondary-bg); box-shadow: none; }
-.button.disabled { color: var(--text-muted); background: var(--surface-inset); box-shadow: none; cursor: default; pointer-events: none; }
 
 .card {
   position: relative;
@@ -135,7 +134,6 @@ strong { font-weight: var(--weight-bold); }
 .home-section-inner { width: min(var(--site-width), calc(100% - 40px)); }
 .home-section-product { background: var(--surface); border-block: 1px solid var(--border); }
 .home-section-download { background: var(--surface); border-top: 1px solid var(--border); }
-.section-title { max-width: 720px; }
 .section-heading { max-width: 16ch; margin: 0; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.02; letter-spacing: -.02em; text-wrap: balance; }
 .lede { max-width: var(--measure); margin: 20px 0 0; color: var(--text-muted); font-size: var(--type-reading); line-height: var(--leading-reading); }
 
@@ -371,8 +369,6 @@ h1 .mono, h3 .mono, .release-history strong .mono { font-size: .8em; font-weight
   .what-if > section { grid-template-columns: 1fr; gap: 6px; }
   .roadmap-row { grid-template-columns: 1fr; padding: 22px 0; }
   .hardening-facts > div { grid-template-columns: 1fr; }
-  .path-lanes { grid-template-columns: 1fr; }
-  .compatibility-notes dl div { grid-template-columns: 1fr; gap: 5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -471,8 +467,6 @@ h1 .mono, h3 .mono, .release-history strong .mono { font-size: .8em; font-weight
 .slide-thumb[data-index="6"] { transform: translateY(144px); }
 .slide-thumb[data-index="7"] { transform: translateY(168px); }
 @media (min-width: 1100px) and (min-height: 600px) { .slide-dots { display: flex; } }
-
-.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); border: 0; white-space: nowrap; }
 
 
 .release-hero .intro a { color: var(--accent-link); }

@@ -45,16 +45,6 @@ export type ProductRelease = {
   artifacts?: Array<{ name: string; format: 'msi' | 'nsis' | 'appimage' | 'deb' | 'rpm'; url: string; sha256: string; signed: boolean }>
 }
 
-export const BETA_SUPPORT = {
-  platforms: [
-    { name: 'Windows', detail: 'Windows 10 and Windows 11' },
-    { name: 'Linux', detail: 'deb, rpm, and AppImage packages' },
-  ],
-  architectures: ['x64'],
-  unsupported: ['Windows on Arm'],
-  note: 'Beta testing has concentrated on current Windows 11 builds, so report anything that behaves differently.',
-} as const
-
 export function getProductStatus(): Promise<ProductStatus | null> {
   return readPublic('/v1/product/status').then(parseProductStatus)
 }
