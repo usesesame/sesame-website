@@ -3,6 +3,10 @@
     "private": true,
     "version": "0.1.0",
     "type": "module",
+    "shippedBuilds": [
+        "client",
+        "ssr"
+    ],
     "scripts": {
         "dev": "vite --config vite.config.ts",
         "build": "vite build --config vite.config.ts && vite build --config vite.ssr.config.ts && node scripts/build-static-routes.mjs",
