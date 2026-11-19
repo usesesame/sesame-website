@@ -39,16 +39,16 @@
     "devDependencies": {
         "@eslint/js": "^10.0.1",
         "@sveltejs/vite-plugin-svelte": "^7.3.1",
-        "@tsconfig/svelte": "^5.0.8",
-        "@types/node": "^26.6.5",
+        "@tsconfig/svelte": "^5.0.9",
+        "@types/node": "^26.6.6",
         "eslint": "^10.14.0",
-        "eslint-plugin-svelte": "^3.23.1",
-        "globals": "^17.13.0",
-        "svelte-check": "^4.7.7",
+        "eslint-plugin-svelte": "^3.24.1",
+        "globals": "^17.14.0",
+        "svelte-check": "^4.7.8",
         "svelte-eslint-parser": "^1.10.1",
         "typescript": "~6.0.2",
-        "typescript-eslint": "^8.72.1",
-        "vite": "^8.3.7"
+        "typescript-eslint": "^8.72.2",
+        "vite": "^8.3.8"
     },
     "overrides": {
         "minimatch": "11.0.5"
