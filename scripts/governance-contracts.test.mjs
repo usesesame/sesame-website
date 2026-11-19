@@ -100,6 +100,15 @@ test('CI audits the npm lockfile for high advisories with the dependencies insta
   assert.match(body, /^ {2}audit:$/m, 'the website CI has no audit job')
   const job = body.slice(body.search(/^ {2}audit:$/m)).split(/^ {2}[a-z0-9_-]+:$/m)[1]
   assert.match(job, /run: npm ci\b/, 'the audit job does not install from the lockfile')
+  const build = job.search(/run: npm run build\b/)
+  assert.ok(build >= 0 && build < job.search(/run: node scripts\/audit-dependencies\.mjs/), 'the audit job does not build the site first, so it cannot tell which packages the site bundles')
+  const manifest = JSON.parse(read('package.json'))
+  assert.deepEqual(manifest.shippedBuilds, ['client', 'ssr'], 'the audit no longer requires a record of both site builds')
+  for (const config of ['vite.config.ts', 'vite.ssr.config.ts']) {
+    assert.match(manifest.scripts.build, new RegExp(`vite build --config ${config.replaceAll('.', '\\.')}`), `the site build no longer runs ${config}`)
+  }
+  assert.match(read('vite.config.ts'), /shippedPackages\('client'\)/, 'the client build no longer records which packages it bundles')
+  assert.match(read('vite.ssr.config.ts'), /shippedPackages\('ssr'\)/, 'the server render build no longer records which packages it bundles')
   assert.match(job, /run: node scripts\/audit-dependencies\.mjs\s*$/m, 'the audit job does not fail on high advisories through the reviewed exceptions')
   assert.doesNotMatch(job, /run: npm audit\b/, 'a bare npm audit ignores the reviewed exceptions')
   assert.doesNotMatch(job, /--omit=dev|--production/, 'the audit job skips development dependencies')

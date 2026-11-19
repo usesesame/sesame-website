@@ -3,6 +3,10 @@
     "private": true,
     "version": "0.1.0",
     "type": "module",
+    "shippedBuilds": [
+        "client",
+        "ssr"
+    ],
     "scripts": {
         "dev": "vite --config vite.config.ts",
         "build": "vite build --config vite.config.ts && vite build --config vite.ssr.config.ts && node scripts/build-static-routes.mjs",
@@ -45,5 +49,8 @@
         "typescript": "~6.0.2",
         "typescript-eslint": "^8.72.1",
         "vite": "^8.3.7"
+    },
+    "overrides": {
+        "minimatch": "11.0.5"
     }
 }
