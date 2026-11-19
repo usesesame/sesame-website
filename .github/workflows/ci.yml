@@ -70,6 +70,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Record what the shipped site bundles
+        run: npm run build
+
       - name: Audit npm dependencies
         run: node scripts/audit-dependencies.mjs
 
