@@ -123,6 +123,76 @@ test('every CI checkout drops its credentials before dependencies install', () =
   }
 })
 
+const jobBlock = (body, name) => {
+  const start = body.search(new RegExp(`^ {2}${name}:$`, 'm'))
+  assert.ok(start >= 0, `the workflow has no ${name} job`)
+  return body.slice(start).split(/^ {2}[a-z0-9_-]+:$/m)[1]
+}
+
+test('the upkeep workflow runs weekly or on demand and never from a pull request', () => {
+  const body = read('.github', 'workflows', 'upkeep.yml')
+  const trigger = body.slice(body.search(/^on:/m), body.search(/^permissions:/m))
+  assert.match(trigger, /^ {2}schedule:\s*\n\s+- cron: '\d+ \d+ \* \* \d'$/m, 'the upkeep workflow does not run weekly')
+  assert.match(trigger, /^ {2}workflow_dispatch:\s*$/m, 'the upkeep workflow cannot be started by hand')
+  assert.doesNotMatch(trigger, /pull_request|push:/, 'the upkeep workflow must not run on code a contributor controls')
+  assert.match(body, /^concurrency:\n {2}group: upkeep-/m, 'the upkeep workflow has no concurrency group')
+  assert.doesNotMatch(body, /secrets\.(?!GITHUB_TOKEN\b)/, 'the upkeep workflow reads a secret other than GITHUB_TOKEN')
+  const jobs = [...body.slice(body.search(/^jobs:/m)).matchAll(/^ {2}([a-z0-9_-]+):$/gm)].map(([, name]) => name)
+  assert.deepEqual(jobs, ['refresh-activity', 'verify-public'])
+  for (const name of jobs) {
+    const job = jobBlock(body, name)
+    assert.match(job, /^ {4}timeout-minutes: \d+$/m, `${name} has no timeout`)
+    assert.match(job, /^ {4}if: github\.repository == 'usesesame\/sesame-website'$/m, `${name} runs in forks`)
+    assert.match(job, /persist-credentials: false/, `${name} leaves the checkout credentials on disk`)
+  }
+})
+
+test('only the activity refresh job can write, and it writes a branch, not main', () => {
+  const body = read('.github', 'workflows', 'upkeep.yml')
+  const refresh = jobBlock(body, 'refresh-activity')
+  assert.match(refresh, /^ {4}permissions:\n {6}contents: write$/m, 'the refresh job does not declare write access on the job')
+  assert.equal(body.match(/contents: write/g).length, 1, 'only the refresh job may hold write access')
+  assert.doesNotMatch(body, /pull-requests: write|actions: write|id-token/, 'the upkeep workflow holds more than the branch push needs')
+  assert.match(refresh, /run: npm run activity:refresh\s*$/m, 'the refresh job does not run the refresh script')
+  assert.match(refresh, /^ {10}git push "https:\/\/x-access-token:\$\{GH_TOKEN\}@github\.com\/\$\{GITHUB_REPOSITORY\}\.git" "\$REFRESH_BRANCH"$/m)
+  assert.doesNotMatch(refresh, /git push[^\n]*(--force|-f\b|\bmain\b)/, 'the refresh job must not overwrite a branch or push main')
+  assert.match(refresh, /git ls-remote --exit-code --heads origin "\$REFRESH_BRANCH"/, 'the refresh job overwrites an open refresh')
+  assert.doesNotMatch(refresh, /npm ci|npm install/, 'the refresh job installs packages while it holds write access')
+  assert.deepEqual(
+    [...refresh.matchAll(/git add (.+)$/gm)].map(([, paths]) => paths),
+    ['src/lib/project-activity.json'],
+    'the refresh job commits more than the activity file',
+  )
+})
+
+test('the weekly public release check reads only public pages and needs no write access', () => {
+  const verify = jobBlock(read('.github', 'workflows', 'upkeep.yml'), 'verify-public')
+  assert.match(verify, /run: npm run release:verify-public\s*$/m, 'the live site is never compared with the published releases')
+  assert.doesNotMatch(verify, /permissions:|secrets\.|GH_TOKEN/, 'the public check takes rights or secrets it does not need')
+  const script = read('scripts', 'verify-public-release.mjs')
+  assert.doesNotMatch(script, /process\.env|authorization/i, 'the public check reads an environment secret')
+})
+
+test('the release build still refuses activity older than the freshness limit', () => {
+  const prepare = read('scripts', 'prepare-site-release.mjs')
+  assert.match(prepare, /activityAgeProblem\(/, 'the release preparation no longer checks the activity age')
+  assert.match(prepare, /if \(activityProblem\) throw new Error\(activityProblem\)/)
+})
+
+test('Dependabot groups minor and patch updates and leaves major updates alone', () => {
+  const body = read('.github', 'dependabot.yml')
+    .split('\n')
+    .filter((line) => !/^\s*#/.test(line))
+    .join('\n')
+  const entries = body.split(/^ {2}- package-ecosystem:/m).slice(1)
+  assert.equal(entries.length, 2)
+  for (const entry of entries) {
+    const groups = entry.slice(entry.search(/^ {4}groups:/m))
+    assert.match(groups, /^ {4}groups:\n {6}[a-z-]+:\n {8}update-types:\n {10}- minor\n {10}- patch\s*$/, `a Dependabot group must hold exactly minor and patch:\n${entry}`)
+    assert.doesNotMatch(groups, /major/, 'a Dependabot group takes major updates')
+  }
+})
+
 test('npm installs run no package scripts and fetch no git dependencies', () => {
   const policy = read('.npmrc').split(/\r?\n/)
   for (const line of ['ignore-scripts=true', 'allow-git=none']) {

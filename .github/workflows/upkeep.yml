@@ -1,0 +1,69 @@
+name: Website upkeep
+
+on:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: upkeep-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  refresh-activity:
+    if: github.repository == 'usesesame/sesame-website'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      REFRESH_BRANCH: refresh-project-activity
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - name: Stop while an earlier refresh is still open
+        run: |
+          if git ls-remote --exit-code --heads origin "$REFRESH_BRANCH" >/dev/null; then
+            echo "::error::$REFRESH_BRANCH already exists. Merge its pull request or delete the branch, then run this workflow again."
+            exit 1
+          fi
+
+      - run: npm run activity:refresh
+
+      - name: Push the refreshed file to a branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet -- src/lib/project-activity.json; then
+            echo "The activity file did not change."
+            exit 0
+          fi
+          git switch -c "$REFRESH_BRANCH"
+          git add src/lib/project-activity.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Refresh the project activity counts'
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$REFRESH_BRANCH"
+          echo "Open the pull request: https://github.com/${GITHUB_REPOSITORY}/pull/new/${REFRESH_BRANCH}" >> "$GITHUB_STEP_SUMMARY"
+
+  verify-public:
+    if: github.repository == 'usesesame/sesame-website'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+
+      - run: npm run release:verify-public
