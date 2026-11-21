@@ -16,6 +16,8 @@
         "design:tokens:check": "node scripts/design-tokens-contract.mjs",
         "seo:check": "node scripts/check-seo.mjs",
         "activity:refresh": "node scripts/fetch-project-activity.mjs",
+        "excerpts:refresh": "node scripts/refresh-source-excerpts.mjs",
+        "excerpts:check": "node scripts/refresh-source-excerpts.mjs --check",
         "status:refresh": "node scripts/fetch-product-status.mjs",
         "seo:submit": "node scripts/submit-indexnow.mjs",
         "release:verify-public": "node scripts/verify-public-release.mjs",

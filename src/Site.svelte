@@ -111,7 +111,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f4ee" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#16150e" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#131210" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="manifest" href="/site.webmanifest" />
@@ -139,7 +139,7 @@
 
 <a class="skip-link" href="#top">Skip to content</a>
 
-<header class="site-header" data-intro={route.key === 'home' ? '' : undefined} data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
+<header class="site-header" data-scrolled={headerScrolled === null ? undefined : headerScrolled}>
   <div class="site-header-inner">
     <a class="brand" href="/" aria-label="Sesame home"><img class="brand-mark" src="/favicon.svg" alt="" width="512" height="512" /><strong>Sesame</strong></a>
     <nav bind:this={navEl} aria-label="Main navigation" onpointerover={(event) => trackLinkTarget(event.target)} onpointerleave={() => settleIndicator()} onfocusin={(event) => trackLinkTarget(event.target)} onfocusout={() => settleIndicator()}>

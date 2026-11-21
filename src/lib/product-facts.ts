@@ -4,39 +4,58 @@ export const IMPORT_FORMAT_COUNT = 15
 
 export const SYNC_PRICES = { monthly: 1, annual: 10, currency: 'EUR' } as const
 
-export const fallbackPlans: ProductPlan[] = [
-  {
-    id: 'free',
-    name: 'Sesame',
-    price: '0',
-    billing: 'none',
-    available: true,
-    description: 'The whole app is free and open source under the AGPL.',
-    includes: [
-      'Encrypted vault',
-      `${IMPORT_FORMAT_COUNT} import formats`,
-      'Nine record types',
-      '2FA and recovery details',
-      'Windows Hello and PIN unlock',
-      'Backup, restore, and export',
+export type FeatureIconName = 'vault' | 'import' | 'card' | 'shield' | 'key' | 'archive' | 'lock' | 'monitor' | 'versions' | 'file-key' | 'server' | 'cloud'
+export type PlanFeature = { icon: FeatureIconName; label: string }
+
+export const planFeatures: ReadonlyMap<string, PlanFeature[]> = new Map([
+  [
+    'free',
+    [
+      { icon: 'vault', label: 'Encrypted local vault' },
+      { icon: 'import', label: `Import from ${IMPORT_FORMAT_COUNT} formats` },
+      { icon: 'card', label: 'Nine item types' },
+      { icon: 'shield', label: '2FA codes and recovery details' },
+      { icon: 'key', label: 'Windows Hello and PIN unlock' },
+      { icon: 'archive', label: 'Backup, restore, and export' },
+      { icon: 'server', label: 'Sync with your own server' },
     ],
-  },
-  {
+  ],
+  [
+    'sync',
+    [
+      { icon: 'cloud', label: 'Sync server run by us' },
+      { icon: 'lock', label: 'End-to-end encryption' },
+      { icon: 'monitor', label: 'Device approval' },
+      { icon: 'versions', label: 'Conflict review' },
+      { icon: 'file-key', label: 'Local access if you cancel' },
+    ],
+  ],
+])
+
+const planDescriptions: ReadonlyMap<string, string> = new Map([
+  ['free', 'The whole app, open source under the AGPL. There is no paid version.'],
+  ['sync', 'Keeps your vault the same on every device you approve. We run the server, so you do not have to.'],
+])
+
+export function withSiteWording(plan: ProductPlan): ProductPlan {
+  const description = planDescriptions.get(plan.id)
+  const features = planFeatures.get(plan.id)
+  if (!description || !features) return plan
+  return { ...plan, description, includes: features.map((feature) => feature.label) }
+}
+
+export const fallbackPlans: ProductPlan[] = [
+  withSiteWording({ id: 'free', name: 'Sesame', price: '0', billing: 'none', available: true, description: '', includes: [] }),
+  withSiteWording({
     id: 'sync',
     name: 'Sesame Sync',
     price: SYNC_PRICES.monthly.toFixed(2),
     annualPrice: SYNC_PRICES.annual.toFixed(2),
     billing: 'monthly',
     available: false,
-    description: 'We will host Sync between the devices you approve once it passes its security review.',
-    includes: [
-      'Approved devices',
-      'End-to-end encryption',
-      'Conflict review',
-      'Local access if Sync ends',
-      'Self-host it instead if you prefer',
-    ],
-  },
+    description: '',
+    includes: [],
+  }),
 ]
 
 export type ProductFacts = {
@@ -55,8 +74,8 @@ export type ProductFacts = {
 
 export function syncPricePhrase(style: 'symbol' | 'code'): string {
   return style === 'symbol'
-    ? `€${SYNC_PRICES.monthly} monthly or €${SYNC_PRICES.annual} yearly`
-    : `EUR ${SYNC_PRICES.monthly} monthly or EUR ${SYNC_PRICES.annual} yearly`
+    ? `€${SYNC_PRICES.monthly} a month or €${SYNC_PRICES.annual} a year`
+    : `EUR ${SYNC_PRICES.monthly} a month or EUR ${SYNC_PRICES.annual} a year`
 }
 
 export function productFacts(status: ProductStatus | null): ProductFacts {
@@ -117,18 +136,18 @@ export function pricingFaqEntries(syncAvailable: boolean): PricingFaqEntry[] {
         'The whole app is free, including vault access, imports, 2FA, security checks, Windows Hello and PIN unlock, backup, restore, export, and recovery. It is open source under the AGPL.',
     },
     {
-      question: 'Then what is the subscription for?',
-      answer: `Running hosted sync costs money to operate, so hosted Sesame Sync is planned at ${syncPricePhrase('symbol')}. It moves only encrypted data between the devices you approve.`,
+      question: 'Why does Sesame Sync cost money?',
+      answer: `Sesame Sync is Sync on our servers, and servers cost money to run, so it is planned at ${syncPricePhrase('symbol')}. Our servers only receive encrypted data that they cannot read.`,
     },
     {
       question: 'Can I sync without paying?',
       answer: syncAvailable
-        ? 'Hosted Sync is available for accounts that have it enabled. The same service is in the server repository under the same licence if you would rather run it yourself.'
-        : 'Yes. Sync is in the latest desktop release and is off until you turn it on, and the sync service is in the server repository under the same licence, so you can run it yourself. Hosted Sync is not available yet.',
+        ? 'Yes. The Sync server is open source under the same licence as the app, so you can run it yourself for free. Sesame Sync is for people who would rather have us run it.'
+        : 'Yes. Sync is in the latest desktop release and is off until you turn it on. The Sync server is open source under the same licence as the app, so you can run it yourself for free. Sesame Sync, which is Sync on our servers, is not open yet.',
       syncInterestLink: !syncAvailable,
     },
     {
-      question: 'What happens if I stop paying, or Sesame stops?',
+      question: 'What happens if I stop paying, or Sesame shuts down?',
       answer:
         'Nothing changes for your vault. It is a file you already have, and it still opens with your master password, recovery kit, PIN, or Windows Hello.',
     },

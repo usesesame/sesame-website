@@ -1,0 +1,166 @@
+{
+  "repository": "usesesame/sesame-desktop",
+  "commit": "322bf48d1bf37562acc41adbe891b60b7b1bdce1",
+  "excerpts": [
+    {
+      "key": "kdf-memory",
+      "path": "src-tauri/sesame-core/src/crypto.rs",
+      "start": 18,
+      "end": 18,
+      "marked": [
+        18
+      ],
+      "lines": [
+        "const MASTER_PASSWORD_KDF_MEMORY_KIB: u32 = 131_072;"
+      ]
+    },
+    {
+      "key": "kdf-passes",
+      "path": "src-tauri/sesame-core/src/lib.rs",
+      "start": 108,
+      "end": 108,
+      "marked": [
+        108
+      ],
+      "lines": [
+        "pub const MIN_KDF_ITERATIONS: u32 = 3;"
+      ]
+    },
+    {
+      "key": "key-derivation",
+      "path": "src-tauri/sesame-core/src/crypto.rs",
+      "start": 24,
+      "end": 38,
+      "marked": [
+        32,
+        34,
+        35
+      ],
+      "lines": [
+        "pub fn master_password_kdf_params() -> KdfParams {",
+        "    kdf_params_with_memory(MASTER_PASSWORD_KDF_MEMORY_KIB)",
+        "}",
+        "",
+        "fn kdf_params_with_memory(memory_kib: u32) -> KdfParams {",
+        "    let mut salt = [0_u8; 32];",
+        "    fill_random(&mut salt);",
+        "    KdfParams {",
+        "        algorithm: \"argon2id\".into(),",
+        "        salt: URL_SAFE_NO_PAD.encode(salt),",
+        "        memory_kib,",
+        "        iterations: MIN_KDF_ITERATIONS,",
+        "        parallelism: 4,",
+        "    }",
+        "}"
+      ]
+    },
+    {
+      "key": "search-fields",
+      "path": "src-tauri/sesame-app/src/application/search.rs",
+      "start": 337,
+      "end": 344,
+      "marked": [
+        340,
+        341,
+        342,
+        343
+      ],
+      "lines": [
+        "fn searchable_fields(item: &TaggedItem) -> Vec<&str> {",
+        "    match item {",
+        "        TaggedItem::Login(entry) => vec![",
+        "            entry.username.as_str(),",
+        "            entry.email.as_str(),",
+        "            entry.url.as_str(),",
+        "            entry.notes.as_deref().unwrap_or_default(),",
+        "        ],"
+      ]
+    },
+    {
+      "key": "approval-delay",
+      "path": "src/lib/controllers/approval-gate.ts",
+      "start": 17,
+      "end": 17,
+      "marked": [
+        17
+      ],
+      "lines": [
+        "export const APPROVAL_SETTLE_MS = 750"
+      ]
+    },
+    {
+      "key": "approval-settle",
+      "path": "src/lib/ui/ModalShell.svelte",
+      "start": 86,
+      "end": 96,
+      "marked": [
+        89,
+        93
+      ],
+      "lines": [
+        "  function unsettle() {",
+        "    settled = false",
+        "    if (settleTimer) clearTimeout(settleTimer)",
+        "    settleTimer = setTimeout(() => (settled = true), APPROVAL_SETTLE_MS)",
+        "  }",
+        "",
+        "  function ignoreUntilSettled(event: Event) {",
+        "    if (settled) return",
+        "    event.preventDefault()",
+        "    event.stopPropagation()",
+        "  }"
+      ]
+    },
+    {
+      "key": "breach-prefix",
+      "path": "src-tauri/sesame-app/src/application/breach_scan.rs",
+      "start": 17,
+      "end": 17,
+      "marked": [
+        17
+      ],
+      "lines": [
+        "pub const SHA1_PREFIX_CHARS: usize = 5;"
+      ]
+    },
+    {
+      "key": "breach-range",
+      "path": "src-tauri/sesame-app/src/application/breach_scan.rs",
+      "start": 59,
+      "end": 72,
+      "marked": [
+        65,
+        67
+      ],
+      "lines": [
+        "pub fn password_range(password: &str) -> PasswordRange {",
+        "    let mut hasher = Sha1::new();",
+        "    hasher.update(password.as_bytes());",
+        "    let mut digest = hasher.finalize();",
+        "    let mut hex: String = digest.iter().map(|byte| format!(\"{byte:02X}\")).collect();",
+        "    digest.zeroize();",
+        "    let (prefix, suffix) = hex.split_at(SHA1_PREFIX_CHARS);",
+        "    let range = PasswordRange {",
+        "        prefix: prefix.to_string(),",
+        "        suffix: Zeroizing::new(suffix.to_string()),",
+        "    };",
+        "    hex.zeroize();",
+        "    range",
+        "}"
+      ]
+    },
+    {
+      "key": "clipboard-clear",
+      "path": "src/lib/preferences.ts",
+      "start": 23,
+      "end": 24,
+      "marked": [
+        24
+      ],
+      "lines": [
+        "export const clipboardClearOptions = [10, 30, 60]",
+        "const DEFAULT_CLIPBOARD_CLEAR_SECONDS = 30"
+      ]
+    }
+  ]
+}

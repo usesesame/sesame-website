@@ -1,8 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { extensionState } from '../lib/extension.svelte'
+  import SourceExcerpt from '../SourceExcerpt.svelte'
+  import { principles } from '../lib/principles'
   import { productFacts } from '../lib/product-facts'
   import { loadExtensions, productState } from '../lib/product-state.svelte'
+  import { excerptCommit, excerptCommitUrl } from '../lib/source-excerpts'
   import { licenceUrl, securityPolicyUrl } from '../lib/source-links'
 
   const facts = $derived(productFacts(productState.status))
@@ -22,6 +25,7 @@
   <nav class="document-nav" aria-label="On this page">
     <strong>On this page</strong>
     <a href="#short">The short version</a>
+    <a href="#code">The code behind the claims</a>
     <a href="#parts">How the parts fit</a>
     <a href="#what-if">What happens if</a>
     <a href="#limits">What Sesame cannot stop</a>
@@ -29,7 +33,7 @@
     <a href="#unfinished">Not done yet</a>
     <a href="#report">Report a problem</a>
   </nav>
-  <article class="document-copy">
+  <article class="document-copy security-copy">
     <div id="short">
       <h2>The short version</h2>
       <ul class="short-version">
@@ -41,6 +45,22 @@
       </ul>
     </div>
 
+    <div id="code">
+      <h2>The code behind the claims</h2>
+      <p>Here are five security claims, each with the code that does it. The code is copied from the public repository at commit <a class="mono" href={excerptCommitUrl} rel="noreferrer">{excerptCommit.slice(0, 7)}</a>, and each link opens the same lines on GitHub.</p>
+      <div class="proof-stack">
+        {#each principles as principle (principle.key)}
+          <section>
+            <h3>{principle.title}</h3>
+            <p>{principle.detail}</p>
+            <div class="excerpt-set">
+              {#each principle.excerpts as excerpt (excerpt.key)}<SourceExcerpt {excerpt} />{/each}
+            </div>
+          </section>
+        {/each}
+      </div>
+    </div>
+
     <div id="parts">
       <h2>How the parts fit</h2>
       <p>Sesame has three parts. Only the desktop app reads your vault. You can create, unlock, import, back up, and restore it without an account or an internet connection.</p>
@@ -50,7 +70,7 @@
           <p><strong>Your own server</strong><span>If you turn Sync on, it holds an encrypted copy of your vault that it cannot read.</span></p>
           <p><strong>Browser extension</strong><span>It stores no passwords and asks the app each time it fills one.</span></p>
         </div>
-        <div class="card map-app">
+        <div class="map-app">
           <strong>Sesame desktop app</strong>
           <div class="map-flow">
             <div class="map-node">
@@ -119,7 +139,7 @@
     <div id="limits">
       <h2>What Sesame cannot stop</h2>
       <p>No password manager can protect you from everything, and these are the limits we know about.</p>
-      <ul>
+      <ul class="plain-rows">
         <li>Malware running on your computer can read your screen, record your keys, and read the app's memory while the vault is unlocked.</li>
         <li>Malware in your browser can pretend to be the extension, so the approval in the Sesame window is the last check before a fill.</li>
         <li>A PIN is a shortcut for this computer rather than a second lock. Software running as you can try PINs against a copy of the vault file, and each extra digit makes the search ten times larger.</li>
@@ -133,30 +153,40 @@
     <div id="details">
       <h2>Technical details</h2>
       <p>This part is for readers who want to check the design against the source code.</p>
+      <h3 class="facts-group">The vault file</h3>
       <dl class="hardening-facts">
         <div><dt>Encryption</dt><dd><span class="mono">XChaCha20-Poly1305</span></dd></div>
         <div><dt>Master password to key</dt><dd>New vaults and a changed master password use <span class="mono">Argon2id</span> with <span class="mono">128 MiB</span> of memory and <span class="mono">3</span> passes. Sesame still opens older vaults that use at least <span class="mono">64 MiB</span>, and refuses files with weaker settings.</dd></div>
         <div><dt>Opening a file</dt><dd>Sesame checks that a file is genuine before reading it, and refuses files that were tampered with, relabelled, or made by a newer version.</dd></div>
         <div><dt>Saving</dt><dd>Sesame writes a new file, checks it, and then swaps it in, so a failed save leaves the old vault as it was.</dd></div>
-        <div><dt>Key in memory on Windows</dt><dd>The key stays out of the page file, and Sesame keeps it encrypted between uses.</dd></div>
-        <div><dt>Key in memory on Linux</dt><dd>Sesame asks the system to keep the key out of swap, crash dumps, and child processes. If the system refuses, Sesame keeps the key in ordinary memory that it wipes on lock and writes a note to the diagnostics log.</dd></div>
         <div><dt>File size</dt><dd>Sesame pads the vault file before it encrypts it, so its size does not show how long an edit was.</dd></div>
         <div><dt>Recovery kit</dt><dd>Replacing a recovery kit rotates the vault key, so the old kit no longer opens later versions of the vault.</dd></div>
+      </dl>
+      <h3 class="facts-group">Keys and secrets in memory</h3>
+      <dl class="hardening-facts">
+        <div><dt>Key in memory on Windows</dt><dd>The key stays out of the page file, and Sesame keeps it encrypted between uses.</dd></div>
+        <div><dt>Key in memory on Linux</dt><dd>Sesame asks the system to keep the key out of swap, crash dumps, and child processes. If the system refuses, Sesame keeps the key in ordinary memory that it wipes on lock and writes a note to the diagnostics log.</dd></div>
         <div><dt>Secret fields</dt><dd>Card numbers, security codes, Wi-Fi passwords, SSH keys, and licence keys stay in the app's native code, and copying one never passes it through the window.</dd></div>
+      </dl>
+      <h3 class="facts-group">The browser and the window</h3>
+      <dl class="hardening-facts">
         <div><dt>Browser approval</dt><dd>An approval needs <span class="mono">750</span> milliseconds of focus in the Sesame window, so a click that lands as the window takes focus cannot approve a fill.</dd></div>
         <div><dt>Window hardening</dt><dd>On Linux the web view runs in the WebKit sandbox, and Sesame refuses to run it when the sandbox cannot start. Both systems turn off the JavaScript JIT in the web view, and the windows cannot leave the app's own address.</dd></div>
         <div><dt>Screen capture</dt><dd>On Windows, a copied secret stays out of clipboard history and Cloud Clipboard sync, and both windows stay out of screenshots, screen sharing, and Recall. A setting allows capture for support sessions.</dd></div>
+        <div><dt>Breach check</dt><dd>Sesame sends only the first <span class="mono">5</span> characters of the password's <span class="mono">SHA-1</span> hash to Have I Been Pwned.</dd></div>
+        <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
+      </dl>
+      <h3 class="facts-group">Updates and Sync</h3>
+      <dl class="hardening-facts">
         <div><dt>Updates</dt><dd>Sesame checks an update download against its signed size, stops a stalled download, and follows redirects only to the release hosts.</dd></div>
         <div><dt>Sync</dt><dd>Sync is off until you turn it on. Desktops check signed history before they accept changes, and a desktop warns you when a server offers an older copy or a second history that does not match.</dd></div>
         <div><dt>Moving the vault key</dt><dd>When Sync gives your vault key to a device that has the newer key, it adds a post-quantum key exchange, <span class="mono">ML-KEM-768</span> combined with <span class="mono">X25519</span>. Once any device in your vault has the newer key, Sesame refuses a new device that offers only the older key unless you allow it for that pairing. Changing the vault key shows the new recovery kit first and waits until you confirm that you saved it. Nobody independent has reviewed this exchange.</dd></div>
-        <div><dt>Breach check</dt><dd>Sesame sends only the first <span class="mono">5</span> characters of the password's <span class="mono">SHA-1</span> hash to Have I Been Pwned.</dd></div>
-        <div><dt>Website icons</dt><dd>Icons stay off until you turn them on, because fetching an icon tells that site you saved it.</dd></div>
       </dl>
     </div>
 
     <div id="unfinished">
       <h2>Not done yet</h2>
-      <ul>
+      <ul class="plain-rows">
         <li>No independent reviewer has audited Sesame yet, so keep an encrypted backup and move over a few accounts at a time.</li>
         <li>{#if extension.status === 'published'}The browser extension is in the Chrome Web Store only, and the Firefox version is experimental.{:else if extension.status === 'approved'}The Chrome Web Store has accepted the browser extension, and its listing is not live yet.{:else}The browser extension is not in a browser store yet.{/if}</li>
         <li>The Windows installer is not Authenticode signed yet, so SmartScreen warns on first run.</li>
