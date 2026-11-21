@@ -7,33 +7,39 @@ export const SYNC_PRICES = { monthly: 1, annual: 10, currency: 'EUR' } as const
 export type FeatureIconName = 'vault' | 'import' | 'card' | 'shield' | 'key' | 'archive' | 'lock' | 'monitor' | 'versions' | 'file-key' | 'server' | 'cloud'
 export type PlanFeature = { icon: FeatureIconName; label: string }
 
-export const planFeatures: Record<string, PlanFeature[]> = {
-  free: [
-    { icon: 'vault', label: 'Encrypted local vault' },
-    { icon: 'import', label: `Import from ${IMPORT_FORMAT_COUNT} formats` },
-    { icon: 'card', label: 'Nine item types' },
-    { icon: 'shield', label: '2FA codes and recovery details' },
-    { icon: 'key', label: 'Windows Hello and PIN unlock' },
-    { icon: 'archive', label: 'Backup, restore, and export' },
-    { icon: 'server', label: 'Sync with your own server' },
+export const planFeatures: ReadonlyMap<string, PlanFeature[]> = new Map([
+  [
+    'free',
+    [
+      { icon: 'vault', label: 'Encrypted local vault' },
+      { icon: 'import', label: `Import from ${IMPORT_FORMAT_COUNT} formats` },
+      { icon: 'card', label: 'Nine item types' },
+      { icon: 'shield', label: '2FA codes and recovery details' },
+      { icon: 'key', label: 'Windows Hello and PIN unlock' },
+      { icon: 'archive', label: 'Backup, restore, and export' },
+      { icon: 'server', label: 'Sync with your own server' },
+    ],
   ],
-  sync: [
-    { icon: 'cloud', label: 'Sync server run by us' },
-    { icon: 'lock', label: 'End-to-end encryption' },
-    { icon: 'monitor', label: 'Device approval' },
-    { icon: 'versions', label: 'Conflict review' },
-    { icon: 'file-key', label: 'Local access if you cancel' },
+  [
+    'sync',
+    [
+      { icon: 'cloud', label: 'Sync server run by us' },
+      { icon: 'lock', label: 'End-to-end encryption' },
+      { icon: 'monitor', label: 'Device approval' },
+      { icon: 'versions', label: 'Conflict review' },
+      { icon: 'file-key', label: 'Local access if you cancel' },
+    ],
   ],
-}
+])
 
-const planDescriptions: Record<string, string> = {
-  free: 'The whole app, open source under the AGPL. There is no paid version.',
-  sync: 'Keeps your vault the same on every device you approve. We run the server, so you do not have to.',
-}
+const planDescriptions: ReadonlyMap<string, string> = new Map([
+  ['free', 'The whole app, open source under the AGPL. There is no paid version.'],
+  ['sync', 'Keeps your vault the same on every device you approve. We run the server, so you do not have to.'],
+])
 
 export function withSiteWording(plan: ProductPlan): ProductPlan {
-  const description = planDescriptions[plan.id]
-  const features = planFeatures[plan.id]
+  const description = planDescriptions.get(plan.id)
+  const features = planFeatures.get(plan.id)
   if (!description || !features) return plan
   return { ...plan, description, includes: features.map((feature) => feature.label) }
 }

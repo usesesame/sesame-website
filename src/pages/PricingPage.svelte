@@ -14,9 +14,9 @@
   const afterSesame = $derived(faq.find((entry) => entry.question.startsWith('What happens if I stop paying')))
   const questions = $derived(faq.filter((entry) => entry !== afterSesame))
 
-  function priceLabel(plan: ProductPlan) {
-    const amount = Number(plan.price)
-    return `€${Number.isInteger(amount) ? amount : amount.toFixed(2)}`
+  function euros(amount: number) {
+    const cents = Math.round(amount * 100)
+    return `€${cents % 100 === 0 ? cents / 100 : (cents / 100).toFixed(2)}`
   }
 
   function period(plan: ProductPlan) {
@@ -43,13 +43,13 @@
     <article class="price-plate" use:buildIn>
       <p class="price-name">{plan.name} <span class="price-tag" class:current={plan.id === 'free' || plan.available}>{plan.id === 'free' ? 'Free' : plan.available ? 'Open' : 'Not open yet'}</span></p>
       <p class="price-figure">
-        <strong>{priceLabel(plan)}</strong>
+        <strong>{euros(Number(plan.price))}</strong>
         {#if period(plan)}<span>{period(plan)}</span>{/if}
-        {#if plan.id === 'sync' && plan.annualPrice}<span class="price-or">or €{Number(plan.annualPrice).toFixed(0)} a year{#if annualSaving(plan) > 0}, which saves €{annualSaving(plan).toFixed(0)}{/if}</span>{/if}
+        {#if plan.id === 'sync' && plan.annualPrice}<span class="price-or">or {euros(Number(plan.annualPrice))} a year{#if annualSaving(plan) > 0}, which saves {euros(annualSaving(plan))}{/if}</span>{/if}
       </p>
       <p class="price-desc">{plan.description}</p>
-      {#if planFeatures[plan.id]}
-        <ul class="price-includes">{#each planFeatures[plan.id] as feature (feature.label)}<li><FeatureIcon name={feature.icon} />{feature.label}</li>{/each}</ul>
+      {#if planFeatures.has(plan.id)}
+        <ul class="price-includes">{#each planFeatures.get(plan.id) ?? [] as feature (feature.label)}<li><FeatureIcon name={feature.icon} />{feature.label}</li>{/each}</ul>
       {:else if plan.includes?.length}
         <ul class="price-includes">{#each plan.includes as item (item)}<li>{item}</li>{/each}</ul>
       {/if}

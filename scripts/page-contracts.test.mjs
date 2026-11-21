@@ -106,6 +106,15 @@ test('plans sent by the server keep the wording written for the site', async () 
   const facts = await read('lib', 'product-facts.ts')
   assert.match(facts, /return \{ \.\.\.plan, description, includes: features\.map\(\(feature\) => feature\.label\) \}/)
   assert.doesNotMatch(facts, /security review/)
+  assert.match(facts, /planDescriptions\.get\(plan\.id\)/)
+  assert.match(facts, /planFeatures\.get\(plan\.id\)/)
+})
+
+test('the pricing page shows cents in the yearly price and the saving', async () => {
+  const pricing = await read('pages', 'PricingPage.svelte')
+  assert.match(pricing, /or \{euros\(Number\(plan\.annualPrice\)\)\} a year/)
+  assert.match(pricing, /which saves \{euros\(annualSaving\(plan\)\)\}/)
+  assert.doesNotMatch(pricing, /toFixed\(0\)/)
 })
 
 test('the pricing page offers a download only while downloads are open and says payments are closed beside the Sync action', async () => {
