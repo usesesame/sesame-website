@@ -2,6 +2,8 @@ import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { digestsAsShown } from './release-page-text.mjs'
+
 const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const origin = new URL(process.argv[2] ?? 'https://usesesame.app').origin
 const repository = process.argv[3] ?? 'usesesame/sesame-desktop'
@@ -50,9 +52,10 @@ const page = await fetch(`${origin}/releases`, { signal: AbortSignal.timeout(30_
 if (!page.ok) errors.push(`${origin}/releases returned ${page.status}`)
 else {
   const html = await page.text()
+  const shown = digestsAsShown(html)
   if (!html.includes(`v${version}`) && !html.includes(version)) errors.push(`${origin}/releases does not mention ${version}`)
   for (const { name, url, sha256 } of published) {
-    if (!html.includes(sha256)) errors.push(`${origin}/releases is missing the digest ${sha256.slice(0, 12)}`)
+    if (!shown.includes(sha256)) errors.push(`${origin}/releases is missing the digest ${sha256.slice(0, 12)}`)
     if (!html.includes(url)) errors.push(`${origin}/releases does not link ${name} to ${url}`)
   }
 }
