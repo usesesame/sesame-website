@@ -1,17 +1,26 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import FaqItem from '../FaqItem.svelte'
+  import FeatureIcon from '../FeatureIcon.svelte'
+  import { buildIn } from '../lib/build-in'
   import type { ProductPlan } from '../lib/product'
-  import { pricingFaqEntries, productFacts } from '../lib/product-facts'
-  import { loadPlans, productState } from '../lib/product-state.svelte'
+  import { planFeatures, pricingFaqEntries, productFacts } from '../lib/product-facts'
+  import { loadPlans, loadStatus, productState } from '../lib/product-state.svelte'
   import { accountUrl } from '../lib/runtime-config'
 
   const facts = $derived(productFacts(productState.status))
   const syncInterestUrl = accountUrl('/support?category=billing&intent=sync#new-request')
+  const faq = $derived(pricingFaqEntries(facts.syncAvailable))
+  const afterSesame = $derived(faq.find((entry) => entry.question.startsWith('What happens if I stop paying')))
+  const questions = $derived(faq.filter((entry) => entry !== afterSesame))
 
   function priceLabel(plan: ProductPlan) {
     const amount = Number(plan.price)
     return `€${Number.isInteger(amount) ? amount : amount.toFixed(2)}`
+  }
+
+  function period(plan: ProductPlan) {
+    return plan.billing === 'one_time' ? 'once' : plan.billing === 'monthly' ? 'a month' : plan.billing === 'yearly' ? 'a year' : ''
   }
 
   function annualSaving(plan: ProductPlan) {
@@ -19,54 +28,69 @@
   }
 
   onMount(() => {
+    void loadStatus()
     void loadPlans()
   })
 </script>
 
-<section class="page-hero compact-page-hero">
+<section class="page-hero pricing-hero">
   <h1>The app is free</h1>
+  <p class="intro">You pay nothing for Sesame, and nothing in it is held back for a paid version. The only thing that will cost money is Sync on our servers, and you can run Sync on your own server for free.</p>
 </section>
-<section class="section pricing-page">
-  <div class="pricing-promise">
-    <strong>Payments are not open yet</strong>
-    <p>Registering interest will not start a subscription.</p>
-  </div>
-  <div class="price-grid">
-    {#each productState.plans as plan (plan.id ?? plan.name)}
-      <article class="card price-card" class:featured={plan.id === 'free'}>
-        <p class="price-name">{plan.name} <span class="price-tag" class:current={plan.id === 'free' || plan.available}>{plan.id === 'free' ? 'Free' : plan.available ? 'Available' : 'Planned'}</span></p>
-        {#if plan.id === 'sync' && plan.annualPrice}
-          <div class="sync-price-options">
-            <p class="price-value">{priceLabel(plan)} <span>monthly</span></p>
-            <p class="price-value annual"><strong>€{Number(plan.annualPrice).toFixed(0)}</strong> <span>yearly</span>{#if annualSaving(plan) > 0}<small>Save €{annualSaving(plan).toFixed(0)}</small>{/if}</p>
-          </div>
-        {:else}
-          <p class="price-value">{priceLabel(plan)} {#if plan.billing === 'one_time'}<span>once</span>{:else if plan.billing === 'monthly'}<span>monthly</span>{:else if plan.billing === 'yearly'}<span>yearly</span>{/if}</p>
-        {/if}
-        <p class="price-desc">{plan.description}</p>
-        {#if plan.includes?.length}
-          <ul class="price-includes">{#each plan.includes as item (item)}<li>{item}</li>{/each}</ul>
-        {/if}
-        {#if plan.id === 'free'}
-          <a class="button button-soft price-cta" href="/#product">See what it does</a>
-        {:else if plan.available}
-          <a class="button price-cta" href={accountUrl('/account') || '/roadmap#sync'}>Set up Sync</a>
-        {:else if syncInterestUrl}
-          <a class="button price-cta" href={syncInterestUrl}>Register Sync interest</a>
-        {:else}
-          <a class="button button-soft price-cta" href="/roadmap#sync">Read the Sync plans</a>
-        {/if}
-      </article>
-    {/each}
-  </div>
-  <p class="pricing-note">Final tax, refund, and support terms will appear before checkout opens.</p>
 
-  <div class="faq-block">
-    <h2>Before you choose</h2>
-    {#each pricingFaqEntries(facts.syncAvailable) as entry (entry.question)}
+<section class="chapter price-plates">
+  {#each productState.plans as plan (plan.id ?? plan.name)}
+    <article class="price-plate" use:buildIn>
+      <p class="price-name">{plan.name} <span class="price-tag" class:current={plan.id === 'free' || plan.available}>{plan.id === 'free' ? 'Free' : plan.available ? 'Open' : 'Not open yet'}</span></p>
+      <p class="price-figure">
+        <strong>{priceLabel(plan)}</strong>
+        {#if period(plan)}<span>{period(plan)}</span>{/if}
+        {#if plan.id === 'sync' && plan.annualPrice}<span class="price-or">or €{Number(plan.annualPrice).toFixed(0)} a year{#if annualSaving(plan) > 0}, which saves €{annualSaving(plan).toFixed(0)}{/if}</span>{/if}
+      </p>
+      <p class="price-desc">{plan.description}</p>
+      {#if planFeatures[plan.id]}
+        <ul class="price-includes">{#each planFeatures[plan.id] as feature (feature.label)}<li><FeatureIcon name={feature.icon} />{feature.label}</li>{/each}</ul>
+      {:else if plan.includes?.length}
+        <ul class="price-includes">{#each plan.includes as item (item)}<li>{item}</li>{/each}</ul>
+      {/if}
+      <div class="price-action">
+        {#if plan.id === 'free'}
+          {#if facts.publicDownload}
+            <a class="button button-xl" href="/releases">Download for Windows and Linux</a>
+          {:else}
+            <a class="button button-xl button-soft" href="/#product">See what it does</a>
+          {/if}
+        {:else if plan.available}
+          <a class="button button-xl button-soft" href={accountUrl('/account') || '/roadmap#sync'}>Set up Sync</a>
+        {:else if syncInterestUrl}
+          <a class="button button-xl button-soft" href={syncInterestUrl}>Tell us you want Sync</a>
+          <p>You cannot pay for Sync yet, and telling us does not start a subscription.</p>
+        {:else}
+          <a class="button button-xl button-soft" href="/roadmap#sync">Read about Sync</a>
+          <p>You cannot pay for Sync yet.</p>
+        {/if}
+      </div>
+    </article>
+  {/each}
+</section>
+
+{#if afterSesame}
+  <section class="band price-band" use:buildIn>
+    <div class="band-inner">
+      <h2 class="section-heading">{afterSesame.question}</h2>
+      <p class="band-statement">{afterSesame.answer}</p>
+    </div>
+  </section>
+{/if}
+
+<section class="chapter pricing-faq">
+  <div class="faq-block" use:buildIn>
+    <h2>Questions about pricing</h2>
+    {#each questions as entry (entry.question)}
       <FaqItem question={entry.question}>
-        <p>{entry.answer} {#if entry.syncInterestLink && syncInterestUrl}You can <a href={syncInterestUrl}>register interest in Sync</a>.{/if}</p>
+        <p>{entry.answer} {#if entry.syncInterestLink && syncInterestUrl}You can <a href={syncInterestUrl}>tell us you want it</a>.{/if}</p>
       </FaqItem>
     {/each}
+    <p class="pricing-note">We will publish the tax, refund, and support terms before payments open.</p>
   </div>
 </section>

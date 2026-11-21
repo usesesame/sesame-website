@@ -1,6 +1,6 @@
 import { parseExtensions } from './extension-parse'
 import { getExtensions, getLatestLinuxRelease, getLatestWindowsRelease, getPlans, getProductStatus } from './product'
-import { fallbackPlans } from './product-facts'
+import { fallbackPlans, withSiteWording } from './product-facts'
 import { parseProductRelease, parseProductStatus } from './product-parse'
 import { refreshChannel } from './release-summary'
 import rawRelease from './latest-release.json'
@@ -29,7 +29,7 @@ export async function loadExtensions(): Promise<void> {
 
 export async function loadPlans(): Promise<void> {
   const value = await getPlans()
-  if (value && value.length > 0) productState.plans = value
+  if (value && value.length > 0) productState.plans = value.map(withSiteWording)
 }
 
 export async function loadLatestRelease(): Promise<void> {

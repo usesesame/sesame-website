@@ -4,6 +4,7 @@
   export let width: number
   export let height: number
   export let eager = false
+  export let priority = false
   export let onFailure: () => void = () => {}
 
   let darkFailed = false
@@ -24,5 +25,5 @@
     <source type="image/png" media="(prefers-color-scheme: dark)" srcset={`${base}-dark.png`} />
   {/if}
   <source type="image/avif" srcset={`${base}.avif`} />
-  <img src={`${base}.png`} {alt} {width} {height} loading={eager ? 'eager' : 'lazy'} decoding="async" on:error={handleError} />
+  <img src={`${base}.png`} {alt} {width} {height} loading={eager ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : undefined} decoding="async" on:error={handleError} />
 </picture>
