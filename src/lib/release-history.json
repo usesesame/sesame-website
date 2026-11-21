@@ -1,4 +1,5 @@
 [
+  { "version": "0.6.0", "publishedAt": "2026-11-21", "summary": "Logins hold custom fields and a filling rule for one address, a whole site or never, an Activity view lists every fill, copy and reveal, email aliases and a command line tool arrive, and the vault moves to format 11, which 0.5.3 cannot open." },
   { "version": "0.5.3", "publishedAt": "2026-11-16", "summary": "Every delete notice has an Undo button, a password shown in the login editor hides again after 30 seconds, a retried vault key adoption now finishes and shows the new recovery kit, and unlocking with the recovery kit resets the PIN attempt count." },
   { "version": "0.5.2", "publishedAt": "2026-11-13", "summary": "Sesame decodes website icons itself, locks the vault when the window process stops, refuses downloads and permission requests, and drops 21 packages the AppImage never used." },
   { "version": "0.5.1", "publishedAt": "2026-10-26", "summary": "Sync shows changes from another device at once and stops writing new versions in turns, device names survive a vault key change, new logins suggest what you already use, and dialogs and quick access no longer flash or close early." },
