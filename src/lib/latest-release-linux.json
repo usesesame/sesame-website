@@ -2,36 +2,36 @@
   "channel": "beta",
   "platform": "linux",
   "available": true,
-  "version": "0.5.3",
-  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.3/Sesame_0.5.3_amd64.AppImage",
-  "sha256": "7799054b6e90fbba1d3b0903d9148ae353c674d67852a8002e383b7913351366",
+  "version": "0.6.0",
+  "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.6.0/Sesame_0.6.0_amd64.AppImage",
+  "sha256": "477c5207baa4539703584c36bc2c1d065ada5095c46ce13343e1073a3a09702f",
   "signed": false,
   "message": "This build is verified with Sigstore and carries no updater signature.",
-  "publishedAt": "2026-11-16T12:03:01Z",
+  "publishedAt": "2026-11-21T12:37:17.174987Z",
   "supportedWindows": [],
-  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.5.3",
+  "releaseNotesUrl": "https://github.com/usesesame/sesame-desktop/releases/tag/v0.6.0",
   "signingKeyId": "",
   "rollbackNotice": "",
   "artifacts": [
     {
-      "name": "Sesame_0.5.3_amd64.AppImage",
+      "name": "Sesame_0.6.0_amd64.AppImage",
       "format": "appimage",
-      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.3/Sesame_0.5.3_amd64.AppImage",
-      "sha256": "7799054b6e90fbba1d3b0903d9148ae353c674d67852a8002e383b7913351366",
+      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.6.0/Sesame_0.6.0_amd64.AppImage",
+      "sha256": "477c5207baa4539703584c36bc2c1d065ada5095c46ce13343e1073a3a09702f",
       "signed": false
     },
     {
-      "name": "Sesame_0.5.3_amd64.deb",
+      "name": "Sesame_0.6.0_amd64.deb",
       "format": "deb",
-      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.3/Sesame_0.5.3_amd64.deb",
-      "sha256": "95e1a5381c1387c434ae47eeb873c5fee8dacf939463352590bca5a70de1336d",
+      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.6.0/Sesame_0.6.0_amd64.deb",
+      "sha256": "95dfe72018568bee93f79f531b3e99c5ec2b79d578f43d3109b3090369bf0acd",
       "signed": false
     },
     {
-      "name": "Sesame-0.5.3-1.x86_64.rpm",
+      "name": "Sesame-0.6.0-1.x86_64.rpm",
       "format": "rpm",
-      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.5.3/Sesame-0.5.3-1.x86_64.rpm",
-      "sha256": "7ed14ae13af2c2d4477b33860d4f023501198b9b2298a4de589533b2c8bdf65c",
+      "url": "https://github.com/usesesame/sesame-desktop/releases/download/v0.6.0/Sesame-0.6.0-1.x86_64.rpm",
+      "sha256": "cf525452a879555e2b230837fb1dae330007d1cc31951d02f9256f4b76fec6a2",
       "signed": false
     }
   ]
